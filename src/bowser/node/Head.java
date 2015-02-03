@@ -15,6 +15,8 @@ public class Head extends DomNode {
     add(this.title);
     add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
         .attribute("href", "/favicon.png"));
+
+    this.generateWhitespace = true;
   }
 
   public Head css(String name) {

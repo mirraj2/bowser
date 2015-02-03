@@ -1,10 +1,10 @@
 package bowser.node;
 
-public class StaticContentNode extends DomNode {
+public class TextNode extends DomNode {
 
-  private final String content;
+  public final String content;
 
-  public StaticContentNode(String content) {
+  public TextNode(String content) {
     this.content = content;
   }
 

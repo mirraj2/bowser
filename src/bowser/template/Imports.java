@@ -5,7 +5,7 @@ import java.util.Map;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.Head;
-import bowser.node.StaticContentNode;
+import bowser.node.TextNode;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -47,7 +47,7 @@ public class Imports {
       String endComment = "<!-- END " + htmlImport + " -->\n\n";
       html = comment + html + endComment;
 
-      ret.add(new StaticContentNode(html));
+      ret.add(new TextNode(html));
     }
 
     return ret;

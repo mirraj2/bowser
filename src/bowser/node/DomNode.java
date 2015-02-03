@@ -6,21 +6,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 public class DomNode {
 
+  public DomNode parent;
+
   public final String tag;
   private final List<String> attributes = new ArrayList<>(0);
   private final List<DomNode> children = Lists.newArrayList();
-  public String text = "";
+
+  public boolean generateWhitespace = false;
 
   public DomNode() {
     this("");
   }
 
+  static int c = 0;
   public DomNode(String tag) {
     this.tag = tag;
   }
@@ -29,7 +34,6 @@ public class DomNode {
     this.tag = n.tag;
     this.attributes.addAll(n.attributes);
     this.children.addAll(n.children);
-    this.text = n.text;
   }
 
   public DomNode replace(DomNode child, DomNode replacement) {
@@ -44,6 +48,11 @@ public class DomNode {
     int index = children.indexOf(child);
     children.remove(index);
     children.addAll(index, replacements);
+
+    for (DomNode node : replacements) {
+      node.parent = this;
+    }
+
     return this;
   }
 
@@ -55,6 +64,7 @@ public class DomNode {
     for (DomNode child : children) {
       checkNotNull(child);
       this.children.add(child);
+      child.parent = this;
     }
     return this;
   }
@@ -93,7 +103,7 @@ public class DomNode {
   }
 
   public DomNode text(String text) {
-    this.text = text;
+    add(new TextNode(text));
     return this;
   }
 
@@ -139,17 +149,25 @@ public class DomNode {
     renderStartTag(sb, depth);
     renderContent(sb, depth);
     renderEndTag(sb, depth);
-    sb.append("\n");
+    if (shouldGenWhitespace()) {
+      sb.append("\n");
+    }
   }
 
   public void renderStartTag(StringBuilder sb, int depth) {
-    for (int i = 0; i < depth; i++) {
-      sb.append("  ");
+    renderStartTag(sb, depth, Function.identity());
+  }
+
+  public void renderStartTag(StringBuilder sb, int depth, Function<String, String> valueFunction) {
+    if (shouldGenWhitespace()) {
+      for (int i = 0; i < depth; i++) {
+        sb.append("  ");
+      }
     }
     sb.append('<').append(tag);
     for (int i = 0; i < attributes.size(); i += 2) {
       String key = attributes.get(i);
-      String value = attributes.get(i + 1);
+      String value = valueFunction.apply(attributes.get(i + 1));
       sb.append(' ').append(key);
       if (value != null) {
         sb.append("=\"").append(value).append("\"");
@@ -157,31 +175,48 @@ public class DomNode {
     }
     sb.append('>');
 
-    if (!children.isEmpty()) {
+    if (shouldGenWhitespace() && hasRealChild()) {
       sb.append('\n');
     }
   }
 
-  public void renderContent(StringBuilder sb, int depth) {
-    if (text.length() > 0) {
-      sb.append(text);
+  private boolean hasRealChild() {
+    for (DomNode child : children) {
+      if (!(child instanceof TextNode)) {
+        return true;
+      }
     }
+    return false;
+  }
 
+  public void renderContent(StringBuilder sb, int depth) {
     for (DomNode child : children) {
       child.render(sb, depth + 1);
     }
   }
 
   public void renderEndTag(StringBuilder sb, int depth) {
-    if (!text.isEmpty() || !children.isEmpty() || !tagsWithNoContent.contains(tag)) {
-      if (!children.isEmpty()) {
+    if (!children.isEmpty() || !tagsWithNoContent.contains(tag)) {
+      if (shouldGenWhitespace() && hasRealChild()) {
         for (int i = 0; i < depth; i++) {
           sb.append("  ");
         }
       }
       sb.append("</").append(tag).append(">");
     }
-    sb.append('\n');
+    if (shouldGenWhitespace()) {
+      sb.append('\n');
+    }
+  }
+
+  private boolean shouldGenWhitespace() {
+    if (this.generateWhitespace) {
+      return true;
+    }
+    if (parent == null) {
+      return false;
+    }
+    return parent.shouldGenWhitespace();
   }
 
   private static final Set<String> tagsWithNoContent = ImmutableSet.of("meta", "br", "img", "link", "import");

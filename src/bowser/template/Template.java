@@ -2,13 +2,15 @@ package bowser.template;
 
 import static com.google.common.base.Preconditions.checkState;
 import jasonlib.Json;
+import jasonlib.Log;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
-import bowser.node.StaticContentNode;
+import bowser.node.TextNode;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 
@@ -54,12 +56,11 @@ public class Template {
       }
     }
 
-    if (node instanceof StaticContentNode) {
-      node.render(sb, depth);
+    if (node instanceof TextNode) {
+      renderText((TextNode) node, sb, depth, context);
     } else {
-      node.renderStartTag(sb, depth);
+      node.renderStartTag(sb, depth, replacer(context));
 
-      renderText(node, sb, context);
       for (DomNode child : node.getChildren()) {
         render(child, sb, depth + 1, context);
       }
@@ -83,31 +84,51 @@ public class Template {
     }
   }
 
-  private void renderText(DomNode node, StringBuilder sb, Context context) {
-    String text = node.text;
-
-    if (node.tag.equals("script")) {
-      sb.append(text);
-      return;
-    }
-
-    int variableStartIndex = -1;
-    for (int i = 0; i < text.length(); i++) {
-      char c = text.charAt(i);
-      if (variableStartIndex >= 0) {
-        if (c == '}') {
-          String variableName = text.substring(variableStartIndex + 1, i);
-          sb.append(evaluate(variableName, context));
-          variableStartIndex = -1;
+  private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
+    if (node.parent.tag.equals("script")) {
+      sb.append(node.content);
+    } else {
+      String text = replacer(context).apply(node.content);
+      if (node.parent.getChildren().size() > 1) {
+        for (int i = 0; i < depth; i++) {
+          // sb.append("  ");
         }
+        sb.append(text);
+        // sb.append("\n");
       } else {
-        if (c == '{') {
-          variableStartIndex = i;
-        } else {
-          sb.append(c);
-        }
+        sb.append(text);
       }
     }
+  }
+
+  private Function<String, String> replacer(Context context) {
+    return text -> {
+      if (text == null) {
+        return null;
+      }
+
+      StringBuilder sb = new StringBuilder();
+
+      int variableStartIndex = -1;
+      for (int i = 0; i < text.length(); i++) {
+        char c = text.charAt(i);
+        if (variableStartIndex >= 0) {
+          if (c == '}') {
+            String variableName = text.substring(variableStartIndex + 1, i);
+            sb.append(evaluate(variableName, context));
+            variableStartIndex = -1;
+          }
+        } else {
+          if (c == '{') {
+            variableStartIndex = i;
+          } else {
+            sb.append(c);
+          }
+        }
+      }
+
+      return sb.toString();
+    };
   }
 
   private String evaluate(String variableName, Context context) {
@@ -143,14 +164,19 @@ public class Template {
   private Object invokeMethod(Object o, String method) {
     if (method.equals("isempty")) {
       if (o == null) {
+        Log.debug("isempty null condition");
         return true;
       }
       if (o instanceof Collection) {
-        return ((Collection<?>) o).isEmpty();
+        boolean ret = ((Collection<?>) o).isEmpty();
+        if (ret) {
+          Log.debug("isempty empty condition" + o);
+        }
+        return ret;
       } else {
         return false;
       }
-    } else if(method.equals("hasdata")){
+    } else if (method.equals("hasdata")) {
       return !((boolean) invokeMethod(o, "isempty"));
     }
     else {

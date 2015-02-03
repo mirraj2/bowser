@@ -7,32 +7,33 @@ public class DomParser {
 
   public DomNode parse(String s) {
     DomNode root = new DomNode("html").attribute("lang", "en");
+    root.add(new TextNode("\n"));
     parse(root, s, 0, s.length());
     return root;
   }
 
   private void parse(DomNode parent, String s, int start, int end) {
-    // trim the string
-    while (start < end && isWhitespace(s.charAt(start))) {
-      start++;
-    }
-    while (end > start && isWhitespace(s.charAt(end - 1))) {
-      end--;
-    }
-
     if (start == end) {
       return;
     }
 
     if (s.charAt(start) != '<') {
-      parent.text(s.substring(start, end));
+      int tagIndex = end;
+      for (int i = start + 1; i < end; i++) {
+        if (s.charAt(i) == '<') {
+          tagIndex = i;
+          break;
+        }
+      }
+      parent.add(new TextNode(s.substring(start, tagIndex)));
+      parse(parent, s, tagIndex, end);
       return;
     }
 
     if (s.charAt(start + 1) == '!') {
       int i = s.indexOf("-->", start);
       if (i != -1) {
-        parent.add(new StaticContentNode(s.substring(start, i + 4)));
+        parent.add(new TextNode(s.substring(start, i + 4)));
         parse(parent, s, i + 3, end);
       }
       return;
@@ -124,7 +125,8 @@ public class DomParser {
   }
 
   private boolean isWhitespace(char c) {
-    return c == ' ' || c == '\n';
+    return c == ' ';
+    // return c == ' ' || c == '\n';
   }
 
   // public static void main(String[] args) {
