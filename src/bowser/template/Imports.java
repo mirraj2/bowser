@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
+import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
 import com.google.common.base.Charsets;
@@ -18,9 +19,15 @@ public class Imports {
   private static final Map<String, String> jsNicknames = Maps.newLinkedHashMap();
   private static final Map<String, String> cssNicknames = Maps.newLinkedHashMap();
 
-  public static DomNode createHead(DomNode headNode) {
-    Head head = new Head(appName);
+  private static final DomParser parser = new DomParser();
 
+  public static Head createHead(DomNode headNode) {
+    Head head = new Head(appName);
+    appendToHead(head, headNode);
+    return head;
+  }
+
+  public static void appendToHead(Head head, DomNode headNode) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
       jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), "/" + jsImport);
       head.javascript(jsImport);
@@ -30,8 +37,6 @@ public class Imports {
       cssImport = cssNicknames.getOrDefault(cssImport.toLowerCase(), "/" + cssImport);
       head.css(cssImport);
     }
-
-    return head;
   }
 
   public static List<DomNode> createImport(DomNode importNode, StaticContentHandler loader) {
@@ -43,11 +48,11 @@ public class Imports {
     }
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
       String comment = "\n<!-- BEGIN " + htmlImport + " -->\n";
+      ret.add(new TextNode(comment));
       String html = new String(loader.getData(htmlImport), Charsets.UTF_8);
+      ret.add(parser.parse(html, false));
       String endComment = "<!-- END " + htmlImport + " -->\n\n";
-      html = comment + html + endComment;
-
-      ret.add(new TextNode(html));
+      ret.add(new TextNode(endComment));
     }
 
     return ret;

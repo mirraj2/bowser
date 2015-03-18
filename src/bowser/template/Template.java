@@ -1,33 +1,51 @@
 package bowser.template;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.size;
 import jasonlib.Json;
-import jasonlib.Log;
-import java.util.Collection;
+import jasonlib.Reflection;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
+import bowser.node.Head;
 import bowser.node.TextNode;
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 
 public class Template {
 
   private static final DomParser parser = new DomParser();
 
   private final DomNode root;
+  private Head head;
 
   private Template(String s, StaticContentHandler loader) {
-    root = parser.parse(s);
+    root = parser.parse(s, true);
 
-    for (DomNode child : ImmutableList.copyOf(root.getChildren())) {
-      if (child.tag.equals("head")) {
-        root.replace(child, Imports.createHead(child));
-      } else if (child.tag.equals("import")) {
-        root.replace(child, Imports.createImport(child, loader));
+    init(root, loader);
+  }
+
+  private void init(DomNode root, StaticContentHandler loader) {
+    for (DomNode node : root.getAllNodes()) {
+      if ("head".equals(node.tag)) {
+        if (head == null) {
+          head = Imports.createHead(node);
+          node.parent.replace(node, head);
+        } else {
+          Imports.appendToHead(head, node);
+          node.parent.remove(node);
+        }
+      } else if ("import".equals(node.tag)) {
+        List<DomNode> importedNodes = Imports.createImport(node, loader);
+        for (DomNode importedNode : importedNodes) {
+          init(importedNode, loader);
+        }
+        node.parent.replace(node, importedNodes);
       }
     }
   }
@@ -48,9 +66,17 @@ public class Template {
 
     String iff = node.getAttribute("if");
     if (iff != null) {
-      boolean b = resolve(iff, context);
+      boolean invert = false;
+      if (iff.startsWith("!")) {
+        iff = iff.substring(1);
+        invert = true;
+      }
+      boolean b = resolveBoolean(iff, context);
+      if (invert) {
+        b = !b;
+      }
       if (b) {
-        node.removeAttribute("if");
+        node = new DomNode(node).removeAttribute("if");
       } else {
         return;
       }
@@ -69,39 +95,68 @@ public class Template {
     }
   }
 
+  private boolean resolveBoolean(String s, Context context) {
+    Object o = resolve(s, context);
+    if (o == null) {
+      return false;
+    }
+    if (o instanceof Boolean) {
+      Boolean b = (Boolean) o;
+      return b;
+    } else {
+      return true;
+    }
+  }
+
   private void renderLoop(DomNode node, StringBuilder sb, int depth, Context context, String loop) {
     List<String> m = Splitter.on(' ').splitToList(loop);
     String variableName = m.get(0);
     checkState(m.get(1).equalsIgnoreCase("in"));
     String collectionName = m.get(2);
 
-    Collection<Object> collection = resolve(collectionName, context);
-    if (collection != null) {
-      for (Object o : collection) {
+    Object data = resolve(collectionName, context);
+
+    if (data == null) {
+      return;
+    }
+
+    if (data.getClass().isArray()) {
+      data = Arrays.asList((Object[]) data);
+    }
+
+    if (data instanceof Json && ((Json) data).isArray()) {
+      data = ((Json) data).asJsonArray();
+    }
+
+    if (data instanceof Map) {
+      ((Map<?, ?>) data).entrySet().forEach((entry) -> {
+        context.put(variableName, entry);
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+      });
+    } else if (data instanceof Iterable) {
+      for (Object o : (Iterable<?>) data) {
         context.put(variableName, o);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
       }
+    } else {
+      throw new RuntimeException("Unhandled data type: " + data.getClass());
     }
   }
 
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
+    Function<String, String> replacer = replacer(context);
     if (node.parent.tag.equals("script")) {
-      sb.append(node.content);
-    } else {
-      String text = replacer(context).apply(node.content);
-      if (node.parent.getChildren().size() > 1) {
-        for (int i = 0; i < depth; i++) {
-          // sb.append("  ");
-        }
-        sb.append(text);
-        // sb.append("\n");
-      } else {
-        sb.append(text);
-      }
+      replacer = replacer(context, "{{", "}}");
     }
+    String text = replacer.apply(node.content);
+    sb.append(text);
   }
 
   private Function<String, String> replacer(Context context) {
+    return replacer(context, "{", "}");
+  }
+
+  private Function<String, String> replacer(Context context, String start, String end) {
     return text -> {
       if (text == null) {
         return null;
@@ -111,18 +166,18 @@ public class Template {
 
       int variableStartIndex = -1;
       for (int i = 0; i < text.length(); i++) {
-        char c = text.charAt(i);
         if (variableStartIndex >= 0) {
-          if (c == '}') {
-            String variableName = text.substring(variableStartIndex + 1, i);
+          if (text.startsWith(end, i)) {
+            String variableName = text.substring(variableStartIndex + start.length(), i);
             sb.append(evaluate(variableName, context));
             variableStartIndex = -1;
+            i += end.length() - 1;
           }
         } else {
-          if (c == '{') {
+          if (text.startsWith(start, i)) {
             variableStartIndex = i;
           } else {
-            sb.append(c);
+            sb.append(text.charAt(i));
           }
         }
       }
@@ -142,11 +197,9 @@ public class Template {
 
   @SuppressWarnings("unchecked")
   private <T> T resolve(String expression, Context context) {
-    expression = expression.toLowerCase();
-
     Iterator<String> iter = Splitter.on('.').split(expression).iterator();
 
-    Object reference = context.data.get(iter.next());
+    Object reference = context.resolve(iter.next());
 
     while (iter.hasNext()) {
       String s = iter.next();
@@ -162,25 +215,27 @@ public class Template {
   }
 
   private Object invokeMethod(Object o, String method) {
-    if (method.equals("isempty")) {
+    if (method.equals("isEmpty")) {
       if (o == null) {
-        Log.debug("isempty null condition");
         return true;
       }
-      if (o instanceof Collection) {
-        boolean ret = ((Collection<?>) o).isEmpty();
-        if (ret) {
-          Log.debug("isempty empty condition" + o);
-        }
-        return ret;
+      if (o instanceof Iterable) {
+        return !((Iterable<?>) o).iterator().hasNext();
       } else {
         return false;
       }
-    } else if (method.equals("hasdata")) {
-      return !((boolean) invokeMethod(o, "isempty"));
-    }
-    else {
-      return null;
+    } else if (method.equals("hasData")) {
+      return !((boolean) invokeMethod(o, "isEmpty"));
+    } else if (method.equals("size")) {
+      if (o == null) {
+        return 0;
+      } else if (o instanceof Iterable) {
+        return size((Iterable<?>) o);
+      } else {
+        throw new RuntimeException("Don't know how to get size from a " + o.getClass());
+      }
+    } else {
+      return Reflection.call(o, method);
     }
   }
 
@@ -189,9 +244,18 @@ public class Template {
       return null;
     } else if (o instanceof Json) {
       Json json = (Json) o;
-      return json.get(fieldName);
+      return json.getObject(fieldName);
+    } else if (o instanceof Entry) {
+      Entry<?, ?> e = (Entry<?, ?>) o;
+      if (fieldName.equals("key")) {
+        return e.getKey();
+      } else if (fieldName.equals("value")) {
+        return e.getValue();
+      } else {
+        throw new RuntimeException("Invalid map.entry accessor: " + fieldName);
+      }
     } else {
-      throw new RuntimeException("Don't know how to dereference a " + o.getClass() + " object.");
+      return Reflection.get(o, fieldName);
     }
   }
 

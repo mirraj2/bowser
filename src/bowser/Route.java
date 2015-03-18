@@ -20,6 +20,7 @@ public class Route {
   };
 
   private Template template;
+  public byte[] resourceData;
 
   public Route(Controller controller, String method, String path, boolean enableCaching) {
     this.controller = controller;
@@ -33,7 +34,7 @@ public class Route {
   }
 
   public Template getTemplate() {
-    if ((this.template == null || !enableCaching) && resource != null) {
+    if ((this.template == null || !enableCaching) && resource != null && resource.endsWith(".html")) {
       String source = IO.from(controller.getClass(), resource).toString();
       try {
         this.template = Template.compile(source, controller.getServer().getResourceLoader());
@@ -57,7 +58,11 @@ public class Route {
 
   public Route to(String resource) {
     this.resource = resource;
-    getTemplate(); // warm the cache
+    if (resource.endsWith(".html")) {
+      getTemplate(); // warm the cache
+    } else {
+      resourceData = IO.from(controller.getClass(), resource).toByteArray();
+    }
     return this;
   }
 

@@ -1,5 +1,6 @@
 package bowser.handler;
 
+import jasonlib.IO;
 import bowser.Request;
 import bowser.RequestHandler;
 import bowser.Response;
@@ -31,14 +32,22 @@ public class RouteHandler implements RequestHandler {
     }
     if (route.handler != null) {
       route.handler.handle(request, response);
+      return true;
     }
     Template template = route.getTemplate();
     if (template != null) {
       Context context = new Context(request);
       route.data.fill(context);
       response.write(template.render(context));
+      return true;
     }
-    return true;
+
+    if (route.resourceData != null) {
+      IO.from(route.resourceData).to(response.getOutputStream());
+      return true;
+    }
+
+    return false;
   }
 
   @Override

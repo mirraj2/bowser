@@ -1,5 +1,7 @@
 package bowser;
 
+import java.net.URL;
+
 public abstract class Controller {
 
   private WebServer server;
@@ -19,6 +21,17 @@ public abstract class Controller {
 
   public WebServer getServer() {
     return server;
+  }
+
+  public URL getResource(String path) {
+    if (path.endsWith(".js")) {
+      path = getJsFolder() + path;
+    }
+    return getClass().getResource(path);
+  }
+
+  protected String getJsFolder() {
+    return "";
   }
 
 }

@@ -5,9 +5,14 @@ import com.google.common.collect.Lists;
 
 public class DomParser {
 
-  public DomNode parse(String s) {
-    DomNode root = new DomNode("html").attribute("lang", "en");
-    root.add(new TextNode("\n"));
+  public DomNode parse(String s, boolean isRoot) {
+    DomNode root;
+    if (isRoot) {
+      root = new DomNode("html").attribute("lang", "en");
+      root.add(new TextNode("\n"));
+    } else {
+      root = new DomNode("div");
+    }
     parse(root, s, 0, s.length());
     return root;
   }
@@ -63,7 +68,7 @@ public class DomParser {
       endTag = endTagIndex + 2 + node.tag.length();
     }
 
-      parse(parent, s, endTag + 1, end);
+    parse(parent, s, endTag + 1, end);
   }
 
   private Integer findEndTag(String tag, String s, int start, int end) {

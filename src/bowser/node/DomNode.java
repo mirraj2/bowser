@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -69,8 +70,35 @@ public class DomNode {
     return this;
   }
 
+  public DomNode remove(DomNode child) {
+    children.remove(child);
+    return this;
+  }
+
   public List<DomNode> getChildren() {
     return children;
+  }
+
+  public List<DomNode> getAllNodes() {
+    List<DomNode> ret = Lists.newArrayList();
+    find(node -> true, ret);
+    return ret;
+  }
+
+  public List<DomNode> find(String tag) {
+    List<DomNode> ret = Lists.newArrayList();
+    find(node -> tag.equals(node.tag), ret);
+    return ret;
+  }
+
+  private void find(Predicate<DomNode> filter, List<DomNode> buffer) {
+    if (filter.test(this)) {
+      buffer.add(this);
+    }
+
+    for (DomNode child : children) {
+      child.find(filter, buffer);
+    }
   }
 
   public List<String> getAttributes() {

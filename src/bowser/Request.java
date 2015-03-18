@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Path;
+import org.simpleframework.http.Query;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
@@ -44,6 +45,10 @@ public class Request {
     return request.getQuery().get(key);
   }
 
+  public Query getQuery() {
+    return request.getQuery();
+  }
+
   public String cookie(String key) {
     Cookie cookie = request.getCookie(key);
     return cookie == null ? null : cookie.getValue();
@@ -70,6 +75,14 @@ public class Request {
   @Override
   public String toString() {
     return getMethod() + " " + path;
+  }
+
+  public boolean isStaticResource() {
+    if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
+        || path.endsWith(".ico")) {
+      return true;
+    }
+    return false;
   }
 
 }

@@ -17,8 +17,15 @@ public class Context {
     return request.get(key);
   }
 
+  public Object resolve(String key) {
+    if (data.containsKey(key)) {
+      return data.get(key);
+    }
+    return request.get(key);
+  }
+
   public void put(String key, Object value) {
-    data.put(key.toLowerCase(), value);
+    data.put(key, value);
   }
 
 }

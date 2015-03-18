@@ -5,6 +5,7 @@ import jasonlib.Log;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import javax.net.ssl.SSLContext;
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
@@ -26,6 +27,8 @@ public class WebServer {
   private final List<RequestHandler> handlers = Lists.newArrayList();
   private StaticContentHandler staticContentHandler;
 
+  private SSLContext sslContext;
+
   public WebServer(String appName, int port, boolean developerMode) {
     Imports.appName = appName;
     this.port = port;
@@ -44,13 +47,18 @@ public class WebServer {
     return this;
   }
 
-  public WebServer auth(RequestHandler authenticator) {
+  public WebServer add(RequestHandler authenticator) {
     handlers.add(authenticator);
     return this;
   }
 
   public void add(Route route) {
     handlers.add(new RouteHandler(route));
+  }
+
+  public WebServer ssl(SSLContext sslContext) {
+    this.sslContext = sslContext;
+    return this;
   }
 
   public StaticContentHandler getResourceLoader() {
@@ -63,14 +71,17 @@ public class WebServer {
     try {
       boolean handled = false;
 
-      if (request.path.endsWith(".css") || request.path.endsWith(".js") || request.path.endsWith(".png")) {
-        handled = staticContentHandler.process(request, response);
-      } else {
-        for (RequestHandler handler : handlers) {
-          if (handler.process(request, response)) {
-            handled = true;
-            break;
-          }
+      for (RequestHandler handler : handlers) {
+        if (handler.process(request, response)) {
+          handled = true;
+          break;
+        }
+      }
+
+      if (!handled) {
+        if (request.path.endsWith(".css") || request.path.endsWith(".js") || request.path.endsWith(".png")
+            || request.path.endsWith(".jpg")) {
+          handled = staticContentHandler.process(request, response);
         }
       }
 
@@ -111,7 +122,7 @@ public class WebServer {
   public WebServer start() {
     try {
       Server server = new ContainerServer(container);
-      new SocketConnection(server).connect(new InetSocketAddress(port));
+      new SocketConnection(server).connect(new InetSocketAddress(port), sslContext);
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
