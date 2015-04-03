@@ -19,10 +19,12 @@ import com.google.common.base.Splitter;
 
 public class Template {
 
+  public static String appName;
+
   private static final DomParser parser = new DomParser();
 
   private final DomNode root;
-  private Head head;
+  private Head head = null;
 
   private Template(String s, StaticContentHandler loader) {
     root = parser.parse(s, true);
@@ -32,14 +34,11 @@ public class Template {
 
   private void init(DomNode root, StaticContentHandler loader) {
     for (DomNode node : root.getAllNodes()) {
-      if ("head".equals(node.tag)) {
-        if (head == null) {
-          head = Imports.createHead(node);
-          node.parent.replace(node, head);
-        } else {
-          Imports.appendToHead(head, node);
-          node.parent.remove(node);
-        }
+      if (node instanceof Head) {
+        head = (Head) node;
+      } else if ("head".equals(node.tag)) {
+        Imports.appendToHead(head, node);
+        node.parent.remove(node);
       } else if ("import".equals(node.tag)) {
         List<DomNode> importedNodes = Imports.createImport(node, loader);
         for (DomNode importedNode : importedNodes) {

@@ -1,5 +1,6 @@
 package bowser.node;
 
+
 public class Head extends DomNode {
 
   private DomNode title;

@@ -14,7 +14,7 @@ import com.google.common.collect.Maps;
 
 public class Request {
 
-  private final org.simpleframework.http.Request request;
+  public final org.simpleframework.http.Request request;
   public List<String> segments;
   public String path;
   private Map<String, Object> userData = Maps.newHashMap();

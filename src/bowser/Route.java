@@ -28,7 +28,7 @@ public class Route {
     this.path = path;
     this.enableCaching = enableCaching;
 
-    path = path.toLowerCase().replace("*", "[0-9a-zA-Z\\-]*");
+    path = path.toLowerCase().replace("*", "[0-9a-zA-Z\\-:]*");
     path += "/?";
     regex = Pattern.compile(path);
   }

@@ -14,6 +14,7 @@ import org.simpleframework.transport.connect.SocketConnection;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
 import bowser.template.Imports;
+import bowser.template.Template;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
@@ -30,7 +31,7 @@ public class WebServer {
   private SSLContext sslContext;
 
   public WebServer(String appName, int port, boolean developerMode) {
-    Imports.appName = appName;
+    Template.appName = appName;
     this.port = port;
     this.developerMode = developerMode;
     this.staticContentHandler = new StaticContentHandler(this);

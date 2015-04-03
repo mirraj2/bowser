@@ -14,18 +14,10 @@ import com.google.common.collect.Maps;
 
 public class Imports {
 
-  public static String appName;
-
   private static final Map<String, String> jsNicknames = Maps.newLinkedHashMap();
   private static final Map<String, String> cssNicknames = Maps.newLinkedHashMap();
 
   private static final DomParser parser = new DomParser();
-
-  public static Head createHead(DomNode headNode) {
-    Head head = new Head(appName);
-    appendToHead(head, headNode);
-    return head;
-  }
 
   public static void appendToHead(Head head, DomNode headNode) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
@@ -47,11 +39,11 @@ public class Imports {
       ret.add(new DomNode("script").attribute("src", jsImport));
     }
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
-      String comment = "\n<!-- BEGIN " + htmlImport + " -->\n";
+      String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
       ret.add(new TextNode(comment));
       String html = new String(loader.getData(htmlImport), Charsets.UTF_8);
       ret.add(parser.parse(html, false));
-      String endComment = "<!-- END " + htmlImport + " -->\n\n";
+      String endComment = "\n<!-- END " + htmlImport + " -->";
       ret.add(new TextNode(endComment));
     }
 

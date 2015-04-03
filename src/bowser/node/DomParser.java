@@ -1,6 +1,7 @@
 package bowser.node;
 
 import java.util.List;
+import bowser.template.Template;
 import com.google.common.collect.Lists;
 
 public class DomParser {
@@ -10,10 +11,14 @@ public class DomParser {
     if (isRoot) {
       root = new DomNode("html").attribute("lang", "en");
       root.add(new TextNode("\n"));
+      root.add(new Head(Template.appName));
+      DomNode body = new DomNode("body");
+      root.add(body);
+      parse(body, s, 0, s.length());
     } else {
       root = new DomNode("div");
+      parse(root, s, 0, s.length());
     }
-    parse(root, s, 0, s.length());
     return root;
   }
 
