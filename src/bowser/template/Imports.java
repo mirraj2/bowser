@@ -36,7 +36,10 @@ public class Imports {
 
     for (String jsImport : split(importNode.getAttribute("js", ""))) {
       jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), "/" + jsImport);
-      ret.add(new DomNode("script").attribute("src", jsImport));
+
+      String s = new String(loader.getData(jsImport), Charsets.UTF_8);
+      ret.add(new DomNode("script").add(new TextNode("\n" + s)));
+      // ret.add(new DomNode("script").attribute("src", jsImport));
     }
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
       String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";

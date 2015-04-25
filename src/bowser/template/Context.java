@@ -2,15 +2,18 @@ package bowser.template;
 
 import java.util.Map;
 import bowser.Request;
+import bowser.Response;
 import com.google.common.collect.Maps;
 
 public class Context {
 
   public final Request request;
+  public final Response response;
   public final Map<String, Object> data = Maps.newHashMap();
 
-  public Context(Request request) {
+  public Context(Request request, Response response) {
     this.request = request;
+    this.response = response;
   }
 
   public <T> T get(String key) {

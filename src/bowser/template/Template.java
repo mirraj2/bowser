@@ -136,6 +136,7 @@ public class Template {
       for (Object o : (Iterable<?>) data) {
         context.put(variableName, o);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        context.data.remove(variableName);
       }
     } else {
       throw new RuntimeException("Unhandled data type: " + data.getClass());
@@ -145,7 +146,7 @@ public class Template {
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
     Function<String, String> replacer = replacer(context);
     if (node.parent.tag.equals("script")) {
-      replacer = replacer(context, "{{", "}}");
+      replacer = replacer(context, "$$(", ")");
     }
     String text = replacer.apply(node.content);
     sb.append(text);

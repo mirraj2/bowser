@@ -89,7 +89,7 @@ public class StaticContentHandler implements RequestHandler {
         return IO.from(url).toByteArray();
       }
     }
-    Log.debug("Couldnt find: " + path);
+    Log.debug("Couldn't find: " + path);
     return NO_DATA;
   }
 

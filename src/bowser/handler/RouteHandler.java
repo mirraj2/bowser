@@ -36,7 +36,7 @@ public class RouteHandler implements RequestHandler {
     }
     Template template = route.getTemplate();
     if (template != null) {
-      Context context = new Context(request);
+      Context context = new Context(request, response);
       route.data.fill(context);
       response.write(template.render(context));
       return true;
