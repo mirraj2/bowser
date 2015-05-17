@@ -79,7 +79,7 @@ public class Request {
 
   public boolean isStaticResource() {
     if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-        || path.endsWith(".ico")) {
+        || path.endsWith(".ico") || path.endsWith(".ttf")) {
       return true;
     }
     return false;

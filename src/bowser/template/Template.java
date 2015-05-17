@@ -190,7 +190,6 @@ public class Template {
     Object o = resolve(variableName, context);
     if (o == null) {
       return "";
-      // return "{" + variableName + "}";
     }
     return String.valueOf(o);
   }

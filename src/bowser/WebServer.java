@@ -80,8 +80,7 @@ public class WebServer {
       }
 
       if (!handled) {
-        if (request.path.endsWith(".css") || request.path.endsWith(".js") || request.path.endsWith(".png")
-            || request.path.endsWith(".jpg")) {
+        if (request.isStaticResource()) {
           handled = staticContentHandler.process(request, response);
         }
       }

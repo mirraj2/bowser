@@ -79,6 +79,14 @@ public class DomNode {
     return children;
   }
 
+  public String get(int index) {
+    DomNode node = children.get(index);
+    List<DomNode> buffer = Lists.newArrayList();
+    node.find(n -> n instanceof TextNode, buffer);
+    TextNode t = (TextNode) buffer.get(0);
+    return t.content;
+  }
+
   public List<DomNode> getAllNodes() {
     List<DomNode> ret = Lists.newArrayList();
     find(node -> true, ret);
