@@ -16,6 +16,7 @@ import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Multimap;
 
 public class Template {
 
@@ -107,6 +108,7 @@ public class Template {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void renderLoop(DomNode node, StringBuilder sb, int depth, Context context, String loop) {
     List<String> m = Splitter.on(' ').splitToList(loop);
     String variableName = m.get(0);
@@ -131,12 +133,22 @@ public class Template {
       ((Map<?, ?>) data).entrySet().forEach((entry) -> {
         context.put(variableName, entry);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        context.data.remove(variableName);
       });
     } else if (data instanceof Iterable) {
       for (Object o : (Iterable<?>) data) {
         context.put(variableName, o);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
         context.data.remove(variableName);
+      }
+    } else if (data instanceof Multimap) {
+      Multimap<Object, Object> multimap = (Multimap<Object, Object>) data;
+      for (Object key : multimap.keySet()) {
+        context.put(variableName, key);
+        context.put("values", multimap.get(key));
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        context.data.remove(variableName);
+        context.data.remove("values");
       }
     } else {
       throw new RuntimeException("Unhandled data type: " + data.getClass());
