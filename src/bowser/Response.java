@@ -1,6 +1,7 @@
 package bowser;
 
 import jasonlib.IO;
+import jasonlib.Json;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +58,10 @@ public class Response {
   public Response status(Status status) {
     response.setStatus(status);
     return this;
+  }
+
+  public Response write(Json json) {
+    return write(json.toString());
   }
 
   public Response write(String text) {
