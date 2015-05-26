@@ -32,6 +32,11 @@ public class Response {
     return this;
   }
 
+  public Response header(String key, String value) {
+    response.addValue(key, value);
+    return this;
+  }
+
   public Response cookie(String key, String value) {
     return cookie(key, value, 7, TimeUnit.DAYS);
   }

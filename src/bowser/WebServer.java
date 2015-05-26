@@ -72,6 +72,8 @@ public class WebServer {
     try {
       boolean handled = false;
 
+      response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
+
       for (RequestHandler handler : handlers) {
         if (handler.process(request, response)) {
           handled = true;
