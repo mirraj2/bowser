@@ -48,8 +48,8 @@ public class WebServer {
     return this;
   }
 
-  public WebServer add(RequestHandler authenticator) {
-    handlers.add(authenticator);
+  public WebServer add(RequestHandler handler) {
+    handlers.add(handler);
     return this;
   }
 
@@ -130,6 +130,24 @@ public class WebServer {
     }
 
     return this;
+  }
+
+  public static WebServer redirectToHttps() {
+    return redirect(80, 443);
+  }
+
+  public static WebServer redirect(int fromPort, int toPort) {
+    return new WebServer("Redirect", fromPort, false).add((request, response) -> {
+      String host = request.getHeader("HOST");
+      if (toPort == 443) {
+        response.redirect("https://" + host + request.path);
+      } else if (toPort == 80) {
+        response.redirect("http://" + host + request.path);
+      } else {
+        response.redirect("http://" + host + toPort + ":" + toPort + request.path);
+      }
+      return true;
+    }).start();
   }
 
 }

@@ -1,6 +1,8 @@
 package bowser;
 
 import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
+import jasonlib.Pair;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +23,9 @@ public class Request {
 
   public Request(org.simpleframework.http.Request request) {
     this.request = request;
-    this.path = request.getPath().getPath().toLowerCase();
-    this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(path));
+    String s = request.getPath().getPath();
+    this.path = s.toLowerCase();
+    this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(s));
   }
 
   public Path getPath() {
@@ -77,9 +80,28 @@ public class Request {
     return getMethod() + " " + path;
   }
 
+  public String getHeader(String key) {
+    return request.getValue(key);
+  }
+
+  public Pair<Long, Long> getRange() {
+    String s = request.getValue("Range");
+    if (s == null || !s.startsWith("bytes=")) {
+      return null;
+    }
+    s = s.substring(6);
+    int index = s.indexOf('-');
+    long start = parseLong(s.substring(0, index));
+    Long end = null;
+    if (index < s.length() - 1) {
+      end = parseLong(s.substring(index + 1));
+    }
+    return Pair.of(start, end);
+  }
+
   public boolean isStaticResource() {
     if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-        || path.endsWith(".ico") || path.endsWith(".ttf")) {
+        || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".mp4")) {
       return true;
     }
     return false;

@@ -2,9 +2,13 @@ package bowser.handler;
 
 import jasonlib.IO;
 import jasonlib.Log;
+import jasonlib.Pair;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.simpleframework.http.Status;
 import bowser.Controller;
 import bowser.Request;
 import bowser.RequestHandler;
@@ -38,6 +42,8 @@ public class StaticContentHandler implements RequestHandler {
       response.contentType("text/css");
     } else if (path.endsWith(".js")) {
       response.contentType("text/javascript");
+    } else if (path.endsWith(".mp4")) {
+      response.contentType("video/mp4");
     }
 
     if (!server.developerMode) {
@@ -48,12 +54,33 @@ public class StaticContentHandler implements RequestHandler {
       }
     }
 
+    Pair<Long, Long> range = request.getRange();
+    InputStream is;
+
+    response.header("Accept-Ranges", "bytes");
+    if (range == null) {
+      response.header("Content-Length", data.length + "");
+      is = new ByteArrayInputStream(data);
+    } else {
+      response.status(Status.PARTIAL_CONTENT);
+      Long end = range.b;
+      if (end == null) {
+        end = (long) data.length - 1;
+      }
+      long len = end - range.a + 1;
+      response.header("Content-Length", len + "");
+      response.header("Content-Range", "bytes " + range.a + "-" + end + "/" + data.length);
+      is = new ByteArrayInputStream(data, range.a.intValue(), (int) len);
+    }
+
     try {
-      IO.from(data).to(response.getOutputStream());
+      IO.from(is).to(response.getOutputStream());
     } catch (Throwable e) {
       e = Throwables.getRootCause(e);
       if (e.getMessage().equals("Stream has been closed")) {
         // ignore this
+      } else if (e.getMessage().equals("Response content complete")) {
+        //ignore
       } else {
         throw Throwables.propagate(e);
       }
