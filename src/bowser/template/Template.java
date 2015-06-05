@@ -265,6 +265,8 @@ public class Template {
       } else {
         throw new RuntimeException("Invalid map.entry accessor: " + fieldName);
       }
+    } else if (o instanceof Map) {
+      return ((Map<?, ?>) o).get(fieldName);
     } else {
       return Reflection.get(o, fieldName);
     }

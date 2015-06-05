@@ -5,6 +5,7 @@ import jasonlib.Log;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Optional;
 import javax.net.ssl.SSLContext;
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
@@ -29,6 +30,8 @@ public class WebServer {
   private StaticContentHandler staticContentHandler;
 
   private SSLContext sslContext;
+
+  private WebLogger logger = emptyLogger();
 
   public WebServer(String appName, int port, boolean developerMode) {
     Template.appName = appName;
@@ -59,6 +62,11 @@ public class WebServer {
 
   public WebServer ssl(SSLContext sslContext) {
     this.sslContext = sslContext;
+    return this;
+  }
+
+  public WebServer logger(WebLogger logger) {
+    this.logger = logger;
     return this;
   }
 
@@ -101,9 +109,14 @@ public class WebServer {
   private final Container container = new Container() {
     @Override
     public void handle(org.simpleframework.http.Request request, org.simpleframework.http.Response response) {
+      long startTime = System.nanoTime();
+      Request req = new Request(request);
+      Response resp = new Response(response);
+      Throwable t = null;
       try {
-        WebServer.this.handle(new Request(request), new Response(response));
+        WebServer.this.handle(req, resp);
       } catch (Throwable e) {
+        t = e;
         e.printStackTrace();
         response.setStatus(Status.INTERNAL_SERVER_ERROR);
         try {
@@ -116,6 +129,13 @@ public class WebServer {
         } catch (IOException e1) {
           e1.printStackTrace();
         }
+      }
+      try {
+        long endTime = System.nanoTime();
+        long millis = Math.round((endTime - startTime) / 1000000.0);
+        logger.log(req, resp, Optional.ofNullable(t), millis);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
   };
@@ -130,6 +150,14 @@ public class WebServer {
     }
 
     return this;
+  }
+
+  private WebLogger emptyLogger() {
+    return new WebLogger() {
+      @Override
+      public void log(Request request, Response response, Optional<Throwable> e, long responseTime) {
+      }
+    };
   }
 
   public static WebServer redirectToHttps() {

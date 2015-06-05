@@ -11,7 +11,9 @@ import com.google.common.base.Throwables;
 
 public class Response {
 
-  private final org.simpleframework.http.Response response;
+  public final org.simpleframework.http.Response response;
+
+  public String responseBody;
 
   public Response(org.simpleframework.http.Response response) {
     this.response = response;
@@ -70,6 +72,7 @@ public class Response {
   }
 
   public Response write(String text) {
+    this.responseBody = text;
     IO.from(text).to(getOutputStream());
     return this;
   }
