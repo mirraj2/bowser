@@ -134,11 +134,6 @@ public class DomParser {
     return ret;
   }
 
-  private boolean isWhitespace(char c) {
-    return c == ' ';
-    // return c == ' ' || c == '\n';
-  }
-
   // public static void main(String[] args) {
   // DomNode node = new DomParser().parse(IO.from(DomParser.class, "test2.html").toString());
   // Log.debug(node);

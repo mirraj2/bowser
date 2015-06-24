@@ -17,6 +17,7 @@ import bowser.handler.StaticContentHandler;
 import bowser.template.Imports;
 import bowser.template.Template;
 import com.google.common.base.Stopwatch;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
@@ -109,7 +110,6 @@ public class WebServer {
   private final Container container = new Container() {
     @Override
     public void handle(org.simpleframework.http.Request request, org.simpleframework.http.Response response) {
-      long startTime = System.nanoTime();
       Request req = new Request(request);
       Response resp = new Response(response);
       Throwable t = null;
@@ -121,19 +121,19 @@ public class WebServer {
         response.setStatus(Status.INTERNAL_SERVER_ERROR);
         try {
           Throwable root = Throwables.getRootCause(e);
+          String message = "Server Error";
           if (root instanceof IllegalStateException) {
-            IO.from(root.getMessage()).to(response.getOutputStream());
-          } else {
-            response.close();
+            if (!Strings.isNullOrEmpty(root.getMessage())) {
+              message = root.getMessage();
+            }
           }
+          IO.from(message).to(response.getOutputStream());
         } catch (IOException e1) {
           e1.printStackTrace();
         }
       }
       try {
-        long endTime = System.nanoTime();
-        long millis = Math.round((endTime - startTime) / 1000000.0);
-        logger.log(req, resp, Optional.ofNullable(t), millis);
+        logger.log(req, resp, Optional.ofNullable(t));
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -155,7 +155,7 @@ public class WebServer {
   private WebLogger emptyLogger() {
     return new WebLogger() {
       @Override
-      public void log(Request request, Response response, Optional<Throwable> e, long responseTime) {
+      public void log(Request request, Response response, Optional<Throwable> e) {
       }
     };
   }

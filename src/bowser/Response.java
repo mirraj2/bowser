@@ -62,6 +62,10 @@ public class Response {
     }
   }
 
+  public int status() {
+    return response.getStatus().code;
+  }
+
   public Response status(Status status) {
     response.setStatus(status);
     return this;
