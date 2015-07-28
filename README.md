@@ -64,7 +64,71 @@ public class HomePage extends Controller {
     } else {
       throw new RuntimeException("Invalid login credentials.");
     }
-  }
+  };
 
 }
+```
+
+## Dynamic Pages (Templates)
+
+Alright, here are where things get interesting. Let's say that users of our site have 'messages' and we want to display those messages to them. The controller will supply the data and the html will render that data.
+
+```java
+public class MessagesPage extends Controller {
+
+  @Override
+  public void init(){
+    route("GET", "/messages").to("messages.html").data(messages);
+  }
+  
+  private final Data messages = context -> {
+    //for this example, let's assume that we have databases called 'userDB' and 'messageDB'
+  
+    //get the user making this request
+    User user = userDB.getUser(context.request.param("token"));
+  
+    List<Message> messages = messageDB.getMessages(user.id);
+    
+    //when you put something into the context, it becomes accessible by the HTML.
+    context.put("user", user);
+    context.put("messages", messages);
+  };
+
+}
+```
+
+And here is the HTML that uses the data that we've put into the context.
+
+```html
+<h1>Hello {user.firstName}</h1>
+<h2>You have {messages.size()} messages.</h2>
+<div loop="message in messages" class="message">
+  <p>{message.title}</p>
+  <p>{message.body}</p>
+</div>
+```
+
+## A super fancy template example
+
+So far you've seen that you can loop through objects, that you can insert variables, and that you can call size() on a collection. In this example, we'll go through all the other random things that Bowser supports.
+
+```html
+<head js="fancy.js" css="fancy.css">
+<p>The text above makes allows us to import javascript and css files into the 'head'</p>
+<p>Insert a variable: {user.name}</p>
+<p>Call a method: {user.getAddress()}</p>
+<div if="items.hasData()">
+  <h2>You have {items.size()} items.</h2>
+  <span loop="item in items">{item.name}</span>
+</div>
+<p if="items.isEmpty()">You have no items.</p>
+<p if="!items.isEmpty()">Another way of saying hasData()</p>
+<script>
+  var text = "In javascript, there is how you replace variables.";
+  var dynamic = "Hello $${user.name}";
+  var text2 = "It is just like in the HTML except with two dollar signs. Someday I'll change the way this is escaped to something better :p";
+</script>
+<p>You can also import javascript/html from other files like this:</p>
+<import js="mario.js">
+<import html="chat-widget.html">
 ```
