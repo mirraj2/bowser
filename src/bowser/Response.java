@@ -1,12 +1,12 @@
 package bowser;
 
-import jasonlib.IO;
-import jasonlib.Json;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Status;
+import ox.IO;
+import ox.Json;
 import com.google.common.base.Throwables;
 
 public class Response {

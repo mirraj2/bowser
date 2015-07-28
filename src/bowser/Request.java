@@ -2,13 +2,13 @@ package bowser;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
-import jasonlib.Pair;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
+import ox.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
