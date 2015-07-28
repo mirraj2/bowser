@@ -21,6 +21,7 @@ import com.google.common.collect.Multimap;
 public class Template {
 
   public static String appName;
+  public static boolean mobileDisplay = false;
 
   private static final DomParser parser = new DomParser();
 
@@ -230,7 +231,9 @@ public class Template {
       if (o == null) {
         return true;
       }
-      if (o instanceof Iterable) {
+      if (o instanceof Json) {
+        return ((Json) o).isEmpty();
+      } else if (o instanceof Iterable) {
         return !((Iterable<?>) o).iterator().hasNext();
       } else {
         return false;
@@ -240,6 +243,8 @@ public class Template {
     } else if (method.equals("size")) {
       if (o == null) {
         return 0;
+      } else if (o instanceof Json) {
+        return ((Json) o).size();
       } else if (o instanceof Iterable) {
         return size((Iterable<?>) o);
       } else {

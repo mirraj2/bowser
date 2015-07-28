@@ -41,6 +41,11 @@ public class WebServer {
     this.staticContentHandler = new StaticContentHandler(this);
   }
 
+  public WebServer mobileDisplay() {
+    Template.mobileDisplay = true;
+    return this;
+  }
+
   public WebServer shortcut(String nickname, String fullName) {
     Imports.shortcut(nickname, fullName);
     return this;
@@ -122,10 +127,8 @@ public class WebServer {
         try {
           Throwable root = Throwables.getRootCause(e);
           String message = "Server Error";
-          if (root instanceof IllegalStateException) {
-            if (!Strings.isNullOrEmpty(root.getMessage())) {
-              message = root.getMessage();
-            }
+          if (!Strings.isNullOrEmpty(root.getMessage())) {
+            message = root.getMessage();
           }
           IO.from(message).to(response.getOutputStream());
         } catch (IOException e1) {

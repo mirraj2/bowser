@@ -84,6 +84,14 @@ public class Request {
     return request.getValue(key);
   }
 
+  public Map<String, String> getHeaders() {
+    Map<String, String> ret = Maps.newLinkedHashMap();
+    request.getNames().forEach(name -> {
+      ret.put(name, request.getValue(name));
+    });
+    return ret;
+  }
+
   public Pair<Long, Long> getRange() {
     String s = request.getValue("Range");
     if (s == null || !s.startsWith("bytes=")) {
@@ -101,7 +109,7 @@ public class Request {
 
   public boolean isStaticResource() {
     if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-        || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".mp4")) {
+        || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".mp4") || path.endsWith(".map")) {
       return true;
     }
     return false;
