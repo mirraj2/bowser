@@ -1,5 +1,9 @@
 ![bowser](http://leviathyn.com/wp-content/uploads/2013/01/Bowser_picture-555x472.png)
 
+## Introduction
+
+First of all, I want to describe the motivation for this project given that there are already many java web servers out there. In my opinion, Jetty and Tomcat are bloated and have terrible APIs. Spring made me want to shoot myself. If you enjoy XML configuration files, endless annotations, and AntiFactoryPatternCreatorDelegators, you may like using one of those aforementioned frameworks.  If you want something incredibly simple and elegant, use SimpleFramework. If you want to use something like SimpleFramework, but with routing and templating on top, this library might be for you.
+
 ## Creating a webserver
 
 We're going to make an Eskimo dating website. We can start up the webserver with the following line of code.
