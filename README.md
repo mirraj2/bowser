@@ -128,7 +128,7 @@ So far you've seen that you can loop through objects, that you can insert variab
 <p if="items.isEmpty()">You have no items.</p>
 <p if="!items.isEmpty()">Another way of saying hasData()</p>
 <script>
-  var text = "In javascript, there is how you replace variables.";
+  var text = "In javascript, this is how you replace variables.";
   var dynamic = "Hello $${user.name}";
   var text2 = "It is just like in the HTML except with two dollar signs. Someday I'll change the way this is escaped to something better :p";
 </script>
