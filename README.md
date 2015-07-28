@@ -38,3 +38,33 @@ Now, when constructing the webserver, we must register our HomePage controller l
         .controller(new HomePage())
         .start();
 ```
+
+## Handling POST requests
+
+Let's say the user wants to login. Here's how we'd handle that.
+
+```java
+public class HomePage extends Controller {
+
+  @Override
+  public void init(){
+    route("GET", "/home").to("home.html");
+    route("POST", "/login").to(login);
+  }
+  
+  private final Handler login = (request, response) -> {
+    String username = request.param("username");
+    String password = request.param("password");
+    
+    //check the username and password against the database
+    //in this example, assume we have something called 'userDB'
+    
+    if(userDB.isValidLogin(username, password)){
+      response.cookie("token", userDB.generateToken());
+    } else {
+      throw new RuntimeException("Invalid login credentials.");
+    }
+  }
+
+}
+```
