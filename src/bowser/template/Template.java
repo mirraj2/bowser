@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import ox.Json;
-import ox.Reflection;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Multimap;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Multimap;
+import ox.Json;
+import ox.Reflection;
 
 public class Template {
 
@@ -60,7 +60,7 @@ public class Template {
 
   private void render(DomNode node, StringBuilder sb, int depth, Context context) {
     String loop = node.getAttribute("loop");
-    if (loop != null) {
+    if (loop != null && !"video".equals(node.tag)) {
       renderLoop(node, sb, depth, context, loop);
       return;
     }
