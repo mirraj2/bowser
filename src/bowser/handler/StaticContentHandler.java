@@ -30,7 +30,7 @@ public class StaticContentHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
-    byte[] data = getData(request.path);
+    byte[] data = getData(request.getOriginalPath());
 
     if (data == null || data == NO_DATA) {
       return false;

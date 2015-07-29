@@ -8,11 +8,11 @@ import java.util.Map;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
+import ox.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import ox.Pair;
 
 public class Request {
 
@@ -26,6 +26,10 @@ public class Request {
     String s = request.getPath().getPath();
     this.path = s.toLowerCase();
     this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(s));
+  }
+
+  public String getOriginalPath() {
+    return request.getPath().getPath();
   }
 
   public Path getPath() {
