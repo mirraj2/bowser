@@ -255,7 +255,7 @@ public class DomNode {
     return parent.shouldGenWhitespace();
   }
 
-  private static final Set<String> tagsWithNoContent = ImmutableSet.of("meta", "br", "img", "link", "import");
+  private static final Set<String> tagsWithNoContent = ImmutableSet.of("meta", "br", "img", "link", "import", "input");
 
   @Override
   public String toString() {
