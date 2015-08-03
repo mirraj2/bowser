@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="Bowser">
+    <property environment="env"/>
+    <property name="Float-Compute.location" value="../Float-Compute"/>
+    <property name="Float-Render.location" value="../Float-Render"/>
+    <property name="Gremlin.location" value="../Gremlin"/>
+    <property name="JasonMirra.location" value="../JasonMirra"/>
+    <property name="Ox.location" value="../Ox"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="Ox.classpath">
+        <pathelement location="${Ox.location}/bin"/>
+        <pathelement location="${Ox.location}/lib/miglayout-4.0-swing.jar"/>
+        <pathelement location="${Ox.location}/lib/gson-2.3.jar"/>
+        <pathelement location="${Ox.location}/lib/guava-18.0.jar"/>
+        <pathelement location="${Ox.location}/lib/objenesis-2.1.jar"/>
+    </path>
+    <path id="Bowser.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/simple-5.1.5.jar"/>
+        <path refid="Ox.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${Ox.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${Ox.location}" inheritAll="false" target="build-project"/>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Bowser.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${Float-Compute.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Float-Compute.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${Float-Render.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Float-Render.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${Gremlin.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Gremlin.location}" inheritAll="false" target="build"/>
+        <ant antfile="build.xml" dir="${JasonMirra.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${JasonMirra.location}" inheritAll="false" target="build"/>
+    </target>
+    <target name="DomParser">
+        <java classname="bowser.node.DomParser" failonerror="true" fork="yes">
+            <classpath refid="Bowser.classpath"/>
+        </java>
+    </target>
+</project>
