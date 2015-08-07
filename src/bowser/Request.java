@@ -120,4 +120,15 @@ public class Request {
     return false;
   }
 
+
+  public boolean isFromMobile() {
+    String userAgent = this.getHeader("User-Agent").toLowerCase();
+    String[] mobileUserAgents = { "android", "webos", "iphone", "ipad", "blackberry", "iemobile", "opera mini" };
+    for (String s : mobileUserAgents) {
+      if (userAgent.contains(s)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
