@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Multimap;
+import ox.Json;
+import ox.Reflection;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
-import ox.Json;
-import ox.Reflection;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Multimap;
 
 public class Template {
 
@@ -43,10 +43,10 @@ public class Template {
         node.parent.remove(node);
       } else if ("import".equals(node.tag)) {
         List<DomNode> importedNodes = Imports.createImport(node, loader);
+        node.parent.replace(node, importedNodes);
         for (DomNode importedNode : importedNodes) {
           init(importedNode, loader);
         }
-        node.parent.replace(node, importedNodes);
       }
     }
   }
