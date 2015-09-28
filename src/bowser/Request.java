@@ -1,13 +1,17 @@
 package bowser;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.simpleframework.http.Cookie;
+import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
+import ox.IO;
 import ox.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
@@ -88,6 +92,15 @@ public class Request {
     return request.getValue(key);
   }
 
+  public BufferedImage getImage() {
+    Part part = getOnlyElement(request.getParts());
+    try {
+      return IO.from(part.getInputStream()).toImage();
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
   public Map<String, String> getHeaders() {
     Map<String, String> ret = Maps.newLinkedHashMap();
     request.getNames().forEach(name -> {
@@ -113,8 +126,8 @@ public class Request {
 
   public boolean isStaticResource() {
     if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-        || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".otf") || path.endsWith("woff")
-        || path.endsWith("woff2") || path.endsWith(".mp4") || path.endsWith(".map")) {
+        || path.endsWith(".gif") || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".otf")
+        || path.endsWith("woff") || path.endsWith("woff2") || path.endsWith(".mp4") || path.endsWith(".map")) {
       return true;
     }
     return false;
