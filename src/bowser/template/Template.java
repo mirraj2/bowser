@@ -235,6 +235,8 @@ public class Template {
         return ((Json) o).isEmpty();
       } else if (o instanceof Iterable) {
         return !((Iterable<?>) o).iterator().hasNext();
+      } else if (o instanceof Multimap) {
+        return ((Multimap<?, ?>) o).isEmpty();
       } else {
         return false;
       }
