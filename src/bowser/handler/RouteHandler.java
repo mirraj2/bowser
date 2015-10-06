@@ -38,7 +38,9 @@ public class RouteHandler implements RequestHandler {
     if (template != null) {
       Context context = new Context(request, response);
       route.data.fill(context);
-      response.write(template.render(context));
+      if (!response.response.isCommitted()) {
+        response.write(template.render(context));
+      }
       return true;
     }
 
