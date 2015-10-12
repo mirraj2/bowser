@@ -47,7 +47,7 @@ public class StaticContentHandler implements RequestHandler {
     }
 
     if (!server.developerMode) {
-      if (path.endsWith(".jpg") || path.endsWith(".png")) {
+      if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")) {
         response.cacheFor(1, TimeUnit.DAYS);
       } else if (path.endsWith(".css") || path.endsWith(".js")) {
         response.cacheFor(20, TimeUnit.MINUTES);
