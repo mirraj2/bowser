@@ -130,6 +130,8 @@ public class WebServer {
           if (!Strings.isNullOrEmpty(root.getMessage())) {
             message = root.getMessage();
           }
+          Log.error("Error handling: " + req);
+          Log.error("Sending error message: " + message);
           IO.from(message).to(response.getOutputStream());
         } catch (IOException e1) {
           e1.printStackTrace();
