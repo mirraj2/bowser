@@ -135,7 +135,11 @@ public class Request {
 
 
   public boolean isFromMobile() {
-    String userAgent = this.getHeader("User-Agent").toLowerCase();
+    String userAgent = getHeader("User-Agent");
+    if (userAgent == null) {
+      return false;
+    }
+    userAgent = userAgent.toLowerCase();
     String[] mobileUserAgents = { "android", "webos", "iphone", "ipad", "blackberry", "iemobile", "opera mini" };
     for (String s : mobileUserAgents) {
       if (userAgent.contains(s)) {
