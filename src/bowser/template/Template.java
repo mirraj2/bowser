@@ -28,8 +28,16 @@ public class Template {
   private final DomNode root;
   private Head head = null;
 
+  private boolean isRoot;
+
+  private Template(String s) {
+    isRoot = false;
+    root = parser.parse(s, isRoot);
+  }
+
   private Template(String s, StaticContentHandler loader) {
-    root = parser.parse(s, true);
+    isRoot = true;
+    root = parser.parse(s, isRoot);
 
     init(root, loader);
   }
@@ -53,7 +61,9 @@ public class Template {
 
   public String render(Context context) {
     StringBuilder sb = new StringBuilder();
-    sb.append("<!DOCTYPE html>\n");
+    if (isRoot) {
+      sb.append("<!DOCTYPE html>\n");
+    }
     render(root, sb, 0, context);
     return sb.toString();
   }
@@ -284,6 +294,10 @@ public class Template {
 
   public static Template compile(String source, StaticContentHandler loader) {
     return new Template(source, loader);
+  }
+
+  public static Template compile(String source) {
+    return new Template(source);
   }
 
 }
