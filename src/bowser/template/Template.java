@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import ox.Json;
-import ox.Reflection;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Multimap;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Multimap;
+import ox.Json;
+import ox.Reflection;
 
 public class Template {
 
@@ -77,15 +77,7 @@ public class Template {
 
     String iff = node.getAttribute("if");
     if (iff != null) {
-      boolean invert = false;
-      if (iff.startsWith("!")) {
-        iff = iff.substring(1);
-        invert = true;
-      }
       boolean b = resolveBoolean(iff, context);
-      if (invert) {
-        b = !b;
-      }
       if (b) {
         node = new DomNode(node).removeAttribute("if");
       } else {
@@ -107,6 +99,17 @@ public class Template {
   }
 
   private boolean resolveBoolean(String s, Context context) {
+    int i = s.indexOf(" && ");
+    if (i != -1) {
+      String a = s.substring(0, i);
+      String b = s.substring(i + 4);
+      return resolveBoolean(a, context) && resolveBoolean(b, context);
+    }
+
+    if (s.startsWith("!")) {
+      return !resolveBoolean(s.substring(1), context);
+    }
+
     Object o = resolve(s, context);
     if (o == null) {
       return false;
