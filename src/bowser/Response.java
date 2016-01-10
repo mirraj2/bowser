@@ -5,9 +5,9 @@ import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Status;
+import com.google.common.base.Throwables;
 import ox.IO;
 import ox.Json;
-import com.google.common.base.Throwables;
 
 public class Response {
 
@@ -31,6 +31,13 @@ public class Response {
 
   public Response cacheFor(int n, TimeUnit units) {
     response.setValue("Cache-Control", "max-age=" + TimeUnit.SECONDS.convert(n, units));
+    return this;
+  }
+
+  public Response noCache() {
+    header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+    header("Pragma", "no-cache"); // HTTP 1.0
+    header("Expires", "0"); // Proxies
     return this;
   }
 
