@@ -172,17 +172,17 @@ public class Template {
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
     Function<String, String> replacer = replacer(context);
     if (node.parent.tag.equals("script")) {
-      replacer = replacer(context, "$$(", ")");
+      replacer = replacer(context, "$$(", ")", false);
     }
     String text = replacer.apply(node.content);
     sb.append(text);
   }
 
   private Function<String, String> replacer(Context context) {
-    return replacer(context, "{", "}");
+    return replacer(context, "{", "}", true);
   }
 
-  private Function<String, String> replacer(Context context, String start, String end) {
+  private Function<String, String> replacer(Context context, String start, String end, boolean nullToEmpty) {
     return text -> {
       if (text == null) {
         return null;
@@ -195,7 +195,7 @@ public class Template {
         if (variableStartIndex >= 0) {
           if (text.startsWith(end, i)) {
             String variableName = text.substring(variableStartIndex + start.length(), i);
-            sb.append(evaluate(variableName, context));
+            sb.append(evaluate(variableName, context, nullToEmpty));
             variableStartIndex = -1;
             i += end.length() - 1;
           }
@@ -212,9 +212,9 @@ public class Template {
     };
   }
 
-  private String evaluate(String variableName, Context context) {
+  private String evaluate(String variableName, Context context, boolean nullToEmpty) {
     Object o = resolve(variableName, context);
-    if (o == null) {
+    if (o == null && nullToEmpty) {
       return "";
     }
     return String.valueOf(o);

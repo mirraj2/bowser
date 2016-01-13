@@ -2,7 +2,6 @@ package bowser.node;
 
 import bowser.template.Template;
 
-
 public class Head extends DomNode {
 
   private DomNode title;
