@@ -1,5 +1,6 @@
 package bowser;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -10,16 +11,17 @@ import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.Server;
 import org.simpleframework.transport.connect.SocketConnection;
-import ox.IO;
-import ox.Log;
-import bowser.handler.RouteHandler;
-import bowser.handler.StaticContentHandler;
-import bowser.template.Imports;
-import bowser.template.Template;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import bowser.handler.ExceptionHandler;
+import bowser.handler.RouteHandler;
+import bowser.handler.StaticContentHandler;
+import bowser.template.Imports;
+import bowser.template.Template;
+import ox.IO;
+import ox.Log;
 
 public class WebServer {
 
@@ -33,6 +35,8 @@ public class WebServer {
   private SSLContext sslContext;
 
   private WebLogger logger = emptyLogger();
+
+  private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
   public WebServer(String appName, int port, boolean developerMode) {
     Template.appName = appName;
@@ -59,6 +63,11 @@ public class WebServer {
 
   public WebServer add(RequestHandler handler) {
     handlers.add(handler);
+    return this;
+  }
+
+  public WebServer exceptionHandler(ExceptionHandler handler) {
+    this.exceptionHandler = checkNotNull(handler);
     return this;
   }
 
@@ -107,6 +116,10 @@ public class WebServer {
       }
 
       response.close();
+    } catch (Exception e) {
+      if (!exceptionHandler.handle(request, response, e)) {
+        throw e;
+      }
     } finally {
       Log.debug("Handled request: " + request + " in " + watch);
     }
