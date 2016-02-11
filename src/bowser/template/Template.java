@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Multimap;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
@@ -16,6 +17,7 @@ import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
 import ox.Json;
+import ox.Log;
 import ox.Reflection;
 
 public class Template {
@@ -235,7 +237,12 @@ public class Template {
         }
         reference = invokeMethod(reference, method);
       } else {
-        reference = dereference(reference, s);
+        try {
+          reference = dereference(reference, s);
+        } catch (Exception e) {
+          Log.error("Problem resolving expression: " + expression);
+          throw Throwables.propagate(e);
+        }
       }
     }
 
