@@ -1,8 +1,8 @@
 package bowser.node;
 
 import java.util.List;
-import bowser.template.Template;
 import com.google.common.collect.Lists;
+import bowser.template.Template;
 
 public class DomParser {
 
@@ -69,7 +69,11 @@ public class DomParser {
 
     Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
     if (endTagIndex != null) {
-      parse(node, s, endTag + 1, endTagIndex); // add a child
+      if (node.tag.equalsIgnoreCase("script")) {
+        node.add(new TextNode(s.substring(endTag + 1, endTagIndex)));
+      } else {
+        parse(node, s, endTag + 1, endTagIndex); // add a child
+      }
       endTag = endTagIndex + 2 + node.tag.length();
     }
 
@@ -143,7 +147,7 @@ public class DomParser {
   // private static void debug(DomNode node, int depth) {
   // String s = "";
   // for (int i = 0; i < depth; i++) {
-  // s += "  ";
+  // s += " ";
   // }
   // s += node.tag;
   // Log.debug(s);
