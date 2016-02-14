@@ -11,12 +11,12 @@ import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
-import ox.IO;
-import ox.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import ox.IO;
+import ox.Pair;
 
 public class Request {
 
@@ -96,6 +96,20 @@ public class Request {
     Part part = getOnlyElement(request.getParts());
     try {
       return IO.from(part.getInputStream()).toImage();
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  public String getFileName() {
+    Part part = getOnlyElement(request.getParts());
+    return part.getFileName();
+  }
+
+  public byte[] getBytes() {
+    Part part = getOnlyElement(request.getParts());
+    try {
+      return IO.from(part.getInputStream()).toByteArray();
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
