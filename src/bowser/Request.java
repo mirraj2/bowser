@@ -141,7 +141,8 @@ public class Request {
   public boolean isStaticResource() {
     if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
         || path.endsWith(".gif") || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".otf")
-        || path.endsWith("woff") || path.endsWith("woff2") || path.endsWith(".mp4") || path.endsWith(".map")) {
+        || path.endsWith("woff") || path.endsWith("woff2") || path.endsWith(".mp4") || path.endsWith(".map")
+        || path.endsWith(".pdf")) {
       return true;
     }
     return false;
