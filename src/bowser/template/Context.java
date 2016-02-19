@@ -1,9 +1,9 @@
 package bowser.template;
 
 import java.util.Map;
+import com.google.common.collect.Maps;
 import bowser.Request;
 import bowser.Response;
-import com.google.common.collect.Maps;
 
 public class Context {
 
@@ -11,12 +11,19 @@ public class Context {
   public final Response response;
   public final Map<String, Object> data = Maps.newHashMap();
 
+  public Context() {
+    this(null, null);
+  }
+
   public Context(Request request, Response response) {
     this.request = request;
     this.response = response;
   }
 
   public <T> T get(String key) {
+    if (request == null) {
+      return null;
+    }
     return request.get(key);
   }
 
@@ -24,7 +31,7 @@ public class Context {
     if (data.containsKey(key)) {
       return data.get(key);
     }
-    return request.get(key);
+    return get(key);
   }
 
   public void put(String key, Object value) {
