@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
@@ -53,6 +54,13 @@ public class Template {
         node.parent.remove(node);
       } else if ("import".equals(node.tag)) {
         List<DomNode> importedNodes = Imports.createImport(node, loader);
+        String iff = node.getAttribute("if");
+        if (iff != null) {
+          DomNode div = new DomNode("div");
+          div.add(importedNodes);
+          div.attribute("if", iff);
+          importedNodes = ImmutableList.of(div);
+        }
         node.parent.replace(node, importedNodes);
         for (DomNode importedNode : importedNodes) {
           init(importedNode, loader);

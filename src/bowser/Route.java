@@ -1,11 +1,11 @@
 package bowser;
 
 import java.util.regex.Pattern;
-import ox.IO;
-import ox.Log;
+import com.google.common.base.Throwables;
 import bowser.template.Data;
 import bowser.template.Template;
-import com.google.common.base.Throwables;
+import ox.IO;
+import ox.Log;
 
 public class Route {
   public final Controller controller;
