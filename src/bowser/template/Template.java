@@ -241,7 +241,7 @@ public class Template {
       if (s.endsWith("()")) {
         String method = s.substring(0, s.length() - 2);
         if (reference == null) {
-          throw new NullPointerException("Tried to invoke a method on a null reference: " + expression);
+          return (T) "";
         }
         reference = invokeMethod(reference, method);
       } else {
