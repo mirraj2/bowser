@@ -79,7 +79,7 @@ public class Response {
   }
 
   public Response write(Json json) {
-    response.setValue("Content-Type", "application/json");
+    contentType("application/json");
     return write(json.toString());
   }
 

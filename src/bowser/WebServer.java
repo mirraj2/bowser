@@ -34,7 +34,7 @@ public class WebServer {
 
   private SSLContext sslContext;
 
-  private WebLogger logger = emptyLogger();
+  private WebLogger logger = new DefaultWebLogger();
 
   private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
@@ -90,8 +90,6 @@ public class WebServer {
   }
 
   private void handle(Request request, Response response) {
-    Stopwatch watch = Stopwatch.createStarted();
-
     try {
       boolean handled = false;
 
@@ -120,14 +118,13 @@ public class WebServer {
       if (!exceptionHandler.handle(request, response, e)) {
         throw e;
       }
-    } finally {
-      Log.debug("Handled request: " + request + " in " + watch);
     }
   }
 
   private final Container container = new Container() {
     @Override
     public void handle(org.simpleframework.http.Request request, org.simpleframework.http.Response response) {
+      Stopwatch watch = Stopwatch.createStarted();
       Request req = new Request(request);
       Response resp = new Response(response);
       Throwable t = null;
@@ -151,7 +148,7 @@ public class WebServer {
         }
       }
       try {
-        logger.log(req, resp, Optional.ofNullable(t));
+        logger.log(req, resp, Optional.ofNullable(t), watch);
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -168,14 +165,6 @@ public class WebServer {
     }
 
     return this;
-  }
-
-  private WebLogger emptyLogger() {
-    return new WebLogger() {
-      @Override
-      public void log(Request request, Response response, Optional<Throwable> e) {
-      }
-    };
   }
 
   public static WebServer redirectToHttps() {
