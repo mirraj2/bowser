@@ -127,6 +127,8 @@ public class Template {
     if (o instanceof Boolean) {
       Boolean b = (Boolean) o;
       return b;
+    } else if (o instanceof String) {
+      return !((String) o).isEmpty();
     } else {
       return true;
     }
