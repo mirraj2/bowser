@@ -129,6 +129,15 @@ public class Template {
       return b;
     } else if (o instanceof String) {
       return !((String) o).isEmpty();
+    } else if (o instanceof Json) {
+      Json j = (Json) o;
+      if (j.isArray()) {
+        return j.size() > 0;
+      } else {
+        return j.iterator().hasNext();
+      }
+    } else if (o instanceof Iterable) {
+      return ((Iterable<?>) o).iterator().hasNext();
     } else {
       return true;
     }
