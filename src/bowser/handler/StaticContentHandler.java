@@ -6,16 +6,16 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.simpleframework.http.Status;
-import ox.IO;
-import ox.Log;
-import ox.Pair;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import bowser.Controller;
 import bowser.Request;
 import bowser.RequestHandler;
 import bowser.Response;
 import bowser.WebServer;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+import ox.IO;
+import ox.Log;
+import ox.Pair;
 
 public class StaticContentHandler implements RequestHandler {
 
@@ -49,7 +49,7 @@ public class StaticContentHandler implements RequestHandler {
     if (!server.developerMode) {
       if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")) {
         response.cacheFor(1, TimeUnit.DAYS);
-      } else if (path.endsWith(".css") || path.endsWith(".js")) {
+      } else if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".min.map")) {
         response.cacheFor(20, TimeUnit.MINUTES);
       }
     }
