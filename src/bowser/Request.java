@@ -32,6 +32,10 @@ public class Request {
     this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(s));
   }
 
+  public String getIP() {
+    return request.getClientAddress().getAddress().getHostAddress();
+  }
+
   public String getOriginalPath() {
     return request.getPath().getPath();
   }
