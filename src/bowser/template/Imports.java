@@ -2,15 +2,15 @@ package bowser.template;
 
 import java.util.List;
 import java.util.Map;
+import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
-import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class Imports {
 
@@ -21,13 +21,27 @@ public class Imports {
 
   public static void appendToHead(Head head, DomNode headNode) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
-      jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), "/" + jsImport);
-      head.javascript(jsImport);
+      String s = jsNicknames.get(jsImport.toLowerCase());
+      if (s == null) {
+        if (jsImport.startsWith("/")) {
+          s =  jsImport;
+        } else{
+          s = "/" + jsImport;
+        }
+      }
+      head.javascript(s);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
-      cssImport = cssNicknames.getOrDefault(cssImport.toLowerCase(), "/" + cssImport);
-      head.css(cssImport);
+      String s = cssNicknames.get(cssImport.toLowerCase());
+      if (s == null) {
+        if (cssImport.startsWith("/")) {
+          s = cssImport;
+        } else {
+          s = "/" + cssImport;
+        }
+      }
+      head.css(s);
     }
   }
 
