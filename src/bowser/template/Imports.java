@@ -23,7 +23,7 @@ public class Imports {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
       String s = jsNicknames.get(jsImport.toLowerCase());
       if (s == null) {
-        if (jsImport.startsWith("/") || jsImport.startsWith("http:")) {
+        if (jsImport.startsWith("/") || jsImport.startsWith("http")) {
           s =  jsImport;
         } else{
           s = "/" + jsImport;
@@ -35,7 +35,7 @@ public class Imports {
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
       String s = cssNicknames.get(cssImport.toLowerCase());
       if (s == null) {
-        if (cssImport.startsWith("/") || cssImport.startsWith("http:")) {
+        if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
           s = cssImport;
         } else {
           s = "/" + cssImport;
