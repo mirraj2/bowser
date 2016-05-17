@@ -1,5 +1,6 @@
 package bowser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +87,12 @@ public class Response {
   public Response write(String text) {
     this.responseBody = text;
     IO.from(text).to(getOutputStream());
+    return this;
+  }
+
+  public Response sendAttachment(File file) {
+    header("Content-Disposition", "attachment; filename='" + file.getName() + "';");
+    IO.from(file).to(getOutputStream());
     return this;
   }
 
