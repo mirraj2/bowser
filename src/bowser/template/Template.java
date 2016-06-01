@@ -56,10 +56,10 @@ public class Template {
         List<DomNode> importedNodes = Imports.createImport(node, loader);
         String iff = node.getAttribute("if");
         if (iff != null) {
-          DomNode div = new DomNode("div");
-          div.add(importedNodes);
-          div.attribute("if", iff);
-          importedNodes = ImmutableList.of(div);
+          DomNode span = new DomNode("span");
+          span.add(importedNodes);
+          span.attribute("if", iff);
+          importedNodes = ImmutableList.of(span);
         }
         node.parent.replace(node, importedNodes);
         for (DomNode importedNode : importedNodes) {
