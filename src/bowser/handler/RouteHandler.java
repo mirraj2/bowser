@@ -1,12 +1,12 @@
 package bowser.handler;
 
-import ox.IO;
 import bowser.Request;
 import bowser.RequestHandler;
 import bowser.Response;
 import bowser.Route;
 import bowser.template.Context;
 import bowser.template.Template;
+import ox.IO;
 
 public class RouteHandler implements RequestHandler {
 
@@ -18,10 +18,7 @@ public class RouteHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
-    if (!request.getMethod().equalsIgnoreCase(route.method)) {
-      return false;
-    }
-    if (!route.regex.matcher(request.path).matches()) {
+    if (!route.matches(request)) {
       return false;
     }
 

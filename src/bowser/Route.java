@@ -22,6 +22,8 @@ public class Route {
   private Template template;
   public byte[] resourceData;
 
+  private boolean nonStatic = false;
+
   public Route(Controller controller, String method, String path, boolean enableCaching) {
     this.controller = controller;
     this.method = method;
@@ -31,6 +33,19 @@ public class Route {
     path = path.toLowerCase().replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
     path += "/?";
     regex = Pattern.compile(path);
+  }
+
+  public boolean matches(Request request) {
+    if (!request.getMethod().equalsIgnoreCase(method)) {
+      return false;
+    }
+    if (!regex.matcher(request.path).matches()) {
+      return false;
+    }
+    if (request.isStaticResource() && nonStatic) {
+      return false;
+    }
+    return true;
   }
 
   public Template getTemplate() {
@@ -53,6 +68,11 @@ public class Route {
 
   public Route data(Data data) {
     this.data = data;
+    return this;
+  }
+
+  public Route nonStatic() {
+    nonStatic = true;
     return this;
   }
 
