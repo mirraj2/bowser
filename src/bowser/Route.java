@@ -23,6 +23,7 @@ public class Route {
   public byte[] resourceData;
 
   private boolean nonStatic = false;
+  private String host = "";
 
   public Route(Controller controller, String method, String path, boolean enableCaching) {
     this.controller = controller;
@@ -44,6 +45,11 @@ public class Route {
     }
     if (request.isStaticResource() && nonStatic) {
       return false;
+    }
+    if (!host.isEmpty() && !host.equals(request.getHeader("Host"))) {
+      if (!controller.getServer().developerMode) {
+        return false;
+      }
     }
     return true;
   }
@@ -83,6 +89,11 @@ public class Route {
     } else {
       resourceData = IO.from(controller.getClass(), resource).toByteArray();
     }
+    return this;
+  }
+
+  public Route host(String host) {
+    this.host = host;
     return this;
   }
 
