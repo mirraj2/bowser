@@ -173,7 +173,7 @@ public class WebServer {
 
   public static WebServer redirect(int fromPort, int toPort) {
     return new WebServer("Redirect", fromPort, false).add((request, response) -> {
-      String host = request.getHeader("HOST");
+      String host = request.getHost();
       if (toPort == 443) {
         response.redirect("https://" + host + request.path);
       } else if (toPort == 80) {

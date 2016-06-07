@@ -25,11 +25,20 @@ public class Request {
   public String path;
   private Map<String, Object> userData = Maps.newHashMap();
 
+  public String host = null;
+
   public Request(org.simpleframework.http.Request request) {
     this.request = request;
     String s = request.getPath().getPath();
     this.path = s.toLowerCase();
     this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(s));
+  }
+
+  public String getHost() {
+    if (host == null) {
+      return host = getHeader("Host");
+    }
+    return host;
   }
 
   public String getIP() {
@@ -151,7 +160,6 @@ public class Request {
     }
     return false;
   }
-
 
   public boolean isFromMobile() {
     String userAgent = getHeader("User-Agent");

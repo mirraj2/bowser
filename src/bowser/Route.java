@@ -31,7 +31,8 @@ public class Route {
     this.path = path;
     this.enableCaching = enableCaching;
 
-    path = path.toLowerCase().replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
+    path = path.toLowerCase();
+    path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
     path += "/?";
     regex = Pattern.compile(path);
   }
@@ -46,10 +47,8 @@ public class Route {
     if (request.isStaticResource() && nonStatic) {
       return false;
     }
-    if (!host.isEmpty() && !host.equals(request.getHeader("Host"))) {
-      if (!controller.getServer().developerMode) {
-        return false;
-      }
+    if (!host.isEmpty() && !host.equals(request.getHost())) {
+      return false;
     }
     return true;
   }
