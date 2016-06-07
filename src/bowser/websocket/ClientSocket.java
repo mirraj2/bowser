@@ -212,7 +212,7 @@ public class ClientSocket {
   private void handleUpgradeRequest(String s) {
     List<String> lines = Splitter.on("\r\n").omitEmptyStrings().splitToList(s);
     List<String> firstLine = Splitter.on(" ").splitToList(lines.get(0));
-    checkState(firstLine.get(0).equals("GET"), "Upgrade request must be a GET");
+    checkState(firstLine.get(0).equals("GET"), "Upgrade request must be a GET. Instead it was: " + firstLine);
 
     Map<String, String> headers = Maps.newHashMap();
     for (int i = 1; i < lines.size(); i++) {
