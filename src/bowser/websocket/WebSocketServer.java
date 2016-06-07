@@ -4,12 +4,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
 public class WebSocketServer {
 
   public final int port;
-  private boolean ssl;
+  private SSLContext context;
   private ServerSocket server;
   private Consumer<ClientSocket> onOpen = socket -> {
   };
@@ -18,8 +19,8 @@ public class WebSocketServer {
     this.port = port;
   }
 
-  public WebSocketServer ssl() {
-    this.ssl = true;
+  public WebSocketServer ssl(SSLContext context) {
+    this.context = context;
     return this;
   }
 
@@ -30,9 +31,9 @@ public class WebSocketServer {
 
   public WebSocketServer start() {
     try {
-      if (ssl) {
-        SSLServerSocketFactory sslserversocketfactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-        server = sslserversocketfactory.createServerSocket(port);
+      if (context != null) {
+        SSLServerSocketFactory socketFactory = context.getServerSocketFactory();
+        server = socketFactory.createServerSocket(port);
       } else {
         server = new ServerSocket(port);
       }
