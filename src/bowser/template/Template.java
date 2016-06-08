@@ -211,18 +211,28 @@ public class Template {
 
       StringBuilder sb = new StringBuilder();
 
+      boolean parens = start.contains("(");
+
       int variableStartIndex = -1;
+      int depth = 0; // depth lets us handle cases like $$(foo.get())
       for (int i = 0; i < text.length(); i++) {
         if (variableStartIndex >= 0) {
           if (text.startsWith(end, i)) {
-            String variableName = text.substring(variableStartIndex + start.length(), i);
-            sb.append(evaluate(variableName, context, nullToEmpty));
-            variableStartIndex = -1;
-            i += end.length() - 1;
+            depth--;
+            if (depth == 0) {
+              String variableName = text.substring(variableStartIndex + start.length(), i);
+              sb.append(evaluate(variableName, context, nullToEmpty));
+              variableStartIndex = -1;
+              i += end.length() - 1;
+            }
+          } else if (parens && text.charAt(i) == '(') {
+            depth++;
           }
         } else {
           if (text.startsWith(start, i)) {
             variableStartIndex = i;
+            i += start.length() - 1;
+            depth = 1;
           } else {
             sb.append(text.charAt(i));
           }
