@@ -35,17 +35,35 @@ public class ClientSocket {
   private Consumer<String> onMessage = s -> {
   };
 
+  private Runnable onClose = () -> {
+  };
+
   private final Consumer<ClientSocket> onOpen;
 
   private final Random rand = new Random();
 
   private OutputStream os;
 
+  private Map<String, String> headers = Maps.newHashMap();
+
   public ClientSocket(Socket socket, Consumer<ClientSocket> onOpen) {
     this.socket = socket;
     this.onOpen = onOpen;
 
     listen();
+  }
+
+  public String getHeader(String key) {
+    return headers.getOrDefault(key, "");
+  }
+
+  public Map<String, String> getCookies() {
+    Map<String, String> ret = Maps.newLinkedHashMap();
+    for (String s : Splitter.on("; ").split(getHeader("Cookie"))) {
+      int i = s.indexOf('=');
+      ret.put(s.substring(0, i), s.substring(i + 1));
+    }
+    return ret;
   }
 
   public ClientSocket send(Json json) {
@@ -64,10 +82,16 @@ public class ClientSocket {
     return this;
   }
 
+  public ClientSocket onClose(Runnable onClose) {
+    this.onClose = onClose;
+    return this;
+  }
+
   private void listen() {
     executor.execute(() -> {
+      InputStream in = null;
       try {
-        BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
+        in = new BufferedInputStream(socket.getInputStream());
         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
         baos.write(in.read());
         byte[] buf = new byte[in.available()];
@@ -76,9 +100,21 @@ public class ClientSocket {
 
         String s = baos.toString("UTF-8");
         handleUpgradeRequest(s);
+      } catch (Throwable t) {
+        t.printStackTrace();
+      }
+      try {
         listenForMessages(in);
-      } catch (Exception e) {
-        e.printStackTrace();
+      } catch (Throwable t) {
+        if (!(t instanceof IOException) && !t.getMessage().contains("Bad rsv")) {
+          t.printStackTrace();
+        }
+      } finally {
+        try {
+          onClose.run();
+        } catch (Throwable t) {
+          t.printStackTrace();
+        }
       }
     });
   }
@@ -95,7 +131,11 @@ public class ClientSocket {
       if (code == Opcode.TEXT) {
         byte[] data = getPayload(in);
         String text = new String(data, Charsets.UTF_8);
-        onMessage.accept(text);
+        try {
+          onMessage.accept(text);
+        } catch (Throwable t) {
+          t.printStackTrace();
+        }
       } else if (code == Opcode.PING) {
         getPayload(in);
         sendPong();
@@ -214,7 +254,6 @@ public class ClientSocket {
     List<String> firstLine = Splitter.on(" ").splitToList(lines.get(0));
     checkState(firstLine.get(0).equals("GET"), "Upgrade request must be a GET. Instead it was: " + firstLine);
 
-    Map<String, String> headers = Maps.newHashMap();
     for (int i = 1; i < lines.size(); i++) {
       String line = lines.get(i);
       int j = line.indexOf(':');
