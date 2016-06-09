@@ -62,6 +62,11 @@ public class Response {
     return this;
   }
 
+  public Response cookie(Cookie cookie) {
+    response.setCookie(cookie);
+    return this;
+  }
+
   public OutputStream getOutputStream() {
     try {
       return response.getOutputStream();
