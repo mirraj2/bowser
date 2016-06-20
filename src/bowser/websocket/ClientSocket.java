@@ -30,7 +30,7 @@ public class ClientSocket {
 
   private static final Executor executor = Executors.newCachedThreadPool();
 
-  private final Socket socket;
+  public final Socket socket;
 
   private Consumer<String> onMessage = s -> {
   };
