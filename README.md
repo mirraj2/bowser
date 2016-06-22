@@ -136,3 +136,14 @@ So far you've seen that you can loop through objects, that you can insert variab
 <import js="mario.js">
 <import html="chat-widget.html">
 ```
+
+## Websockets
+
+You can start a websocket server like so:
+
+```java
+ int port = 12345;
+ new WebSocketServer(port).onOpen(socket->{
+   System.out.println("Client connected: " + socket);
+ }).start();
+```
