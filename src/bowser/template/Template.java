@@ -116,6 +116,16 @@ public class Template {
       return resolveBoolean(a, context) && resolveBoolean(b, context);
     }
 
+    i = s.indexOf(" == ");
+    if (i != -1) {
+      String a = s.substring(0, i);
+      String b = s.substring(i + 4);
+
+      Object o1 = evaluate(a, context, true);
+      Object o2 = evaluate(b, context, true);
+      return equals(o1, o2);
+    }
+
     if (s.startsWith("!")) {
       return !resolveBoolean(s.substring(1), context);
     }
@@ -141,6 +151,10 @@ public class Template {
     } else {
       return true;
     }
+  }
+
+  private boolean equals(Object a, Object b) {
+    return String.valueOf(a).equalsIgnoreCase(String.valueOf(b));
   }
 
   @SuppressWarnings("unchecked")
@@ -253,6 +267,10 @@ public class Template {
 
   @SuppressWarnings("unchecked")
   private <T> T resolve(String expression, Context context) {
+    if (expression.startsWith("'") && expression.endsWith("'")) {
+      return (T) expression.substring(1, expression.length() - 1);
+    }
+
     Iterator<String> iter = Splitter.on('.').split(expression).iterator();
 
     Object reference = context.resolve(iter.next());
