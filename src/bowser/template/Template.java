@@ -121,8 +121,8 @@ public class Template {
       String a = s.substring(0, i);
       String b = s.substring(i + 4);
 
-      Object o1 = evaluate(a, context, true);
-      Object o2 = evaluate(b, context, true);
+      Object o1 = resolve(a, context);
+      Object o2 = resolve(b, context);
       return equals(o1, o2);
     }
 
@@ -154,7 +154,16 @@ public class Template {
   }
 
   private boolean equals(Object a, Object b) {
-    return String.valueOf(a).equalsIgnoreCase(String.valueOf(b));
+    if (a == null || b == null) {
+      return a == null && b == null;
+    }
+    if (a.getClass().isEnum()) {
+      a = ((Enum<?>) a).name();
+    }
+    if (b.getClass().isEnum()) {
+      b = ((Enum<?>) b).name();
+    }
+    return a.toString().equalsIgnoreCase(b.toString());
   }
 
   @SuppressWarnings("unchecked")
