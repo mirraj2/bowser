@@ -280,6 +280,10 @@ public class Template {
       return (T) expression.substring(1, expression.length() - 1);
     }
 
+    if (expression.equals("null")) {
+      return null;
+    }
+
     Iterator<String> iter = Splitter.on('.').split(expression).iterator();
 
     Object reference = context.resolve(iter.next());

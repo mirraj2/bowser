@@ -22,7 +22,7 @@ public class Head extends DomNode {
     add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
     add(this.title);
     add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
-        .attribute("href", "/favicon.png?t=2"));
+        .attribute("href", "/favicon.png"));
 
     this.generateWhitespace = true;
   }
