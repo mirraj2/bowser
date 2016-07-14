@@ -16,7 +16,7 @@ public class Head extends DomNode {
     
     String viewport = "width=device-width, initial-scale=1";
     if(Template.mobileDisplay){
-      viewport += ", maximum-scale=1";
+      viewport += ", maximum-scale=1, user-scalable=no";
     }
     
     add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
