@@ -16,11 +16,9 @@ public class Head extends DomNode {
     
     String viewport = "width=device-width, initial-scale=1";
     if(Template.mobileDisplay){
-      viewport += ", maximum-scale=1, user-scalable=0, shrink-to-fit=no";
+      viewport += ", maximum-scale=1";
     }
     
-    add(new DomNode("meta").attribute("name", "HandheldFriendly").attribute("content", "true"));
-
     add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
     add(this.title);
     add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
