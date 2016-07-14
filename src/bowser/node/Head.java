@@ -19,6 +19,8 @@ public class Head extends DomNode {
       viewport += ", maximum-scale=1, user-scalable=no";
     }
     
+    add(new DomNode("meta").attribute("name", "HandheldFriendly").attribute("content", "true"));
+
     add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
     add(this.title);
     add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
