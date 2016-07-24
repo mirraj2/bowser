@@ -87,6 +87,15 @@ public class ClientSocket {
     return this;
   }
 
+  public ClientSocket close() {
+    try {
+      socket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return this;
+  }
+
   private void listen() {
     executor.execute(() -> {
       InputStream in = null;
