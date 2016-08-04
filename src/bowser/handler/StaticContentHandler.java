@@ -81,7 +81,7 @@ public class StaticContentHandler implements RequestHandler {
       if (e.getMessage().equals("Stream has been closed")) {
         // ignore this
       } else if (e.getMessage().equals("Response content complete")) {
-        //ignore
+        // ignore
       } else {
         throw Throwables.propagate(e);
       }

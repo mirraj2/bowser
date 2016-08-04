@@ -1,6 +1,7 @@
 package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ox.util.Utils.normalize;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -94,6 +95,11 @@ public class WebServer {
       boolean handled = false;
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
+
+      String s = normalize(request.getHeader("Accept-Encoding"));
+      if (s.contains("gzip")) {
+        response.gzipOutput();
+      }
 
       for (RequestHandler handler : handlers) {
         if (handler.process(request, response)) {

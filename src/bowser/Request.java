@@ -84,7 +84,9 @@ public class Request {
   }
 
   public Request put(String key, Object value) {
-    userData.put(key, value);
+    if (value != null) {
+      userData.put(key, value);
+    }
     return this;
   }
 

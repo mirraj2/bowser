@@ -271,6 +271,7 @@ public class Template {
     if (o == null && nullToEmpty) {
       return "";
     }
+    // Log.debug(variableName + " = " + o);
     return String.valueOf(o);
   }
 

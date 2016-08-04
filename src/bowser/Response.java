@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Status;
 import com.google.common.base.Throwables;
@@ -15,6 +16,8 @@ public class Response {
   public final org.simpleframework.http.Response response;
 
   public String responseBody;
+
+  private boolean gzip = false;
 
   public Response(org.simpleframework.http.Response response) {
     this.response = response;
@@ -39,6 +42,12 @@ public class Response {
     header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
     header("Pragma", "no-cache"); // HTTP 1.0
     header("Expires", "0"); // Proxies
+    return this;
+  }
+
+  public Response gzipOutput() {
+    gzip = true;
+    header("Content-Encoding", "gzip");
     return this;
   }
 
@@ -69,7 +78,11 @@ public class Response {
 
   public OutputStream getOutputStream() {
     try {
-      return response.getOutputStream();
+      OutputStream os = response.getOutputStream();
+      if (gzip) {
+        os = new GZIPOutputStream(os);
+      }
+      return os;
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
