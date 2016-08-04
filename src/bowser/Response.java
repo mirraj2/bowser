@@ -45,14 +45,18 @@ public class Response {
     return this;
   }
 
-  public Response gzipOutput() {
-    gzip = true;
-    header("Content-Encoding", "gzip");
+  public Response setCompressed(boolean b) {
+    gzip = b;
+    if (b) {
+      header("Content-Encoding", "gzip");
+    } else {
+      header("Content-Encoding", null);
+    }
     return this;
   }
 
   public Response header(String key, String value) {
-    response.addValue(key, value);
+    response.setValue(key, value);
     return this;
   }
 

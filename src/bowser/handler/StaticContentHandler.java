@@ -43,14 +43,18 @@ public class StaticContentHandler implements RequestHandler {
     } else if (path.endsWith(".js")) {
       response.contentType("text/javascript");
     } else if (path.endsWith(".mp4")) {
+      response.setCompressed(false);
       response.contentType("video/mp4");
     }
 
-    if (!server.developerMode) {
-      if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
-          || path.endsWith(".gif")) {
+    if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
+        || path.endsWith(".gif")) {
+      response.setCompressed(false);
+      if (!server.developerMode) {
         response.cacheFor(1, TimeUnit.DAYS);
-      } else if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".min.map")) {
+      }
+    } else if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".min.map")) {
+      if (!server.developerMode) {
         response.cacheFor(20, TimeUnit.MINUTES);
       }
     }

@@ -2,7 +2,6 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.normalize;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,6 @@ import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
 import bowser.template.Imports;
 import bowser.template.Template;
-import ox.IO;
 import ox.Log;
 
 public class WebServer {
@@ -98,7 +96,7 @@ public class WebServer {
 
       String s = normalize(request.getHeader("Accept-Encoding"));
       if (s.contains("gzip")) {
-        response.gzipOutput();
+        response.setCompressed(true);
       }
 
       for (RequestHandler handler : handlers) {
@@ -146,10 +144,8 @@ public class WebServer {
           if (!Strings.isNullOrEmpty(root.getMessage())) {
             message = root.getMessage();
           }
-          // Log.error("Error handling: " + req);
-          // Log.error("Sending error message: " + message);
-          IO.from(message).to(response.getOutputStream());
-        } catch (IOException e1) {
+          resp.write(message);
+        } catch (Exception e1) {
           e1.printStackTrace();
         }
       }
