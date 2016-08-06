@@ -16,6 +16,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import ox.IO;
+import ox.Json;
 import ox.Pair;
 
 public class Request {
@@ -88,6 +89,10 @@ public class Request {
       userData.put(key, value);
     }
     return this;
+  }
+
+  public Json getJson() {
+    return new Json(getContent());
   }
 
   public String getContent() {
