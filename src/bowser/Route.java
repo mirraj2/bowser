@@ -44,7 +44,7 @@ public class Route {
     if (!regex.matcher(request.path).matches()) {
       return false;
     }
-    if (request.isStaticResource() && nonStatic) {
+    if (nonStatic && request.isStaticResource()) {
       return false;
     }
     if (!host.isEmpty() && !host.equals(request.getHost())) {

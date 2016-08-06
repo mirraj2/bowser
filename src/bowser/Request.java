@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
@@ -14,6 +15,7 @@ import org.simpleframework.http.Query;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import ox.IO;
 import ox.Json;
@@ -158,15 +160,20 @@ public class Request {
     return Pair.of(start, end);
   }
 
+  private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "gif", "ico", "ttf",
+      "otf", "woff", "woff2", "mp4", "map", "pdf", "cur");
+
   public boolean isStaticResource() {
-    if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-        || path.endsWith(".gif") || path.endsWith(".ico") || path.endsWith(".ttf") || path.endsWith(".otf")
-        || path.endsWith("woff") || path.endsWith("woff2") || path.endsWith(".mp4") || path.endsWith(".map")
-        || path.endsWith(".pdf") || path.endsWith(".cur")) {
-      return true;
+    int i = path.lastIndexOf(".");
+    if (i == -1) {
+      return false;
     }
-    return false;
+    String extension = path.substring(i + 1);
+    return staticExtensions.contains(extension);
   }
+
+  private static final String[] mobileUserAgents = { "android", "webos", "iphone", "ipad", "blackberry", "iemobile",
+      "opera mini" };
 
   public boolean isFromMobile() {
     String userAgent = getHeader("User-Agent");
@@ -174,7 +181,6 @@ public class Request {
       return false;
     }
     userAgent = userAgent.toLowerCase();
-    String[] mobileUserAgents = { "android", "webos", "iphone", "ipad", "blackberry", "iemobile", "opera mini" };
     for (String s : mobileUserAgents) {
       if (userAgent.contains(s)) {
         return true;
