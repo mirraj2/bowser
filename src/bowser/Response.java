@@ -55,6 +55,10 @@ public class Response {
     return this;
   }
 
+  public boolean isCompressed() {
+    return gzip;
+  }
+
   public Response header(String key, String value) {
     response.setValue(key, value);
     return this;

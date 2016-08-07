@@ -64,7 +64,9 @@ public class StaticContentHandler implements RequestHandler {
 
     response.header("Accept-Ranges", "bytes");
     if (range == null) {
-      response.header("Content-Length", data.length + "");
+      if (!response.isCompressed()) {
+        response.header("Content-Length", data.length + "");
+      }
       is = new ByteArrayInputStream(data);
     } else {
       response.status(Status.PARTIAL_CONTENT);
@@ -73,7 +75,9 @@ public class StaticContentHandler implements RequestHandler {
         end = (long) data.length - 1;
       }
       long len = end - range.a + 1;
-      response.header("Content-Length", len + "");
+      if (!response.isCompressed()) {
+        response.header("Content-Length", len + "");
+      }
       response.header("Content-Range", "bytes " + range.a + "-" + end + "/" + data.length);
       is = new ByteArrayInputStream(data, range.a.intValue(), (int) len);
     }
