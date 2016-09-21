@@ -12,14 +12,14 @@ import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
-import ox.IO;
-import ox.Json;
-import ox.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import ox.IO;
+import ox.Json;
+import ox.Pair;
 
 public class Request {
 
@@ -160,8 +160,8 @@ public class Request {
     return Pair.of(start, end);
   }
 
-  private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "jpeg", "gif", "ico",
-      "ttf", "otf", "woff", "woff2", "mp4", "map", "pdf", "cur");
+  private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "jpeg", "gif", "svg",
+      "ico", "ttf", "otf", "woff", "woff2", "mp4", "map", "pdf", "cur");
 
   public boolean isStaticResource() {
     int i = path.lastIndexOf(".");
