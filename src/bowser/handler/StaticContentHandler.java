@@ -45,6 +45,8 @@ public class StaticContentHandler implements RequestHandler {
     } else if (path.endsWith(".mp4")) {
       response.setCompressed(false);
       response.contentType("video/mp4");
+    } else if (path.endsWith(".svg")) {
+      response.contentType("image/svg+xml");
     }
 
     if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
