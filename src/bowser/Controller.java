@@ -1,10 +1,14 @@
 package bowser;
 
+import static ox.util.Utils.getExtension;
 import java.net.URL;
+import java.util.Map;
+import com.google.common.collect.Maps;
 
 public abstract class Controller {
 
   private WebServer server;
+  private final Map<String, String> folders = Maps.newHashMap();
 
   public final void init(WebServer server) {
     this.server = server;
@@ -23,15 +27,22 @@ public abstract class Controller {
     return server;
   }
 
-  public URL getResource(String path) {
-    if (path.endsWith(".js")) {
-      path = getJsFolder() + path;
+  public void mapFolders(String... extensions) {
+    for (String s : extensions) {
+      mapFolder(s, s);
     }
-    return getClass().getResource(path);
   }
 
-  protected String getJsFolder() {
-    return "";
+  public void mapFolder(String extension, String folder) {
+    folders.put(extension, folder);
+  }
+
+  public URL getResource(String path) {
+    String folder = folders.get(getExtension(path));
+    if (folder != null) {
+      path = folder + "/" + path;
+    }
+    return getClass().getResource(path);
   }
 
 }

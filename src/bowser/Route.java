@@ -55,7 +55,7 @@ public class Route {
 
   public Template getTemplate() {
     if ((this.template == null || !enableCaching) && resource != null && resource.endsWith(".html")) {
-      String source = IO.from(controller.getClass(), resource).toString();
+      String source = IO.from(controller.getResource(resource)).toString();
       try {
         this.template = Template.compile(source, controller.getServer().getResourceLoader());
       } catch (Exception e) {
