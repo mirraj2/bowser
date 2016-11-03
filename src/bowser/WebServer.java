@@ -2,17 +2,14 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.normalize;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.Server;
-import org.simpleframework.transport.Socket;
 import org.simpleframework.transport.connect.SocketConnection;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
@@ -163,15 +160,7 @@ public class WebServer {
   @SuppressWarnings("resource")
   public WebServer start() {
     try {
-      Server server = new ContainerServer(container) {
-        private final String[] protocols = { "TLSv1.2" };
-        @Override
-        public void process(Socket socket) throws IOException {
-          SSLSocket s = (SSLSocket) socket;
-          s.setEnabledProtocols(protocols);
-          super.process(socket);
-        }
-      };
+      Server server = new ContainerServer(container);
       new SocketConnection(server).connect(new InetSocketAddress(port), sslContext);
     } catch (Exception e) {
       throw Throwables.propagate(e);
