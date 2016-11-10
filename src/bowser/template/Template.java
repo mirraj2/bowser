@@ -214,6 +214,11 @@ public class Template {
   }
 
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
+    if (node.parent.tag.equals("code")) {
+      sb.append(node.content);
+      return;
+    }
+
     Function<String, String> replacer = replacer(context);
     if (node.parent.tag.equals("script")) {
       replacer = replacer(context, "$$(", ")", false);
