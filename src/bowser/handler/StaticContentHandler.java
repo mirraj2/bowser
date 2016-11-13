@@ -50,7 +50,7 @@ public class StaticContentHandler implements RequestHandler {
     }
 
     if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
-        || path.endsWith(".gif")) {
+        || path.endsWith(".gif") || path.endsWith(".svg")) {
       response.setCompressed(false);
       if (!server.developerMode) {
         response.cacheFor(1, TimeUnit.DAYS);
