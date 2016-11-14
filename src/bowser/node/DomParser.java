@@ -2,16 +2,25 @@ package bowser.node;
 
 import java.util.List;
 import com.google.common.collect.Lists;
-import bowser.template.Template;
 
 public class DomParser {
+
+  public final Head head;
+
+  public DomParser() {
+    this(new Head(""));
+  }
+
+  public DomParser(Head head) {
+    this.head = head;
+  }
 
   public DomNode parse(String s, boolean isRoot) {
     DomNode root;
     if (isRoot) {
       root = new DomNode("html").attribute("lang", "en");
       root.add(new TextNode("\n"));
-      root.add(new Head(Template.appName));
+      root.add(head.copy());
       DomNode body = new DomNode("body");
       root.add(body);
       parse(body, s, 0, s.length());
@@ -112,7 +121,6 @@ public class DomParser {
         }
       }
     }
-    // <div foo="bar"><div foo="bat"></div></div>
   }
 
   private static List<String> split(String s, char z) {
@@ -137,24 +145,5 @@ public class DomParser {
     }
     return ret;
   }
-
-  // public static void main(String[] args) {
-  // DomNode node = new DomParser().parse(IO.from(DomParser.class, "test2.html").toString());
-  // Log.debug(node);
-  // // debug(node, 0);
-  // }
-  //
-  // private static void debug(DomNode node, int depth) {
-  // String s = "";
-  // for (int i = 0; i < depth; i++) {
-  // s += " ";
-  // }
-  // s += node.tag;
-  // Log.debug(s);
-  //
-  // for (DomNode child : node.getChildren()) {
-  // debug(child, depth + 1);
-  // }
-  // }
 
 }

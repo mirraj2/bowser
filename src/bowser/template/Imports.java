@@ -9,7 +9,6 @@ import com.google.common.collect.Maps;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
-import bowser.node.Head;
 import bowser.node.TextNode;
 
 public class Imports {
@@ -17,9 +16,7 @@ public class Imports {
   private static final Map<String, String> jsNicknames = Maps.newLinkedHashMap();
   private static final Map<String, String> cssNicknames = Maps.newLinkedHashMap();
 
-  private static final DomParser parser = new DomParser();
-
-  public static void appendToHead(Head head, DomNode headNode) {
+  public static void appendToHead(DomNode head, DomNode headNode) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
       String s = jsNicknames.get(jsImport.toLowerCase());
       if (s == null) {
@@ -45,7 +42,7 @@ public class Imports {
     }
   }
 
-  public static List<DomNode> createImport(DomNode importNode, StaticContentHandler loader) {
+  public static List<DomNode> createImport(DomNode importNode, StaticContentHandler loader, DomParser parser) {
     List<DomNode> ret = Lists.newArrayList();
 
     for (String jsImport : split(importNode.getAttribute("js", ""))) {
@@ -70,7 +67,7 @@ public class Imports {
   }
 
   private static Iterable<String> split(String s) {
-    return Splitter.on(' ').omitEmptyStrings().split(s);
+    return Splitter.on(' ').omitEmptyStrings().trimResults().split(s);
   }
 
   public static void shortcut(String nickname, String fullName) {

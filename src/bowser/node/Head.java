@@ -4,12 +4,8 @@ import bowser.template.Template;
 
 public class Head extends DomNode {
 
-  private DomNode title;
-
   public Head(String title) {
     super("head");
-
-    this.title = new DomNode("title").text(title);
 
     add(new DomNode("meta").attribute("charset", "utf-8"));
     add(new DomNode("meta").attribute("http-equiv", "X-UA-Compatible").attribute("content", "IE=edge"));
@@ -20,16 +16,11 @@ public class Head extends DomNode {
     }
     
     add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
-    add(this.title);
+    add(new DomNode("title").text(title));
     add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
-        .attribute("href", "/favicon.png?t=3"));
+        .attribute("href", "/favicon.png"));
 
     this.generateWhitespace = true;
-  }
-
-  public Head css(String name) {
-    add(new DomNode("link").attribute("href", name).attribute("rel", "stylesheet"));
-    return this;
   }
 
 }

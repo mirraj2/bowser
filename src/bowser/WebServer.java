@@ -18,6 +18,7 @@ import com.google.common.collect.Lists;
 import bowser.handler.ExceptionHandler;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
+import bowser.node.Head;
 import bowser.template.Imports;
 import bowser.template.Template;
 import ox.Log;
@@ -37,11 +38,13 @@ public class WebServer {
 
   private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
+  private final Head head;
+
   public WebServer(String appName, int port, boolean developerMode) {
-    Template.appName = appName;
     this.port = port;
     this.developerMode = developerMode;
     this.staticContentHandler = new StaticContentHandler(this);
+    head = new Head(appName);
   }
 
   public WebServer mobileDisplay() {
@@ -86,6 +89,10 @@ public class WebServer {
 
   public StaticContentHandler getResourceLoader() {
     return staticContentHandler;
+  }
+
+  public Head getHead() {
+    return head;
   }
 
   private void handle(Request request, Response response) {

@@ -27,6 +27,7 @@ public class DomNode {
   }
 
   static int c = 0;
+
   public DomNode(String tag) {
     this.tag = tag;
   }
@@ -181,6 +182,11 @@ public class DomNode {
     return add(new DomNode("script").attribute("src", name));
   }
 
+  public DomNode css(String name) {
+    add(new DomNode("link").attribute("href", name).attribute("rel", "stylesheet"));
+    return this;
+  }
+
   public void render(StringBuilder sb, int depth) {
     renderStartTag(sb, depth);
     renderContent(sb, depth);
@@ -262,6 +268,19 @@ public class DomNode {
     StringBuilder sb = new StringBuilder();
     render(sb, 0);
     return sb.toString();
+  }
+
+  public DomNode copy() {
+    if (this instanceof TextNode) {
+      return this;
+    }
+    DomNode ret = new DomNode(tag);
+    ret.attributes.addAll(attributes);
+    ret.generateWhitespace = generateWhitespace;
+    for (DomNode child : children) {
+      ret.add(child.copy());
+    }
+    return ret;
   }
 
 }

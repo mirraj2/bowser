@@ -23,22 +23,23 @@ import ox.Reflection;
 
 public class Template {
 
-  public static String appName;
   public static boolean mobileDisplay = false;
 
-  private static final DomParser parser = new DomParser();
-
   private final DomNode root;
-  private Head head = null;
+  private DomNode head = null;
 
   private boolean isRoot;
 
-  private Template(String s) {
+  private DomParser parser;
+
+  private Template(String s, DomParser parser) {
+    this.parser = parser;
     isRoot = false;
     root = parser.parse(s, isRoot);
   }
 
-  private Template(String s, StaticContentHandler loader) {
+  private Template(String s, StaticContentHandler loader, DomParser parser) {
+    this.parser = parser;
     isRoot = true;
     root = parser.parse(s, isRoot);
 
@@ -47,13 +48,15 @@ public class Template {
 
   private void init(DomNode root, StaticContentHandler loader) {
     for (DomNode node : root.getAllNodes()) {
-      if (node instanceof Head) {
-        head = (Head) node;
-      } else if ("head".equals(node.tag)) {
-        Imports.appendToHead(head, node);
-        node.parent.remove(node);
+      if ("head".equals(node.tag)) {
+        if (head == null) {
+          head = node;
+        } else {
+          Imports.appendToHead(head, node);
+          node.parent.remove(node);
+        }
       } else if ("import".equals(node.tag)) {
-        List<DomNode> importedNodes = Imports.createImport(node, loader);
+        List<DomNode> importedNodes = Imports.createImport(node, loader, parser);
         String iff = node.getAttribute("if");
         if (iff != null) {
           DomNode span = new DomNode("span");
@@ -368,12 +371,16 @@ public class Template {
     }
   }
 
-  public static Template compile(String source, StaticContentHandler loader) {
-    return new Template(source, loader);
+  public static Template compile(String source, StaticContentHandler loader, Head head) {
+    return new Template(source, loader, new DomParser(head));
+  }
+
+  public static Template compile(String source, DomParser parser) {
+    return new Template(source, parser);
   }
 
   public static Template compile(String source) {
-    return new Template(source);
+    return compile(source, new DomParser());
   }
 
 }
