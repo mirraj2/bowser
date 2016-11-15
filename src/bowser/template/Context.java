@@ -20,9 +20,10 @@ public class Context {
     this.response = response;
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T get(String key) {
     if (request == null) {
-      return null;
+      return (T) data.get(key);
     }
     return request.get(key);
   }
