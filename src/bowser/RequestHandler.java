@@ -7,4 +7,7 @@ public interface RequestHandler {
    */
   public boolean process(Request request, Response response);
 
+  public default void load() {
+  }
+
 }

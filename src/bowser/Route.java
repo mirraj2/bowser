@@ -84,12 +84,17 @@ public class Route {
 
   public Route to(String resource) {
     this.resource = resource;
-    if (resource.endsWith(".html")) {
-      getTemplate(); // warm the cache
-    } else {
-      resourceData = IO.from(controller.getClass(), resource).toByteArray();
-    }
     return this;
+  }
+
+  public void load() {
+    if (resource != null) {
+      if (resource.endsWith(".html")) {
+        getTemplate(); // warm the cache
+      } else {
+        resourceData = IO.from(controller.getClass(), resource).toByteArray();
+      }
+    }
   }
 
   public Route host(String host) {

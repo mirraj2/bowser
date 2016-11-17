@@ -54,4 +54,9 @@ public class RouteHandler implements RequestHandler {
     return route.toString();
   }
 
+  @Override
+  public void load() {
+    route.load();
+  }
+
 }

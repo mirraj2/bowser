@@ -59,7 +59,7 @@ public class WebServer {
 
   public WebServer controller(Controller controller) {
     controllers.add(controller);
-    // controller.init(this);
+    controller.init(this);
     return this;
   }
 
@@ -166,8 +166,8 @@ public class WebServer {
 
   @SuppressWarnings("resource")
   public WebServer start() {
-    for (Controller controller : controllers) {
-      controller.init(this);
+    for (RequestHandler handler : handlers) {
+      handler.load();
     }
 
     try {
