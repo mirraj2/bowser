@@ -39,7 +39,7 @@ public class Request {
 
   public String getHost() {
     if (host == null) {
-      return host = getHeader("Host");
+      host = getHeader("Host");
     }
     return host;
   }
