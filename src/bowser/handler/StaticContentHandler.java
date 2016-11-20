@@ -93,6 +93,8 @@ public class StaticContentHandler implements RequestHandler {
       } else if ("Response content complete".equals(e.getMessage())) {
         // ignore
       } else {
+        Log.debug("type: " + e.getClass());
+        Log.debug("message: " + e.getMessage());
         throw Throwables.propagate(e);
       }
     }
