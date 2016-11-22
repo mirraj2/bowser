@@ -141,19 +141,20 @@ public class WebServer {
       Throwable t = null;
       try {
         WebServer.this.handle(req, resp);
-      } catch (Throwable e) {
-        t = e;
-        e.printStackTrace();
-        response.setStatus(Status.INTERNAL_SERVER_ERROR);
-        try {
-          Throwable root = Throwables.getRootCause(e);
-          String message = "Server Error";
-          if (!Strings.isNullOrEmpty(root.getMessage())) {
-            message = root.getMessage();
+      } catch (final Throwable e) {
+        Throwable root = Throwables.getRootCause(e);
+        if (!"Stream has been closed".equals(root.getMessage())) {
+          e.printStackTrace();
+          response.setStatus(Status.INTERNAL_SERVER_ERROR);
+          try {
+            String message = "Server Error";
+            if (!Strings.isNullOrEmpty(root.getMessage())) {
+              message = root.getMessage();
+            }
+            resp.write(message);
+          } catch (Exception e1) {
+            e1.printStackTrace();
           }
-          resp.write(message);
-        } catch (Exception e1) {
-          e1.printStackTrace();
         }
       }
       try {

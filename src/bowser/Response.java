@@ -69,7 +69,14 @@ public class Response {
   }
 
   public Response cookie(String key, String value, int expiry, TimeUnit units) {
+    return cookie(key, value, expiry, units, "");
+  }
+
+  public Response cookie(String key, String value, int expiry, TimeUnit units, String domain) {
     Cookie cookie = new Cookie(key, value);
+    if (!domain.isEmpty()) {
+      cookie.setDomain(domain);
+    }
     if (value == null) {
       cookie.setExpiry(0);
     } else {
