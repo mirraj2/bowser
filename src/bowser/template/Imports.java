@@ -16,13 +16,13 @@ public class Imports {
   private static final Map<String, String> jsNicknames = Maps.newLinkedHashMap();
   private static final Map<String, String> cssNicknames = Maps.newLinkedHashMap();
 
-  public static void appendToHead(DomNode head, DomNode headNode) {
+  public static void appendToHead(DomNode head, DomNode headNode, StaticContentHandler loader, boolean embedCSS) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
       String s = jsNicknames.get(jsImport.toLowerCase());
       if (s == null) {
         if (jsImport.startsWith("/") || jsImport.startsWith("http")) {
-          s =  jsImport;
-        } else{
+          s = jsImport;
+        } else {
           s = "/" + jsImport;
         }
       }
@@ -38,7 +38,12 @@ public class Imports {
           s = "/" + cssImport;
         }
       }
-      head.css(s);
+      if (embedCSS) {
+        String data = new String(loader.getData(cssImport), Charsets.UTF_8);
+        head.add(new DomNode("style").add(new TextNode("\n" + data)));
+      } else {
+        head.css(s);
+      }
     }
   }
 

@@ -32,27 +32,21 @@ public class Template {
 
   private DomParser parser;
 
-  private Template(String s, DomParser parser) {
-    this.parser = parser;
-    isRoot = false;
-    root = parser.parse(s, isRoot);
-  }
-
-  private Template(String s, StaticContentHandler loader, DomParser parser) {
+  private Template(String s, StaticContentHandler loader, DomParser parser, boolean embedCSS) {
     this.parser = parser;
     isRoot = true;
     root = parser.parse(s, isRoot);
 
-    init(root, loader);
+    init(root, loader, embedCSS);
   }
 
-  private void init(DomNode root, StaticContentHandler loader) {
+  private void init(DomNode root, StaticContentHandler loader, boolean embedCSS) {
     for (DomNode node : root.getAllNodes()) {
       if ("head".equals(node.tag)) {
         if (head == null) {
           head = node;
         } else {
-          Imports.appendToHead(head, node);
+          Imports.appendToHead(head, node, loader, embedCSS);
           node.parent.remove(node);
         }
       } else if ("import".equals(node.tag)) {
@@ -66,7 +60,7 @@ public class Template {
         }
         node.parent.replace(node, importedNodes);
         for (DomNode importedNode : importedNodes) {
-          init(importedNode, loader);
+          init(importedNode, loader, embedCSS);
         }
       }
     }
@@ -217,7 +211,7 @@ public class Template {
   }
 
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
-    if (node.parent.tag.equals("code")) {
+    if (node.parent.tag.equals("code") || node.parent.tag.equals("style")) {
       sb.append(node.content);
       return;
     }
@@ -371,16 +365,16 @@ public class Template {
     }
   }
 
-  public static Template compile(String source, StaticContentHandler loader, Head head) {
-    return new Template(source, loader, new DomParser(head));
+  public static Template compile(String source, StaticContentHandler loader, Head head, boolean embedCSS) {
+    return new Template(source, loader, new DomParser(head), embedCSS);
   }
 
-  public static Template compile(String source, DomParser parser) {
-    return new Template(source, parser);
-  }
-
-  public static Template compile(String source) {
-    return compile(source, new DomParser());
-  }
+  // public static Template compile(String source, DomParser parser) {
+  // return new Template(source, parser);
+  // }
+  //
+  // public static Template compile(String source) {
+  // return compile(source, new DomParser());
+  // }
 
 }

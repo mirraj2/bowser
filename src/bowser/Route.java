@@ -58,7 +58,7 @@ public class Route {
       String source = IO.from(controller.getResource(resource)).toString();
       try {
         this.template = Template.compile(source, controller.getServer().getResourceLoader(),
-            controller.getServer().getHead());
+            controller.getServer().getHead(), false);
       } catch (Exception e) {
         Log.error("Problem compiling template: " + resource);
         throw Throwables.propagate(e);

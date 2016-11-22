@@ -8,7 +8,7 @@ public class DomParser {
   public final Head head;
 
   public DomParser() {
-    this(new Head(""));
+    this(Head.defaults(""));
   }
 
   public DomParser(Head head) {

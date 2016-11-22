@@ -44,7 +44,7 @@ public class WebServer {
     this.port = port;
     this.developerMode = developerMode;
     this.staticContentHandler = new StaticContentHandler(this);
-    head = new Head(appName);
+    head = Head.defaults(appName);
   }
 
   public WebServer mobileDisplay() {
