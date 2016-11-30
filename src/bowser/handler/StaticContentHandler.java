@@ -3,6 +3,7 @@ package bowser.handler;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.channels.ClosedChannelException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.simpleframework.http.Status;
@@ -88,8 +89,8 @@ public class StaticContentHandler implements RequestHandler {
       IO.from(is).to(response.getOutputStream());
     } catch (Throwable e) {
       e = Throwables.getRootCause(e);
-      if ("Stream has been closed".equals(e.getMessage())) {
-        // ignore this
+      if (e instanceof ClosedChannelException || "Stream has been closed".equals(e.getMessage())) {
+        // ignore
       } else if ("Response content complete".equals(e.getMessage())) {
         // ignore
       } else {
