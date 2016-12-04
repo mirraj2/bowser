@@ -32,7 +32,11 @@ public class Route {
     this.enableCaching = enableCaching;
 
     path = path.toLowerCase();
-    path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
+    if (path.contains("**")) {
+      path = path.replace("**", ".*");
+    } else {
+      path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
+    }
     path += "/?";
     regex = Pattern.compile(path);
   }
