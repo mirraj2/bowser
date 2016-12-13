@@ -211,13 +211,13 @@ public class Template {
   }
 
   private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
-    if (node.parent.tag.equals("code") || node.parent.tag.equals("style")) {
+    if (node.parent.tag.equals("style")) {
       sb.append(node.content);
       return;
     }
 
     Function<String, String> replacer = replacer(context);
-    if (node.parent.tag.equals("script")) {
+    if (node.parent.tag.equals("script") || node.parent.tag.equals("code")) {
       replacer = replacer(context, "$$(", ")", false);
     }
     String text = replacer.apply(node.content);
