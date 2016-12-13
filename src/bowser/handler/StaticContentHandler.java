@@ -89,7 +89,8 @@ public class StaticContentHandler implements RequestHandler {
       IO.from(is).to(response.getOutputStream());
     } catch (Throwable e) {
       e = Throwables.getRootCause(e);
-      if (e instanceof ClosedChannelException || "Stream has been closed".equals(e.getMessage())) {
+      if (e instanceof ClosedChannelException || "Stream has been closed".equals(e.getMessage())
+          || "Socket closed".equals(e.getMessage())) {
         // ignore
       } else if ("Response content complete".equals(e.getMessage())) {
         // ignore
