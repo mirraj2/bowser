@@ -2,6 +2,7 @@ package bowser.template;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.size;
+import static ox.util.Utils.trim;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -106,17 +107,17 @@ public class Template {
   }
 
   private boolean resolveBoolean(String s, Context context) {
-    int i = s.indexOf(" && ");
+    int i = s.indexOf("&&");
     if (i != -1) {
       String a = s.substring(0, i);
-      String b = s.substring(i + 4);
+      String b = s.substring(i + 2);
       return resolveBoolean(a, context) && resolveBoolean(b, context);
     }
 
-    i = s.indexOf(" == ");
+    i = s.indexOf("==");
     if (i != -1) {
       String a = s.substring(0, i);
-      String b = s.substring(i + 4);
+      String b = s.substring(i + 2);
 
       Object o1 = resolve(a, context);
       Object o2 = resolve(b, context);
@@ -279,6 +280,8 @@ public class Template {
 
   @SuppressWarnings("unchecked")
   private <T> T resolve(String expression, Context context) {
+    expression = trim(expression);
+
     if (expression.startsWith("'") && expression.endsWith("'")) {
       return (T) expression.substring(1, expression.length() - 1);
     }
