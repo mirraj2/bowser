@@ -64,6 +64,10 @@ public class Request {
     return parseInt(getSegment(index));
   }
 
+  public boolean isPost() {
+    return request.getMethod().equalsIgnoreCase("POST");
+  }
+
   public String getMethod() {
     return request.getMethod();
   }

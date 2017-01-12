@@ -1,5 +1,7 @@
 package bowser;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import java.net.URL;
 import java.util.regex.Pattern;
 import com.google.common.base.Throwables;
 import bowser.template.Data;
@@ -60,7 +62,9 @@ public class Route {
   public Template getTemplate() {
     if ((this.template == null || !enableCaching) && resource != null && resource.endsWith(".html")) {
       try {
-        String source = IO.from(controller.getResource(resource)).toString();
+        URL url = controller.getResource(resource);
+        checkNotNull(url, this + ": Could not find resource: " + resource);
+        String source = IO.from(url).toString();
         this.template = Template.compile(source, controller.getServer().getResourceLoader(),
             controller.getServer().getHead(), false);
       } catch (Exception e) {
