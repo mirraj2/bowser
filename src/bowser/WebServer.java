@@ -2,6 +2,7 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.normalize;
+import static ox.util.Utils.urlEncode;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
@@ -188,12 +189,13 @@ public class WebServer {
   public static WebServer redirect(int fromPort, int toPort) {
     return new WebServer("Redirect", fromPort, false).add((request, response) -> {
       String host = request.getHost();
+      String path = urlEncode(request.path);
       if (toPort == 443) {
-        response.redirect("https://" + host + request.path);
+        response.redirect("https://" + host + path);
       } else if (toPort == 80) {
-        response.redirect("http://" + host + request.path);
+        response.redirect("http://" + host + path);
       } else {
-        response.redirect("http://" + host + toPort + ":" + toPort + request.path);
+        response.redirect("http://" + host + toPort + ":" + toPort + path);
       }
       return true;
     }).start();
