@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Status;
-import com.google.common.base.Throwables;
 import ox.IO;
 import ox.Json;
 
@@ -134,7 +133,7 @@ public class Response {
       response.close();
       return this;
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
   }
 

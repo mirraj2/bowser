@@ -2,6 +2,7 @@ package bowser.template;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.size;
+import static ox.util.Utils.propagate;
 import static ox.util.Utils.trim;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -10,9 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.google.common.html.HtmlEscapers;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
@@ -275,7 +276,9 @@ public class Template {
       return "";
     }
     // Log.debug(variableName + " = " + o);
-    return String.valueOf(o);
+    String ret = String.valueOf(o);
+    ret = HtmlEscapers.htmlEscaper().escape(ret);
+    return ret;
   }
 
   @SuppressWarnings("unchecked")
@@ -307,7 +310,7 @@ public class Template {
           reference = dereference(reference, s);
         } catch (Exception e) {
           Log.error("Problem resolving expression: " + expression);
-          throw Throwables.propagate(e);
+          throw propagate(e);
         }
       }
     }
