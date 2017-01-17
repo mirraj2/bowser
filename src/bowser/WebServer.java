@@ -103,9 +103,10 @@ public class WebServer {
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
       response.header("X-Frame-Options", "DENY");
-
-      long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
-      response.header("Strict-Transport-Security", "max-age=" + ONE_YEAR + "; includeSubDomains");
+      if (sslContext != null) {
+        long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
+        response.header("Strict-Transport-Security", "max-age=" + ONE_YEAR + "; includeSubDomains");
+      }
 
       String s = normalize(request.getHeader("Accept-Encoding"));
       if (s.contains("gzip")) {
