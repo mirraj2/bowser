@@ -1,5 +1,6 @@
 package bowser;
 
+import static ox.util.Utils.propagate;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -82,8 +83,7 @@ public class Response {
     } else {
       cookie.setExpiry((int) TimeUnit.SECONDS.convert(expiry, units));
     }
-    response.setCookie(cookie);
-    return this;
+    return cookie(cookie);
   }
 
   public Response cookie(Cookie cookie) {
@@ -99,7 +99,7 @@ public class Response {
       }
       return os;
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
   }
 
