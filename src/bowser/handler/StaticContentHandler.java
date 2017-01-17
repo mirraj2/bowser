@@ -1,5 +1,6 @@
 package bowser.handler;
 
+import static ox.util.Utils.propagate;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -97,7 +98,7 @@ public class StaticContentHandler implements RequestHandler {
       } else {
         Log.debug("type: " + e.getClass());
         Log.debug("message: " + e.getMessage());
-        throw Throwables.propagate(e);
+        throw propagate(e);
       }
     }
 

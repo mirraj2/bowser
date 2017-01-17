@@ -2,6 +2,7 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.normalize;
+import static ox.util.Utils.propagate;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
@@ -100,6 +101,7 @@ public class WebServer {
       boolean handled = false;
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
+      response.header("X-Frame-Options", "DENY");
 
       String s = normalize(request.getHeader("Accept-Encoding"));
       if (s.contains("gzip")) {
@@ -151,6 +153,7 @@ public class WebServer {
             if (!Strings.isNullOrEmpty(root.getMessage())) {
               message = root.getMessage();
             }
+            resp.contentType("text/plain");
             resp.write(message);
           } catch (Exception e1) {
             e1.printStackTrace();
@@ -175,7 +178,7 @@ public class WebServer {
       Server server = new ContainerServer(container);
       new SocketConnection(server).connect(new InetSocketAddress(port), sslContext);
     } catch (Exception e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
 
     return this;
@@ -188,7 +191,6 @@ public class WebServer {
   public static WebServer redirect(int fromPort, int toPort) {
     return new WebServer("Redirect", fromPort, false).add((request, response) -> {
       String host = request.getHost();
-      // String path = urlEncode(request.path);
       String path = request.request.getTarget();
       if (toPort == 443) {
         response.redirect("https://" + host + path);
