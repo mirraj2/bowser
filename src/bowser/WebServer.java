@@ -6,6 +6,7 @@ import static ox.util.Utils.propagate;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
@@ -102,6 +103,9 @@ public class WebServer {
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
       response.header("X-Frame-Options", "DENY");
+
+      long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
+      response.header("Strict-Transport-Security", "max-age=" + ONE_YEAR + "; includeSubDomains");
 
       String s = normalize(request.getHeader("Accept-Encoding"));
       if (s.contains("gzip")) {
