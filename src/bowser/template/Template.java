@@ -218,19 +218,27 @@ public class Template {
       return;
     }
 
-    Function<String, String> replacer = replacer(context);
+    String text = node.content;
+
     if (node.parent.tag.equals("script") || node.parent.tag.equals("code")) {
-      replacer = replacer(context, "$$(", ")", false);
+      Function<String, String> replacer = replacer(context, "$$(", ")", false, true);
+      text = replacer.apply(text);
+    } else {
+      Function<String, String> noEscapeReplacer = replacer(context, "{{", "}}", true, false);
+      text = noEscapeReplacer.apply(text);
+      Function<String, String> replacer = replacer(context);
+      text = replacer.apply(text);
     }
-    String text = replacer.apply(node.content);
+
     sb.append(text);
   }
 
   private Function<String, String> replacer(Context context) {
-    return replacer(context, "{", "}", true);
+    return replacer(context, "{", "}", true, true);
   }
 
-  private Function<String, String> replacer(Context context, String start, String end, boolean nullToEmpty) {
+  private Function<String, String> replacer(Context context, String start, String end, boolean nullToEmpty,
+      boolean escapeHtml) {
     return text -> {
       if (text == null) {
         return null;
@@ -248,7 +256,7 @@ public class Template {
             depth--;
             if (depth == 0) {
               String variableName = text.substring(variableStartIndex + start.length(), i);
-              sb.append(evaluate(variableName, context, nullToEmpty));
+              sb.append(evaluate(variableName, context, nullToEmpty, escapeHtml));
               variableStartIndex = -1;
               i += end.length() - 1;
             }
@@ -270,14 +278,16 @@ public class Template {
     };
   }
 
-  private String evaluate(String variableName, Context context, boolean nullToEmpty) {
+  private String evaluate(String variableName, Context context, boolean nullToEmpty, boolean escapeHtml) {
     Object o = resolve(variableName, context);
     if (o == null && nullToEmpty) {
       return "";
     }
     // Log.debug(variableName + " = " + o);
     String ret = String.valueOf(o);
-    ret = HtmlEscapers.htmlEscaper().escape(ret);
+    if (escapeHtml) {
+      ret = HtmlEscapers.htmlEscaper().escape(ret);
+    }
     return ret;
   }
 
