@@ -1,9 +1,9 @@
 package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ox.util.Utils.propagate;
 import java.net.URL;
 import java.util.regex.Pattern;
-import com.google.common.base.Throwables;
 import bowser.template.Data;
 import bowser.template.Template;
 import ox.IO;
@@ -69,7 +69,7 @@ public class Route {
             controller.getServer().getHead(), false);
       } catch (Exception e) {
         Log.error("Problem compiling template: " + resource);
-        throw Throwables.propagate(e);
+        throw propagate(e);
       }
     }
     return this.template;

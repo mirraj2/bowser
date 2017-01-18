@@ -220,7 +220,10 @@ public class Template {
 
     String text = node.content;
 
-    if (node.parent.tag.equals("script") || node.parent.tag.equals("code")) {
+    if (node.parent.tag.equals("script")) {
+      Function<String, String> replacer = replacer(context, "$$(", ")", false, false);
+      text = replacer.apply(text);
+    } else if (node.parent.tag.equals("code")) {
       Function<String, String> replacer = replacer(context, "$$(", ")", false, true);
       text = replacer.apply(text);
     } else {
