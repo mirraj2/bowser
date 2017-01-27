@@ -102,7 +102,7 @@ public class WebServer {
       boolean handled = false;
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
-      response.header("X-Frame-Options", "DENY");
+      response.header("X-Frame-Options", "SAMEORIGIN");
       if (sslContext != null) {
         long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
         response.header("Strict-Transport-Security", "max-age=" + ONE_YEAR + "; includeSubDomains");

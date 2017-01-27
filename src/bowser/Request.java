@@ -3,6 +3,7 @@ package bowser;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import static ox.util.Utils.propagate;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +14,6 @@ import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
 import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -105,7 +105,7 @@ public class Request {
     try {
       return request.getContent();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
   }
 
@@ -123,7 +123,7 @@ public class Request {
     try {
       return IO.from(part.getInputStream()).toImage();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
   }
 
@@ -137,7 +137,7 @@ public class Request {
     try {
       return IO.from(part.getInputStream()).toByteArray();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
   }
 
