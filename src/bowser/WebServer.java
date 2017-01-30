@@ -142,7 +142,6 @@ public class WebServer {
   private final Container container = new Container() {
     @Override
     public void handle(org.simpleframework.http.Request request, org.simpleframework.http.Response response) {
-      Log.info("Got request: " + request);
       Stopwatch watch = Stopwatch.createStarted();
       Request req = new Request(request);
       Response resp = new Response(response);
