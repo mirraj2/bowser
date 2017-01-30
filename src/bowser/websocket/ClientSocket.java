@@ -1,6 +1,7 @@
 package bowser.websocket;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Utils.propagate;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
@@ -72,7 +72,7 @@ public class ClientSocket {
       os.write(createFrame(Opcode.TEXT, payload));
       os.flush();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
     return this;
   }
@@ -288,7 +288,7 @@ public class ClientSocket {
       os.write(response.getBytes(Charsets.UTF_8));
       os.flush();
     } catch (IOException e) {
-      throw Throwables.propagate(e);
+      throw propagate(e);
     }
 
     onOpen.accept(this);
