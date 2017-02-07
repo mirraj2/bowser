@@ -57,6 +57,10 @@ public class StaticContentHandler implements RequestHandler {
       if (!server.developerMode) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
+    } else if (path.endsWith(".svg")) {
+      if (!server.developerMode) {
+        response.cacheFor(1, TimeUnit.DAYS);
+      }
     } else if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".min.map")) {
       if (!server.developerMode) {
         response.cacheFor(20, TimeUnit.MINUTES);
