@@ -59,7 +59,7 @@ public class ClientSocket {
 
   public Map<String, String> getCookies() {
     Map<String, String> ret = Maps.newLinkedHashMap();
-    for (String s : Splitter.on("; ").split(getHeader("Cookie"))) {
+    for (String s : Splitter.on("; ").omitEmptyStrings().split(getHeader("Cookie"))) {
       int i = s.indexOf('=');
       ret.put(s.substring(0, i), s.substring(i + 1));
     }
