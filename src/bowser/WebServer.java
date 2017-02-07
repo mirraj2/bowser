@@ -149,6 +149,7 @@ public class WebServer {
       try {
         WebServer.this.handle(req, resp);
       } catch (final Throwable e) {
+        t = e;
         Throwable root = Throwables.getRootCause(e);
         if (!"Stream has been closed".equals(root.getMessage())) {
           e.printStackTrace();
