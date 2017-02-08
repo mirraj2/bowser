@@ -118,7 +118,7 @@ So far you've seen that you can loop through objects, that you can insert variab
 
 ```html
 <head js="fancy.js" css="fancy.css">
-<p>The text above makes allows us to import javascript and css files into the 'head'</p>
+<p>The text above allows us to import javascript and css files into the 'head'</p>
 <p>Insert a variable: {user.name}</p>
 <p>Call a method: {user.getAddress()}</p>
 <div if="items.hasData()">
