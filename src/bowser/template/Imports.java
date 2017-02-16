@@ -58,14 +58,17 @@ public class Imports {
       // ret.add(new DomNode("script").attribute("src", jsImport));
     }
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
-      String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
-      ret.add(new TextNode(comment));
+      if (loader.getServer().developerMode) {
+        String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
+        ret.add(new TextNode(comment));
+      }
       String html = new String(loader.getData(htmlImport), Charsets.UTF_8);
       DomNode n = parser.parse(html, false);
       ret.addAll(n.getChildren());
-      // ret.add(n);
-      String endComment = "\n<!-- END " + htmlImport + " -->";
-      ret.add(new TextNode(endComment));
+      if (loader.getServer().developerMode) {
+        String endComment = "\n<!-- END " + htmlImport + " -->";
+        ret.add(new TextNode(endComment));
+      }
     }
 
     return ret;

@@ -141,4 +141,8 @@ public class StaticContentHandler implements RequestHandler {
     return NO_DATA;
   }
 
+  public WebServer getServer() {
+    return server;
+  }
+
 }
