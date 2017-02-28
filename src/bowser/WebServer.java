@@ -38,6 +38,7 @@ public class WebServer {
 
   private WebLogger logger = new DefaultWebLogger();
 
+  private RequestHandler notFoundHandler = null;
   private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
   private final Head head;
@@ -72,6 +73,11 @@ public class WebServer {
 
   public WebServer exceptionHandler(ExceptionHandler handler) {
     this.exceptionHandler = checkNotNull(handler);
+    return this;
+  }
+
+  public WebServer notFoundHandler(RequestHandler handler) {
+    this.notFoundHandler = handler;
     return this;
   }
 
@@ -128,7 +134,11 @@ public class WebServer {
 
       if (!handled) {
         Log.info("Not found: " + request);
-        response.status(Status.NOT_FOUND);
+        if (notFoundHandler == null) {
+          response.status(Status.NOT_FOUND);
+        } else{
+          notFoundHandler.process(request, response);
+        }
       }
 
       response.close();
@@ -151,8 +161,9 @@ public class WebServer {
       } catch (final Throwable e) {
         t = e;
         Throwable root = Throwables.getRootCause(e);
-        if (!"Stream has been closed".equals(root.getMessage())) {
+        if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
           e.printStackTrace();
+          Log.debug("root msg: " + root.getMessage());
           response.setStatus(Status.INTERNAL_SERVER_ERROR);
           try {
             String message = "Server Error";
