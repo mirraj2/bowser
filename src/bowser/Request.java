@@ -127,6 +127,10 @@ public class Request {
     }
   }
 
+  public Part getPart(String name) {
+    return request.getPart(name);
+  }
+
   public String getFileName() {
     Part part = getOnlyElement(request.getParts());
     return part.getFileName();
