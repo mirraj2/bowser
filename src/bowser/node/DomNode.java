@@ -114,6 +114,10 @@ public class DomNode {
     return attributes;
   }
 
+  public boolean hasAttribute(String key) {
+    return attributeIndex(key) != -1;
+  }
+
   public String getAttribute(String key) {
     return getAttribute(key, null);
   }

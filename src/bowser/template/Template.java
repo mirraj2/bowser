@@ -97,7 +97,7 @@ public class Template {
     if (node instanceof TextNode) {
       renderText((TextNode) node, sb, depth, context);
     } else {
-      node.renderStartTag(sb, depth, replacer(context));
+      node.renderStartTag(sb, depth, replacer(context, "{", "}", true, true));
 
       for (DomNode child : node.getChildren()) {
         render(child, sb, depth + 1, context);
@@ -229,15 +229,16 @@ public class Template {
     } else {
       Function<String, String> noEscapeReplacer = replacer(context, "{{", "}}", true, false);
       text = noEscapeReplacer.apply(text);
-      Function<String, String> replacer = replacer(context);
+
+      boolean escapeHtml = true;
+      if (node.parent.hasAttribute("allowHtml")) {
+        escapeHtml = false;
+      }
+      Function<String, String> replacer = replacer(context, "{", "}", true, escapeHtml);
       text = replacer.apply(text);
     }
 
     sb.append(text);
-  }
-
-  private Function<String, String> replacer(Context context) {
-    return replacer(context, "{", "}", true, true);
   }
 
   private Function<String, String> replacer(Context context, String start, String end, boolean nullToEmpty,
@@ -288,7 +289,7 @@ public class Template {
     }
     // Log.debug(variableName + " = " + o);
     String ret = String.valueOf(o);
-    if (escapeHtml) {
+    if (escapeHtml || ret.toLowerCase().contains("script")) {
       ret = HtmlEscapers.htmlEscaper().escape(ret);
     }
     return ret;
