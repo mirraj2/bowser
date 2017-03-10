@@ -169,7 +169,7 @@ public class Request {
   }
 
   private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "jpeg", "gif", "svg",
-      "ico", "ttf", "otf", "woff", "woff2", "eot", "mp4", "map", "pdf", "cur", "txt");
+      "ico", "ttf", "otf", "woff", "woff2", "eot", "mp4", "map", "pdf", "cur", "txt", "mp3");
 
   public boolean isStaticResource() {
     int i = path.lastIndexOf(".");
