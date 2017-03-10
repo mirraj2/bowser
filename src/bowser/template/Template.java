@@ -192,6 +192,15 @@ public class Template {
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
         context.data.remove(variableName);
       });
+    } else if (data instanceof Json && ((Json) data).isObject()) {
+      Json json = (Json) data;
+      for (String key : json) {
+        context.put(variableName, key);
+        context.put("value", json.getObject(key));
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        context.data.remove(variableName);
+        context.data.remove("value");
+      }
     } else if (data instanceof Iterable) {
       for (Object o : (Iterable<?>) data) {
         context.put(variableName, o);
