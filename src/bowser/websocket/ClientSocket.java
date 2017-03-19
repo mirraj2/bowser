@@ -77,6 +77,16 @@ public class ClientSocket {
     return this;
   }
 
+  public ClientSocket send(byte[] data) {
+    try {
+      os.write(createFrame(Opcode.BINARY, data));
+      os.flush();
+    } catch (IOException e) {
+      throw propagate(e);
+    }
+    return this;
+  }
+
   public ClientSocket onMessage(Consumer<String> onMessage) {
     this.onMessage = onMessage;
     return this;
@@ -216,7 +226,7 @@ public class ClientSocket {
     ByteBuffer buf = ByteBuffer
         .allocate(1 + (sizebytes > 1 ? sizebytes + 1 : sizebytes) + (mask ? 4 : 0) + payload.length);
     byte one = (byte) -128;
-    one |= Opcode.TEXT.code;
+    one |= code.code;
     buf.put(one);
     byte[] payloadlengthbytes = toByteArray(payload.length, sizebytes);
     assert (payloadlengthbytes.length == sizebytes);

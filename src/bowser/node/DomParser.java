@@ -52,7 +52,7 @@ public class DomParser {
     if (s.charAt(start + 1) == '!') {
       int i = s.indexOf("-->", start);
       if (i != -1) {
-        parent.add(new TextNode(s.substring(start, i + 4)));
+        parent.add(new TextNode(s.substring(start, i + 3)));
         parse(parent, s, i + 3, end);
       }
       return;
