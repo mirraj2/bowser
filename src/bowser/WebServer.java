@@ -137,7 +137,9 @@ public class WebServer {
         if (notFoundHandler == null) {
           response.status(Status.NOT_FOUND);
         } else{
-          notFoundHandler.process(request, response);
+          if (!notFoundHandler.process(request, response)) {
+            response.status(Status.NOT_FOUND);
+          }
         }
       }
 
