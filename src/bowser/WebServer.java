@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
-import org.simpleframework.http.core.ContainerServer;
-import org.simpleframework.transport.Server;
+import org.simpleframework.http.core.ContainerSocketProcessor;
+import org.simpleframework.transport.SocketProcessor;
 import org.simpleframework.transport.connect.SocketConnection;
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
@@ -194,7 +194,7 @@ public class WebServer {
     }
 
     try {
-      Server server = new ContainerServer(container);
+      SocketProcessor server = new ContainerSocketProcessor(container);
       new SocketConnection(server).connect(new InetSocketAddress(port), sslContext);
     } catch (Exception e) {
       throw propagate(e);
