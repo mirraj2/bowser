@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="Bowser">
+<project basedir="." default="build" name="bowser">
     <property environment="env"/>
-    <property name="Ox.location" value="../Ox"/>
+    <property name="ox.location" value="../ox"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.8"/>
     <property name="source" value="1.8"/>
-    <path id="Ox.classpath">
-        <pathelement location="${Ox.location}/bin"/>
-        <pathelement location="${Ox.location}/lib/miglayout-4.0-swing.jar"/>
-        <pathelement location="${Ox.location}/lib/gson-2.3.jar"/>
-        <pathelement location="${Ox.location}/lib/guava-20.0.jar"/>
-        <pathelement location="${Ox.location}/lib/objenesis-2.1.jar"/>
+    <path id="ox.classpath">
+        <pathelement location="${ox.location}/bin"/>
+        <pathelement location="${ox.location}/lib/gson-2.3.jar"/>
+        <pathelement location="${ox.location}/lib/guava-20.0.jar"/>
+        <pathelement location="${ox.location}/lib/objenesis-2.1.jar"/>
     </path>
-    <path id="Bowser.classpath">
+    <path id="bowser.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/simple-5.1.5.jar"/>
-        <path refid="Ox.classpath"/>
+        <path refid="ox.classpath"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -33,17 +28,17 @@
         <delete dir="bin"/>
     </target>
     <target depends="clean" name="cleanall">
-        <ant antfile="build.xml" dir="${Ox.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="clean"/>
     </target>
     <target depends="build-subprojects,build-project" name="build"/>
     <target name="build-subprojects">
-        <ant antfile="build.xml" dir="${Ox.location}" inheritAll="false" target="build-project"/>
+        <ant antfile="build.xml" dir="${ox.location}" inheritAll="false" target="build-project"/>
     </target>
     <target depends="init" name="build-project">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
             <src path="src"/>
-            <classpath refid="Bowser.classpath"/>
+            <classpath refid="bowser.classpath"/>
         </javac>
     </target>
 </project>
