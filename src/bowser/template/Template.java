@@ -4,16 +4,19 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.size;
 import static ox.util.Utils.propagate;
 import static ox.util.Utils.trim;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
+
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
@@ -147,6 +150,8 @@ public class Template {
       }
     } else if (o instanceof Iterable) {
       return ((Iterable<?>) o).iterator().hasNext();
+    } else if (o instanceof Number) {
+      return ((Number) o).intValue() != 0;
     } else {
       return true;
     }
