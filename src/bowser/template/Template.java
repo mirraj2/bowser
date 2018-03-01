@@ -303,7 +303,7 @@ public class Template {
     }
     // Log.debug(variableName + " = " + o);
     String ret = String.valueOf(o);
-    if (escapeHtml || ret.toLowerCase().contains("script")) {
+    if (escapeHtml || ret.toLowerCase().contains("<script>")) {
       ret = HtmlEscapers.htmlEscaper().escape(ret);
     }
     return ret;
