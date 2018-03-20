@@ -4,19 +4,22 @@ import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static ox.util.Utils.propagate;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
+
 import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
 import ox.IO;
 import ox.Json;
 import ox.Pair;
@@ -32,9 +35,7 @@ public class Request {
 
   public Request(org.simpleframework.http.Request request) {
     this.request = request;
-    String s = request.getPath().getPath();
-    this.path = s.toLowerCase();
-    this.segments = ImmutableList.copyOf(Splitter.on('/').omitEmptyStrings().split(s));
+    setPath(request.getPath().getPath());
   }
 
   public String getHost() {
@@ -54,6 +55,11 @@ public class Request {
 
   public Path getPath() {
     return request.getPath();
+  }
+
+  public void setPath(String path) {
+    this.segments = Splitter.on('/').omitEmptyStrings().splitToList(path);
+    this.path = path.toLowerCase();
   }
 
   public String getSegment(int index) {
