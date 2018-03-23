@@ -133,13 +133,12 @@ public class Request {
     }
   }
 
-  public Part getPart(String name) {
-    return request.getPart(name);
+  public Part getPart() {
+    return getOnlyElement(request.getParts());
   }
 
-  public String getFileName() {
-    Part part = getOnlyElement(request.getParts());
-    return part.getFileName();
+  public Part getPart(String name) {
+    return request.getPart(name);
   }
 
   public byte[] getBytes() {
