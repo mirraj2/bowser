@@ -31,7 +31,7 @@ public class Request {
   public String path;
   private Map<String, Object> userData = Maps.newHashMap();
 
-  public String host = null;
+  private String host = null;
 
   public Request(org.simpleframework.http.Request request) {
     this.request = request;

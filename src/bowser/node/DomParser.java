@@ -18,7 +18,7 @@ public class DomParser {
 
   public DomNode parse(String s, boolean isRoot) {
     DomNode root;
-    if (isRoot) {
+    if (isRoot && head != null) {
       root = new DomNode("html").attribute("lang", "en");
       root.add(new TextNode("\n"));
       root.add(head.copy());
