@@ -3,20 +3,25 @@ package bowser;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.normalize;
 import static ox.util.Utils.propagate;
+
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
 import javax.net.ssl.SSLContext;
+
 import org.simpleframework.http.Status;
 import org.simpleframework.http.core.Container;
 import org.simpleframework.http.core.ContainerServer;
 import org.simpleframework.transport.Server;
 import org.simpleframework.transport.connect.SocketConnection;
+
 import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+
 import bowser.handler.ExceptionHandler;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
@@ -165,7 +170,6 @@ public class WebServer {
         Throwable root = Throwables.getRootCause(e);
         if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
           e.printStackTrace();
-          Log.debug("root msg: " + root.getMessage());
           response.setStatus(Status.INTERNAL_SERVER_ERROR);
           try {
             String message = "Server Error";

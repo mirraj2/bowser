@@ -399,16 +399,12 @@ public class Template {
     }
   }
 
+  public static Template compile(String source) {
+    return compile(source, null, null, false);
+  }
+
   public static Template compile(String source, StaticContentHandler loader, Head head, boolean embedCSS) {
     return new Template(source, loader, new DomParser(head), embedCSS);
   }
-
-  // public static Template compile(String source, DomParser parser) {
-  // return new Template(source, parser);
-  // }
-  //
-  // public static Template compile(String source) {
-  // return compile(source, new DomParser());
-  // }
 
 }
