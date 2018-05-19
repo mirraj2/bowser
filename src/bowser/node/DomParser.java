@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import ox.Log;
+
 public class DomParser {
 
   public final Head head;
@@ -19,20 +21,22 @@ public class DomParser {
   public DomNode parse(String s, boolean isRoot) {
     DomNode root;
     if (isRoot && head != null) {
+      DomNode headCopy = head.copy();
+
       root = new DomNode("html").attribute("lang", "en");
       root.add(new TextNode("\n"));
-      root.add(head.copy());
+      root.add(headCopy);
       DomNode body = new DomNode("body");
       root.add(body);
-      parse(body, s, 0, s.length());
+      parse(headCopy, body, s, 0, s.length());
     } else {
       root = new DomNode("div");
-      parse(root, s, 0, s.length());
+      parse(null, root, s, 0, s.length());
     }
     return root;
   }
 
-  private void parse(DomNode parent, String s, int start, int end) {
+  private void parse(DomNode head, DomNode parent, String s, int start, int end) {
     if (start == end) {
       return;
     }
@@ -46,7 +50,7 @@ public class DomParser {
         }
       }
       parent.add(new TextNode(s.substring(start, tagIndex)));
-      parse(parent, s, tagIndex, end);
+      parse(head, parent, s, tagIndex, end);
       return;
     }
 
@@ -54,7 +58,7 @@ public class DomParser {
       int i = s.indexOf("-->", start);
       if (i != -1) {
         parent.add(new TextNode(s.substring(start, i + 3)));
-        parse(parent, s, i + 3, end);
+        parse(head, parent, s, i + 3, end);
       }
       return;
     }
@@ -75,19 +79,27 @@ public class DomParser {
       }
     }
 
-    parent.add(node);
+    if (node.tag.equalsIgnoreCase("meta")) {
+      if (head == null) {
+        Log.warn("<head> is null, skipping meta tag.");
+      } else {
+        head.add(node);
+      }
+    } else {
+      parent.add(node);
+    }
 
     Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
     if (endTagIndex != null) {
       if (node.tag.equalsIgnoreCase("script")) {
         node.add(new TextNode(s.substring(endTag + 1, endTagIndex)));
       } else {
-        parse(node, s, endTag + 1, endTagIndex); // add a child
+        parse(head, node, s, endTag + 1, endTagIndex); // add a child
       }
       endTag = endTagIndex + 2 + node.tag.length();
     }
 
-    parse(parent, s, endTag + 1, end);
+    parse(head, parent, s, endTag + 1, end);
   }
 
   private Integer findEndTag(String tag, String s, int start, int end) {

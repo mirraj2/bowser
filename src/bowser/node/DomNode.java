@@ -2,12 +2,14 @@ package bowser.node;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -169,7 +171,12 @@ public class DomNode {
 
   public DomNode attribute(String key, Object value) {
     attributes.add(key);
-    attributes.add(value == null ? null : value.toString());
+    if (value == null) {
+      attributes.add(null);
+    } else {
+      String v = value.toString().replace("\n", "");
+      attributes.add(v);
+    }
     return this;
   }
 
