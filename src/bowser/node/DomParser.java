@@ -91,7 +91,7 @@ public class DomParser {
 
     Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
     if (endTagIndex != null) {
-      if (node.tag.equalsIgnoreCase("script")) {
+      if (node.tag.equalsIgnoreCase("script") || node.tag.equalsIgnoreCase("code")) {
         node.add(new TextNode(s.substring(endTag + 1, endTagIndex)));
       } else {
         parse(head, node, s, endTag + 1, endTagIndex); // add a child
