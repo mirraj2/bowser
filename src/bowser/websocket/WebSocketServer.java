@@ -1,9 +1,12 @@
 package bowser.websocket;
 
+import static ox.util.Functions.emptyConsumer;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
@@ -12,8 +15,7 @@ public class WebSocketServer {
   public final int port;
   private SSLContext context;
   private ServerSocket server;
-  private Consumer<ClientSocket> onOpen = socket -> {
-  };
+  private Consumer<ClientSocket> onOpen = emptyConsumer();
 
   public WebSocketServer(int port) {
     this.port = port;

@@ -2,8 +2,10 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
+
 import java.net.URL;
 import java.util.regex.Pattern;
+
 import bowser.template.Data;
 import bowser.template.Template;
 import ox.IO;
@@ -37,7 +39,7 @@ public class Route {
     if (path.contains("**")) {
       path = path.replace("**", ".*");
     } else {
-      path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ]*");
+      path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ']*");
     }
     path += "/?";
     regex = Pattern.compile(path);

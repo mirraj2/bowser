@@ -1,15 +1,19 @@
 package bowser.handler;
 
 import static ox.util.Utils.propagate;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.ClosedChannelException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
 import org.simpleframework.http.Status;
+
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+
 import bowser.Controller;
 import bowser.Request;
 import bowser.RequestHandler;
@@ -34,7 +38,7 @@ public class StaticContentHandler implements RequestHandler {
   public boolean process(Request request, Response response) {
     byte[] data = getData(request.getOriginalPath());
 
-    if (data == null || data == NO_DATA) {
+    if (data == null) {
       return false;
     }
 
@@ -122,6 +126,10 @@ public class StaticContentHandler implements RequestHandler {
       if (!server.developerMode) {
         cache.put(path, data);
       }
+    }
+
+    if (data == NO_DATA) {
+      return null;
     }
 
     return data;

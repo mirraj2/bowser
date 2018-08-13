@@ -1,7 +1,10 @@
 package bowser.websocket;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Functions.emptyConsumer;
+import static ox.util.Functions.emptyRunnable;
 import static ox.util.Utils.propagate;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,12 +20,14 @@ import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
+
 import ox.Json;
 import ox.Log;
 
@@ -32,11 +37,9 @@ public class ClientSocket {
 
   public final Socket socket;
 
-  private Consumer<String> onMessage = s -> {
-  };
+  private Consumer<String> onMessage = emptyConsumer();
 
-  private Runnable onClose = () -> {
-  };
+  private Runnable onClose = emptyRunnable();
 
   private final Consumer<ClientSocket> onOpen;
 
