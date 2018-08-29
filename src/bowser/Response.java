@@ -1,13 +1,16 @@
 package bowser;
 
 import static ox.util.Utils.propagate;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
+
 import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Status;
+
 import ox.IO;
 import ox.Json;
 
@@ -62,6 +65,10 @@ public class Response {
   public Response header(String key, String value) {
     response.setValue(key, value);
     return this;
+  }
+
+  public Response removeCookie(String key) {
+    return cookie(key, null);
   }
 
   public Response cookie(String key, String value) {
