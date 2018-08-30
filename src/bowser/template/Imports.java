@@ -2,10 +2,12 @@ package bowser.template;
 
 import java.util.List;
 import java.util.Map;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
@@ -43,6 +45,15 @@ public class Imports {
         head.add(new DomNode("style").add(new TextNode("\n" + data)));
       } else {
         head.css(s);
+      }
+    }
+
+    for (DomNode child : headNode.getChildren()) {
+      if (!(child instanceof TextNode)) {
+        if (child.tag.equals("title")) {
+          head.find("title").forEach(head::remove);
+        }
+        head.add(child);
       }
     }
   }

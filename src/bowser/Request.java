@@ -38,6 +38,10 @@ public class Request {
     setPath(request.getPath().getPath());
   }
 
+  public void setHost(String s) {
+    this.host = s;
+  }
+
   public String getHost() {
     if (host == null) {
       String s = getHeader("Host");
