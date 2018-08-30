@@ -20,6 +20,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
+import bowser.handler.MobileDetector;
 import ox.IO;
 import ox.Json;
 import ox.Pair;
@@ -194,20 +195,7 @@ public class Request {
     return staticExtensions.contains(extension);
   }
 
-  private static final String[] mobileUserAgents = { "android", "webos", "iphone", "ipad", "blackberry", "iemobile",
-      "opera mini" };
-
   public boolean isFromMobile() {
-    String userAgent = getHeader("User-Agent");
-    if (userAgent == null) {
-      return false;
-    }
-    userAgent = userAgent.toLowerCase();
-    for (String s : mobileUserAgents) {
-      if (userAgent.contains(s)) {
-        return true;
-      }
-    }
-    return false;
+    return MobileDetector.isFromMobile(this);
   }
 }
