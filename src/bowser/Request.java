@@ -40,7 +40,12 @@ public class Request {
 
   public String getHost() {
     if (host == null) {
-      host = getHeader("Host");
+      String s = getHeader("Host");
+      int i = s.indexOf(':');
+      if (i != -1) {
+        s = s.substring(0, i);
+      }
+      host = s;
     }
     return host;
   }
