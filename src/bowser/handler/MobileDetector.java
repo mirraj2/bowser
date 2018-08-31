@@ -28,7 +28,11 @@ public class MobileDetector {
           + "i(g |nc|nw)|wmlb|wonu|x700|yas\\-|your|zeto|zte\\-");
 
   public static boolean isFromMobile(Request request) {
-    String userAgent = request.getHeader("User-Agent").toLowerCase();
+    String userAgent = request.getHeader("User-Agent");
+    if (userAgent == null) {
+      return false;
+    }
+    userAgent = userAgent.toLowerCase();
     return p1.matcher(userAgent).matches()
         || p2.matcher(userAgent.substring(0, 4)).matches();
   }
