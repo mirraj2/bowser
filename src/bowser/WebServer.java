@@ -49,10 +49,14 @@ public class WebServer {
   private final Head head;
 
   public WebServer(String appName, int port, boolean developerMode) {
+    this(appName, port, developerMode, null);
+  }
+
+  public WebServer(String appName, int port, boolean developerMode, String googleAnalyticsId) {
     this.port = port;
     this.developerMode = developerMode;
     this.staticContentHandler = new StaticContentHandler(this);
-    head = Head.defaults(appName);
+    head = Head.defaults(appName, googleAnalyticsId);
   }
 
   public WebServer mobileDisplay() {

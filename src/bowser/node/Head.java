@@ -9,8 +9,17 @@ public class Head extends DomNode {
 
   }
 
-  public static Head defaults(String title) {
+  public static Head defaults(String title, String googleAnalyticsId) {
     Head ret = new Head(title);
+
+    if (googleAnalyticsId != null) {
+      ret.add(
+          new DomNode("script").attribute("src", "https://www.googletagmanager.com/gtag/js?id=" + googleAnalyticsId));
+      ret.add(new DomNode("script").text("window.dataLayer = window.dataLayer || [];\n" +
+          "      function gtag(){dataLayer.push(arguments);}\n" +
+          "      gtag('js', new Date());\n" +
+          "      gtag('config', '" + googleAnalyticsId + "');"));
+    }
 
     ret.add(new DomNode("meta").attribute("charset", "utf-8"));
     ret.add(new DomNode("meta").attribute("http-equiv", "X-UA-Compatible").attribute("content", "IE=edge"));
