@@ -1,6 +1,7 @@
 package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ox.util.Utils.checkNotEmpty;
 import static ox.util.Utils.normalize;
 import static ox.util.Utils.propagate;
 
@@ -25,6 +26,7 @@ import com.google.common.collect.Lists;
 import bowser.handler.ExceptionHandler;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
+import bowser.node.DomNode;
 import bowser.node.Head;
 import bowser.template.Imports;
 import bowser.template.Template;
@@ -100,6 +102,19 @@ public class WebServer {
     return this;
   }
 
+  public WebServer googleAnalytics(String googleAnalyticsId) {
+    checkNotEmpty(normalize(googleAnalyticsId));
+
+    head.add(new DomNode("script").attribute("src",
+        "https://www.googletagmanager.com/gtag/js?id=" + googleAnalyticsId));
+    head.add(new DomNode("script").text("window.dataLayer = window.dataLayer || [];\n" +
+        "function gtag(){dataLayer.push(arguments);}\n" +
+        "gtag('js', new Date());\n" +
+        "gtag('config', '" + googleAnalyticsId + "');"));
+
+    return this;
+  }
+
   public StaticContentHandler getResourceLoader() {
     return staticContentHandler;
   }
@@ -141,7 +156,7 @@ public class WebServer {
         Log.info("Not found: " + request);
         if (notFoundHandler == null) {
           response.status(Status.NOT_FOUND);
-        } else{
+        } else {
           if (!notFoundHandler.process(request, response)) {
             response.status(Status.NOT_FOUND);
           }
