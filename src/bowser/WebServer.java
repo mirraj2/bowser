@@ -187,9 +187,13 @@ public class WebServer {
           e.printStackTrace();
           response.setStatus(Status.INTERNAL_SERVER_ERROR);
           try {
-            String message = "Server Error";
-            if (!Strings.isNullOrEmpty(root.getMessage())) {
+            String message;
+            if (e instanceof UserReadableError) {
+              message = e.getMessage();
+            } else if (!Strings.isNullOrEmpty(root.getMessage())) {
               message = root.getMessage();
+            } else {
+              message = "Server Error";
             }
             resp.contentType("text/plain");
             resp.write(message);
