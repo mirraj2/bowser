@@ -193,33 +193,33 @@ public class Template {
 
     if (data instanceof Map) {
       ((Map<?, ?>) data).entrySet().forEach((entry) -> {
-        context.put(variableName, entry);
+        Object oldValue = context.put(variableName, entry);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
-        context.data.remove(variableName);
+        context.put(variableName, oldValue);
       });
     } else if (data instanceof Json && ((Json) data).isObject()) {
       Json json = (Json) data;
       for (String key : json) {
-        context.put(variableName, key);
-        context.put("value", json.getObject(key));
+        Object oldVal1 = context.put(variableName, key);
+        Object oldVal2 = context.put("value", json.getObject(key));
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
-        context.data.remove(variableName);
-        context.data.remove("value");
+        context.put(variableName, oldVal1);
+        context.put("value", oldVal2);
       }
     } else if (data instanceof Iterable) {
       for (Object o : (Iterable<?>) data) {
-        context.put(variableName, o);
+        Object oldValue = context.put(variableName, o);
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
-        context.data.remove(variableName);
+        context.put(variableName, oldValue);
       }
     } else if (data instanceof Multimap) {
       Multimap<Object, Object> multimap = (Multimap<Object, Object>) data;
       for (Object key : multimap.keySet()) {
-        context.put(variableName, key);
-        context.put("values", multimap.get(key));
+        Object oldVal1 = context.put(variableName, key);
+        Object oldVal2 = context.put("values", multimap.get(key));
         render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
-        context.data.remove(variableName);
-        context.data.remove("values");
+        context.data.put(variableName, oldVal1);
+        context.data.put("values", oldVal2);
       }
     } else {
       throw new RuntimeException("Unhandled data type: " + data.getClass());

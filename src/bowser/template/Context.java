@@ -1,7 +1,9 @@
 package bowser.template;
 
 import java.util.Map;
+
 import com.google.common.collect.Maps;
+
 import bowser.Request;
 import bowser.Response;
 
@@ -35,8 +37,8 @@ public class Context {
     return get(key);
   }
 
-  public void put(String key, Object value) {
-    data.put(key, value);
+  public Object put(String key, Object value) {
+    return data.put(key, value);
   }
 
 }
