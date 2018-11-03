@@ -24,17 +24,11 @@ public class Context {
 
   @SuppressWarnings("unchecked")
   public <T> T get(String key) {
-    if (request == null) {
-      return (T) data.get(key);
+    Object ret = data.get(key);
+    if (ret == null && request != null) {
+      ret = request.get(key);
     }
-    return request.get(key);
-  }
-
-  public Object resolve(String key) {
-    if (data.containsKey(key)) {
-      return data.get(key);
-    }
-    return get(key);
+    return (T) ret;
   }
 
   public Object put(String key, Object value) {

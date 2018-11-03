@@ -323,7 +323,7 @@ public class Template {
 
     Iterator<String> iter = Splitter.on('.').split(expression).iterator();
 
-    Object reference = context.resolve(iter.next());
+    Object reference = context.get(iter.next());
 
     while (iter.hasNext()) {
       String s = iter.next();
