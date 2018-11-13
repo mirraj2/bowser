@@ -154,9 +154,8 @@ public class Request {
   }
 
   public byte[] getBytes() {
-    Part part = getOnlyElement(request.getParts());
     try {
-      return IO.from(part.getInputStream()).toByteArray();
+      return IO.from(getPart().getInputStream()).toByteArray();
     } catch (IOException e) {
       throw propagate(e);
     }

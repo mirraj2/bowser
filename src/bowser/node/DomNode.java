@@ -10,11 +10,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 public class DomNode {
+
+  private static final CharMatcher IS_NEWLINE = CharMatcher.is('\n');
 
   public DomNode parent;
 
@@ -174,8 +177,9 @@ public class DomNode {
     if (value == null) {
       attributes.add(null);
     } else {
-      String v = value.toString().replace("\n", "");
-      attributes.add(v);
+      String s = value.toString();
+      s = IS_NEWLINE.removeFrom(s);
+      attributes.add(s);
     }
     return this;
   }
