@@ -34,6 +34,8 @@ import ox.Log;
 
 public class WebServer {
 
+  public static boolean debugHandlers = false;
+
   public final int port;
   public final boolean developerMode;
   public final List<Controller> controllers = Lists.newArrayList();
@@ -142,6 +144,9 @@ public class WebServer {
       for (RequestHandler handler : handlers) {
         if (handler.process(request, response)) {
           handled = true;
+          if (debugHandlers) {
+            Log.debug("request handled by " + handler);
+          }
           break;
         }
       }
