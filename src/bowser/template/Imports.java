@@ -1,5 +1,8 @@
 package bowser.template;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -62,9 +65,14 @@ public class Imports {
     List<DomNode> ret = Lists.newArrayList();
 
     for (String jsImport : split(importNode.getAttribute("js", ""))) {
-      jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), "/" + jsImport);
+      if (!jsImport.startsWith("/")) {
+        jsImport = "/" + jsImport;
+      }
+      jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), jsImport);
 
-      String s = new String(loader.getData(jsImport), Charsets.UTF_8);
+      byte[] jsBytes = loader.getData(jsImport);
+      checkNotNull(jsBytes, "Could not find: " + jsImport);
+      String s = new String(jsBytes, StandardCharsets.UTF_8);
       ret.add(new DomNode("script").add(new TextNode("\n" + s)));
       // ret.add(new DomNode("script").attribute("src", jsImport));
     }
@@ -73,7 +81,7 @@ public class Imports {
         String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
         ret.add(new TextNode(comment));
       }
-      String html = new String(loader.getData(htmlImport), Charsets.UTF_8);
+      String html = new String(loader.getData(htmlImport), StandardCharsets.UTF_8);
       DomNode n = parser.parse(html, false);
       ret.addAll(n.getChildren());
       if (loader.getServer().developerMode) {
