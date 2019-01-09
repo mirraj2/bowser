@@ -111,6 +111,7 @@ public class Template {
   }
 
   private boolean resolveBoolean(String s, Context context) {
+    s = s.trim();
     int i = s.indexOf("&&");
     if (i != -1) {
       String a = s.substring(0, i);
