@@ -70,8 +70,12 @@ public class ClientSocket {
   }
 
   public ClientSocket send(Json json) {
+    byte[] payload = json.asByteArray();
+    return sendText(payload);
+  }
+
+  public ClientSocket sendText(byte[] payload) {
     try {
-      byte[] payload = json.asByteArray();
       os.write(createFrame(Opcode.TEXT, payload));
       os.flush();
     } catch (IOException e) {

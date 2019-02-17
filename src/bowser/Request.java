@@ -7,6 +7,7 @@ import static ox.util.Utils.propagate;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -165,6 +166,14 @@ public class Request {
     }
   }
 
+  public InputStream getPartBytesAsStream() {
+    try {
+      return getPart().getInputStream();
+    } catch (IOException e) {
+      throw propagate(e);
+    }
+  }
+
   public Map<String, String> getHeaders() {
     Map<String, String> ret = Maps.newLinkedHashMap();
     request.getNames().forEach(name -> {
@@ -189,7 +198,7 @@ public class Request {
   }
 
   private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "jpeg", "gif", "svg",
-      "ico", "ttf", "otf", "woff", "woff2", "eot", "mp4", "map", "pdf", "cur", "txt", "mp3");
+      "ico", "ttf", "otf", "woff", "woff2", "eot", "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm");
 
   public boolean isStaticResource() {
     int i = path.lastIndexOf(".");
