@@ -13,7 +13,6 @@ public class Head extends DomNode {
     Head ret = new Head(title);
 
     ret.add(new DomNode("meta").attribute("charset", "utf-8"));
-    ret.add(new DomNode("meta").attribute("http-equiv", "X-UA-Compatible").attribute("content", "IE=edge"));
     
     String viewport = "width=device-width, initial-scale=1";
     if(Template.mobileDisplay){
