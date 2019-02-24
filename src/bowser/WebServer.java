@@ -105,14 +105,25 @@ public class WebServer {
   }
 
   public WebServer googleAnalytics(String googleAnalyticsId) {
+    return googleAnalytics(googleAnalyticsId, "");
+  }
+
+  public WebServer googleAnalytics(String googleAnalyticsId, String adwordsTagId) {
     checkNotEmpty(normalize(googleAnalyticsId));
 
     head.add(new DomNode("script").attribute("src",
         "https://www.googletagmanager.com/gtag/js?id=" + googleAnalyticsId));
-    head.add(new DomNode("script").text("window.dataLayer = window.dataLayer || [];\n" +
+
+    String script = "window.dataLayer = window.dataLayer || [];\n" +
         "function gtag(){dataLayer.push(arguments);}\n" +
         "gtag('js', new Date());\n" +
-        "gtag('config', '" + googleAnalyticsId + "');"));
+        "gtag('config', '" + googleAnalyticsId + "');\n";
+
+    if (!adwordsTagId.isEmpty()) {
+      script += "gtag('config', '" + adwordsTagId + "');\n";
+    }
+
+    head.add(new DomNode("script").text(script));
 
     return this;
   }
