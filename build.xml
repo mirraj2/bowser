@@ -8,7 +8,7 @@
     <path id="ox.classpath">
         <pathelement location="${ox.location}/bin"/>
         <pathelement location="${ox.location}/lib/gson-2.3.jar"/>
-        <pathelement location="${ox.location}/lib/guava-20.0.jar"/>
+        <pathelement location="${ox.location}/lib/guava-27.0.1-jre.jar"/>
         <pathelement location="${ox.location}/lib/objenesis-2.1.jar"/>
     </path>
     <path id="bowser.classpath">

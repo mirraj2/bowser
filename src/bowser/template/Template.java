@@ -134,6 +134,7 @@ public class Template {
     }
 
     Object o = resolve(s, context);
+    // Log.debug(s + " :: " + o);
     if (o == null) {
       return false;
     }
