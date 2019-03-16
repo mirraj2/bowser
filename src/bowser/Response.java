@@ -118,6 +118,11 @@ public class Response {
     return this;
   }
 
+  public Response status(int code) {
+    response.setStatus(Status.getStatus(code));
+    return this;
+  }
+
   public Response write(Json json) {
     contentType("application/json");
     return write(json.toString());
