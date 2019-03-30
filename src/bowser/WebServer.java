@@ -31,6 +31,7 @@ import bowser.node.Head;
 import bowser.template.Imports;
 import bowser.template.Template;
 import ox.Log;
+import ox.Threads;
 
 public class WebServer {
 
@@ -228,9 +229,9 @@ public class WebServer {
 
   @SuppressWarnings("resource")
   public WebServer start() {
-    for (RequestHandler handler : handlers) {
+    Threads.get(8).input(handlers).run(handler -> {
       handler.load();
-    }
+    });
 
     try {
       Server server = new ContainerServer(container);

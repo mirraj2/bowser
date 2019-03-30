@@ -20,11 +20,13 @@ import org.simpleframework.http.Query;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 import bowser.handler.MobileDetector;
 import ox.IO;
 import ox.Json;
 import ox.Pair;
+import ox.util.Images;
 
 public class Request {
 
@@ -159,11 +161,7 @@ public class Request {
   }
 
   public byte[] getBytes() {
-    try {
-      return IO.from(getPart().getInputStream()).toByteArray();
-    } catch (IOException e) {
-      throw propagate(e);
-    }
+    return IO.from(getPartBytesAsStream()).toByteArray();
   }
 
   public InputStream getPartBytesAsStream() {
@@ -197,8 +195,13 @@ public class Request {
     return Pair.of(start, end);
   }
 
-  private static final Set<String> staticExtensions = ImmutableSet.of("css", "js", "png", "jpg", "jpeg", "gif", "svg",
-      "ico", "ttf", "otf", "woff", "woff2", "eot", "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm");
+  private static final Set<String> staticExtensions;
+  static {
+   Set<String> set=  Sets.newHashSet("css", "js", "ico", "otf", "woff", "woff2", "eot",
+        "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm");
+    set.addAll(Images.FORMATS);
+   staticExtensions = ImmutableSet.copyOf(set);
+  }
 
   public boolean isStaticResource() {
     int i = path.lastIndexOf(".");
