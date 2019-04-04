@@ -4,12 +4,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
@@ -18,31 +16,24 @@ import bowser.node.TextNode;
 
 public class Imports {
 
-  private static final Map<String, String> jsNicknames = Maps.newLinkedHashMap();
-  private static final Map<String, String> cssNicknames = Maps.newLinkedHashMap();
-
   public static void appendToHead(DomNode head, DomNode headNode, StaticContentHandler loader, boolean embedCSS) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
-      String s = jsNicknames.get(jsImport.toLowerCase());
-      if (s == null) {
+      String s;
         if (jsImport.startsWith("/") || jsImport.startsWith("http")) {
           s = jsImport;
         } else {
           s = "/" + jsImport;
         }
-      }
       head.javascript(s);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
-      String s = cssNicknames.get(cssImport.toLowerCase());
-      if (s == null) {
+      String s;
         if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
           s = cssImport;
         } else {
           s = "/" + cssImport;
         }
-      }
       if (embedCSS) {
         String data = new String(loader.getData(cssImport), Charsets.UTF_8);
         head.add(new DomNode("style").add(new TextNode("\n" + data)));
@@ -68,8 +59,6 @@ public class Imports {
       if (!jsImport.startsWith("/")) {
         jsImport = "/" + jsImport;
       }
-      jsImport = jsNicknames.getOrDefault(jsImport.toLowerCase(), jsImport);
-
       byte[] jsBytes = loader.getData(jsImport);
       checkNotNull(jsBytes, "Could not find: " + jsImport);
       String s = new String(jsBytes, StandardCharsets.UTF_8);
@@ -95,17 +84,6 @@ public class Imports {
 
   private static Iterable<String> split(String s) {
     return Splitter.on(' ').omitEmptyStrings().trimResults().split(s);
-  }
-
-  public static void shortcut(String nickname, String fullName) {
-    nickname = nickname.toLowerCase();
-    if (fullName.endsWith(".js")) {
-      jsNicknames.put(nickname, fullName);
-    } else if (fullName.endsWith(".css")) {
-      cssNicknames.put(nickname, fullName);
-    } else {
-      throw new RuntimeException("Don't know type of: " + fullName);
-    }
   }
 
 }

@@ -160,6 +160,10 @@ public class Request {
     return request.getPart(name);
   }
 
+  public List<Part> getParts() {
+    return request.getParts();
+  }
+
   public byte[] getBytes() {
     return IO.from(getPartBytesAsStream()).toByteArray();
   }

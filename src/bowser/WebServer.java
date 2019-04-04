@@ -28,7 +28,6 @@ import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
 import bowser.node.DomNode;
 import bowser.node.Head;
-import bowser.template.Imports;
 import bowser.template.Template;
 import ox.Log;
 import ox.Threads;
@@ -62,11 +61,6 @@ public class WebServer {
 
   public WebServer mobileDisplay() {
     Template.mobileDisplay = true;
-    return this;
-  }
-
-  public WebServer shortcut(String nickname, String fullName) {
-    Imports.shortcut(nickname, fullName);
     return this;
   }
 
