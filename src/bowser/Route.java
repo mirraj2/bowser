@@ -55,7 +55,8 @@ public class Route {
     if (nonStatic && request.isStaticResource()) {
       return false;
     }
-    if (!host.isEmpty() && !request.getHost().endsWith(host)) {
+    String h = request.getHost();
+    if (!host.isEmpty() && (h == null || !h.endsWith(host))) {
       return false;
     }
     return true;
