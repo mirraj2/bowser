@@ -119,6 +119,13 @@ public class Template {
       return resolveBoolean(a, context) && resolveBoolean(b, context);
     }
 
+    i = s.indexOf("||");
+    if (i != -1) {
+      String a = s.substring(0, i);
+      String b = s.substring(i + 2);
+      return resolveBoolean(a, context) || resolveBoolean(b, context);
+    }
+
     i = s.indexOf("==");
     if (i != -1) {
       String a = s.substring(0, i);
