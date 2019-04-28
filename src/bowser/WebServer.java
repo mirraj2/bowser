@@ -86,7 +86,7 @@ public class WebServer {
   }
 
   public void add(Route route) {
-    handlers.add(new RouteHandler(route));
+    add(new RouteHandler(route));
   }
 
   public WebServer ssl(SSLContext sslContext) {
