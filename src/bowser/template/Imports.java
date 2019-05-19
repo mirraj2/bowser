@@ -70,7 +70,9 @@ public class Imports {
         String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
         ret.add(new TextNode(comment));
       }
-      String html = new String(loader.getData(htmlImport), StandardCharsets.UTF_8);
+      byte[] data = loader.getData(htmlImport);
+      checkNotNull(data, "Couldn't find: " + htmlImport);
+      String html = new String(data, StandardCharsets.UTF_8);
       DomNode n = parser.parse(html, false);
       ret.addAll(n.getChildren());
       if (loader.getServer().developerMode) {
