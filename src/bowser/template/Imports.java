@@ -66,7 +66,7 @@ public class Imports {
       // ret.add(new DomNode("script").attribute("src", jsImport));
     }
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
-      if (loader.getServer().developerMode) {
+      if (loader.getServer().showImportComments) {
         String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
         ret.add(new TextNode(comment));
       }
@@ -75,7 +75,7 @@ public class Imports {
       String html = new String(data, StandardCharsets.UTF_8);
       DomNode n = parser.parse(html, false);
       ret.addAll(n.getChildren());
-      if (loader.getServer().developerMode) {
+      if (loader.getServer().showImportComments) {
         String endComment = "\n<!-- END " + htmlImport + " -->";
         ret.add(new TextNode(endComment));
       }

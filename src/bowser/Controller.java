@@ -1,8 +1,10 @@
 package bowser;
 
 import static ox.util.Utils.getExtension;
+
 import java.net.URL;
 import java.util.Map;
+
 import com.google.common.collect.Maps;
 
 public abstract class Controller {
@@ -18,7 +20,7 @@ public abstract class Controller {
   public abstract void init();
 
   protected Route route(String method, String path) {
-    Route ret = new Route(this, method, path, !server.developerMode);
+    Route ret = new Route(this, method, path, server.enableCaching);
     server.add(ret);
     return ret;
   }

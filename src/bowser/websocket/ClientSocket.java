@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
@@ -48,6 +49,8 @@ public class ClientSocket {
   private OutputStream os;
 
   private Map<String, String> headers = Maps.newHashMap();
+
+  private List<byte[]> frames = Lists.newArrayList();
 
   public ClientSocket(Socket socket, Consumer<ClientSocket> onOpen) {
     this.socket = socket;
@@ -149,12 +152,18 @@ public class ClientSocket {
     while (true) {
       byte b1 = (byte) in.read();
 
-      // boolean finished = b1 >> 8 != 0;
+      boolean finished = b1 >> 8 != 0;
       byte rsv = (byte) ((b1 & ~(byte) 128) >> 4);
       checkState(rsv == 0, "Bad rsv: " + rsv);
       Opcode code = Opcode.get((byte) (b1 & 15));
 
-      if (code == Opcode.TEXT) {
+      if (code == Opcode.CONTINUOUS || !finished) {
+        byte[] data = getPayload(in);
+        frames.add(data);
+        if (finished) {
+          processContinuousFrames();
+        }
+      } else if (code == Opcode.TEXT) {
         byte[] data = getPayload(in);
         String text = new String(data, Charsets.UTF_8);
         try {
@@ -168,6 +177,26 @@ public class ClientSocket {
       } else {
         Log.debug("Received opcode: " + code);
       }
+    }
+  }
+
+  private void processContinuousFrames() {
+    int length = 0;
+    for (byte[] frame : frames) {
+      length += frame.length;
+    }
+    
+    byte[] combined = new byte[length];
+    int index = 0;
+    for (byte[] frame : frames) {
+      System.arraycopy(frame, 0, combined, index, frame.length);
+      index += frame.length;
+    }
+    String text = new String(combined, Charsets.UTF_8);
+    try {
+      onMessage.accept(text);
+    } catch (Throwable t) {
+      t.printStackTrace();
     }
   }
 

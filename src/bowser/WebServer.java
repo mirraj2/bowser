@@ -37,7 +37,8 @@ public class WebServer {
   public static boolean debugHandlers = false;
 
   public final int port;
-  public final boolean developerMode;
+  public final boolean enableCaching;
+  public final boolean showImportComments = false;
   public final List<Controller> controllers = Lists.newArrayList();
 
   private final List<RequestHandler> handlers = Lists.newArrayList();
@@ -52,9 +53,9 @@ public class WebServer {
 
   private final Head head;
 
-  public WebServer(String appName, int port, boolean developerMode) {
+  public WebServer(String appName, int port, boolean enableCaching) {
     this.port = port;
-    this.developerMode = developerMode;
+    this.enableCaching = enableCaching;
     this.staticContentHandler = new StaticContentHandler(this);
     head = Head.defaults(appName);
   }
