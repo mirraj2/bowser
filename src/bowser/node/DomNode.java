@@ -169,6 +169,9 @@ public class DomNode {
   }
 
   public DomNode attribute(String key) {
+    if (key.isEmpty()) {
+      return this;
+    }
     return attribute(key, null);
   }
 
