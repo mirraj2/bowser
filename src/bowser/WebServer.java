@@ -71,6 +71,13 @@ public class WebServer {
     return this;
   }
 
+  public WebServer controller(Controller... controllers) {
+    for (Controller c : controllers) {
+      controller(c);
+    }
+    return this;
+  }
+
   public WebServer add(RequestHandler handler) {
     handlers.add(handler);
     return this;
