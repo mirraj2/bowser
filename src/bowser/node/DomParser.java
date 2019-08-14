@@ -9,13 +9,15 @@ import ox.Log;
 public class DomParser {
 
   public final Head head;
+  public boolean debugMode = false;
 
   public DomParser() {
-    this(Head.defaults(""));
+    this(Head.defaults(""), false);
   }
 
-  public DomParser(Head head) {
+  public DomParser(Head head, boolean debugMode) {
     this.head = head;
+    this.debugMode = debugMode;
   }
 
   public DomNode parse(String s, boolean isRoot) {
@@ -40,6 +42,10 @@ public class DomParser {
     if (start == end) {
       return;
     }
+
+    // if (debugMode) {
+    // Log.debug("parent is " + parent.tag + " :: PARSING: " + s.substring(start, end));
+    // }
 
     if (s.charAt(start) != '<') {
       int tagIndex = end;
@@ -91,7 +97,8 @@ public class DomParser {
 
     Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
     if (endTagIndex != null) {
-      if (node.tag.equalsIgnoreCase("script") || node.tag.equalsIgnoreCase("code")) {
+      if (node.tag.equalsIgnoreCase("script") || node.tag.equalsIgnoreCase("code")
+          || node.tag.equalsIgnoreCase("svg")) {
         node.add(new TextNode(s.substring(endTag + 1, endTagIndex)));
       } else {
         parse(head, node, s, endTag + 1, endTagIndex); // add a child

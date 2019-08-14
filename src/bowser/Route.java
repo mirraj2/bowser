@@ -69,7 +69,7 @@ public class Route {
         checkNotNull(url, this + ": Could not find resource: " + resource);
         String source = IO.from(url).toString();
         this.template = Template.compile(source, controller.getServer().getResourceLoader(),
-            controller.getServer().getHead(), false);
+            controller.getServer().getHead(), false, false);
       } catch (Exception e) {
         Log.error("Problem compiling template: " + resource);
         throw propagate(e);

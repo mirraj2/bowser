@@ -243,7 +243,7 @@ public class Template {
 
     String text = node.content;
 
-    if (node.parent.tag.equals("script")) {
+    if (node.parent.tag.equals("script") || node.parent.tag.equals("svg")) {
       Function<String, String> replacer = replacer(context, "$$(", ")", false, false);
       text = replacer.apply(text);
     } else if (node.parent.tag.equals("code")) {
@@ -409,11 +409,12 @@ public class Template {
   }
 
   public static Template compile(String source) {
-    return compile(source, null, null, false);
+    return compile(source, null, null, false, false);
   }
 
-  public static Template compile(String source, StaticContentHandler loader, Head head, boolean embedCSS) {
-    return new Template(source, loader, new DomParser(head), embedCSS);
+  public static Template compile(String source, StaticContentHandler loader, Head head, boolean embedCSS,
+      boolean debugMode) {
+    return new Template(source, loader, new DomParser(head, debugMode), embedCSS);
   }
 
 }
