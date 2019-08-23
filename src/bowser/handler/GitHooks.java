@@ -68,12 +68,13 @@ public class GitHooks extends Controller {
   }
 
   private void restart() {
+    Log.info("Restarting server.");
     try {
-      Log.info("Restarting server.");
-      Runtime.getRuntime().exec(updatePath);
+      new ProcessBuilder(updatePath).inheritIO().start();
     } catch (IOException e) {
       e.printStackTrace();
     }
+    // Runtime.getRuntime().exec(updatePath);
   }
 
 }
