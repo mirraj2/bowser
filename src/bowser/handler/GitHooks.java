@@ -1,5 +1,6 @@
 package bowser.handler;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import bowser.Controller;
 import bowser.Handler;
 import ox.Json;
 import ox.Log;
+import ox.OS;
 
 public class GitHooks extends Controller {
 
@@ -70,7 +72,11 @@ public class GitHooks extends Controller {
   private void restart() {
     Log.info("Restarting server.");
     try {
-      new ProcessBuilder(updatePath).inheritIO().start();
+      File out = new File(OS.getHomeFolder(), "restart-log.txt");
+      new ProcessBuilder(updatePath)
+          .redirectOutput(out)
+          .redirectError(out)
+          .start();
     } catch (IOException e) {
       e.printStackTrace();
     }
