@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/simple-5.1.5.jar" sourcepath="open-src/simple.zip"/>
+	<classpathentry kind="lib" path="lib/jsass/commons-io-2.6.jar"/>
+	<classpathentry kind="lib" path="lib/jsass/jsass-5.9.2.jar" sourcepath="open-src/jsass-5.9.2-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ox"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

@@ -18,6 +18,7 @@ import bowser.Controller;
 import bowser.Request;
 import bowser.RequestHandler;
 import bowser.Response;
+import bowser.SCSSProcessor;
 import bowser.WebServer;
 import ox.IO;
 import ox.Log;
@@ -29,9 +30,11 @@ public class StaticContentHandler implements RequestHandler {
 
   private WebServer server;
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
+  private final SCSSProcessor scssProcessor;
 
   public StaticContentHandler(WebServer server) {
     this.server = server;
+    this.scssProcessor = new SCSSProcessor(server.enableCaching);
   }
 
   @Override
@@ -44,7 +47,7 @@ public class StaticContentHandler implements RequestHandler {
 
     String path = request.path;
 
-    if (path.endsWith(".css")) {
+    if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
     } else if (path.endsWith(".js")) {
       response.contentType("text/javascript");
@@ -65,10 +68,14 @@ public class StaticContentHandler implements RequestHandler {
       if (server.enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
-    } else if (path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".min.map")) {
+    } else if (path.endsWith(".css") || path.endsWith(".scss") || path.endsWith(".js") || path.endsWith(".min.map")) {
       if (server.enableCaching) {
         response.cacheFor(20, TimeUnit.MINUTES);
       }
+    }
+
+    if (path.endsWith(".scss")) {
+      data = scssProcessor.process(request.getOriginalPath(), data);
     }
 
     Pair<Long, Long> range = request.getRange();

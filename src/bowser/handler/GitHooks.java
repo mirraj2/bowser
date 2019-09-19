@@ -12,6 +12,10 @@ import ox.Log;
 
 public class GitHooks extends Controller {
 
+  // use this command to test #deploy
+  // $.post("/updateServer", JSON.stringify({ref: "refs/heads/master", repository: {name: "foo"},
+  // commits:[{message:"#deploy"}]}));
+
   private String updatePath;
 
   public GitHooks(String updatePath) {

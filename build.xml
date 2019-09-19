@@ -14,6 +14,8 @@
     <path id="bowser.classpath">
         <pathelement location="bin"/>
         <pathelement location="lib/simple-5.1.5.jar"/>
+        <pathelement location="lib/jsass/commons-io-2.6.jar"/>
+        <pathelement location="lib/jsass/jsass-5.9.2.jar"/>
         <path refid="ox.classpath"/>
     </path>
     <target name="init">
