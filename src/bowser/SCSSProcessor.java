@@ -11,7 +11,6 @@ import io.bit3.jsass.CompilationException;
 import io.bit3.jsass.Compiler;
 import io.bit3.jsass.Options;
 import io.bit3.jsass.Output;
-import ox.Log;
 
 public class SCSSProcessor {
 
@@ -28,7 +27,6 @@ public class SCSSProcessor {
     if (this.enableCaching) {
       byte[] ret = cache.get(path);
       if (ret != null) {
-        Log.debug("CACHE HIT");
         return ret;
       }
     }
