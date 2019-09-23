@@ -34,7 +34,7 @@ public class StaticContentHandler implements RequestHandler {
 
   public StaticContentHandler(WebServer server) {
     this.server = server;
-    this.scssProcessor = new SCSSProcessor(server.enableCaching);
+    this.scssProcessor = new SCSSProcessor(this, server.enableCaching);
   }
 
   @Override
