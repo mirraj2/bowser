@@ -1,6 +1,5 @@
 package bowser;
 
-import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Utils.propagate;
 
 import java.io.IOException;
@@ -18,7 +17,6 @@ public class HttpFile {
 
   HttpFile(Part part) {
     this.delegate = part;
-    checkState(part.isFile());
   }
 
   public String getName() {

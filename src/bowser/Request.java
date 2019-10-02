@@ -153,9 +153,7 @@ public class Request {
   public List<HttpFile> getFiles() {
     List<HttpFile> ret = Lists.newArrayList();
     for (Part part : request.getParts()) {
-      if (part.isFile()) {
-        ret.add(new HttpFile(part));
-      }
+      ret.add(new HttpFile(part));
     }
     return ret;
 
@@ -189,7 +187,7 @@ public class Request {
     Set<String> set = Sets.newHashSet("css", "scss", "js", "ico", "otf", "woff", "woff2", "eot",
         "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm");
     set.addAll(Images.FORMATS);
-   staticExtensions = ImmutableSet.copyOf(set);
+    staticExtensions = ImmutableSet.copyOf(set);
   }
 
   public boolean isStaticResource() {
