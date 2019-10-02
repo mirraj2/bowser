@@ -1,13 +1,11 @@
 package bowser;
 
-import static com.google.common.collect.Iterables.getOnlyElement;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import static ox.util.Utils.only;
 import static ox.util.Utils.propagate;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,11 +17,11 @@ import org.simpleframework.http.Query;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import bowser.handler.MobileDetector;
-import ox.IO;
 import ox.Json;
 import ox.Pair;
 import ox.util.Images;
@@ -143,37 +141,24 @@ public class Request {
     return request.getValue(key);
   }
 
-  public BufferedImage getImage() {
-    Part part = getOnlyElement(request.getParts());
-    try {
-      return IO.from(part.getInputStream()).toImage();
-    } catch (IOException e) {
-      throw propagate(e);
+  public HttpFile getFile() {
+    return only(getFiles());
+  }
+
+  public HttpFile getFile(String fileName) {
+    Part part = request.getPart(fileName);
+    return part == null ? null : new HttpFile(part);
+  }
+
+  public List<HttpFile> getFiles() {
+    List<HttpFile> ret = Lists.newArrayList();
+    for (Part part : request.getParts()) {
+      if (part.isFile()) {
+        ret.add(new HttpFile(part));
+      }
     }
-  }
+    return ret;
 
-  public Part getPart() {
-    return getOnlyElement(request.getParts());
-  }
-
-  public Part getPart(String name) {
-    return request.getPart(name);
-  }
-
-  public List<Part> getParts() {
-    return request.getParts();
-  }
-
-  public byte[] getBytes() {
-    return IO.from(getPartBytesAsStream()).toByteArray();
-  }
-
-  public InputStream getPartBytesAsStream() {
-    try {
-      return getPart().getInputStream();
-    } catch (IOException e) {
-      throw propagate(e);
-    }
   }
 
   public Map<String, String> getHeaders() {
