@@ -252,7 +252,9 @@ public class ClientSocket {
       os.write(data);
       os.flush();
     } catch (IOException e) {
-      e.printStackTrace();
+      if (!e.getMessage().contains("Broken pipe")) {
+        e.printStackTrace();
+      }
     }
   }
 
