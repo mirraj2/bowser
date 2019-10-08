@@ -235,7 +235,15 @@ public class ClientSocket {
     }
 
     byte[] data = new byte[payloadLength];
-    checkState(in.read(data) == data.length, "Didn't read all the bytes.");
+    int offset = 0;
+    while (offset < payloadLength) {
+      int numRead = in.read(data, offset, payloadLength - offset);
+      if (numRead == -1) {
+        break;
+      }
+      offset += numRead;
+    }
+    checkState(offset == payloadLength, "Expected %s bytes, but was %s", payloadLength, offset);
 
     if (mask) {
       for (int i = 0; i < payloadLength; i++) {
@@ -309,7 +317,8 @@ public class ClientSocket {
   private void handleUpgradeRequest(String s) {
     List<String> lines = Splitter.on("\r\n").omitEmptyStrings().splitToList(s);
     List<String> firstLine = Splitter.on(" ").splitToList(lines.get(0));
-    checkState(firstLine.get(0).equals("GET"), "Upgrade request must be a GET. Instead it was: " + firstLine);
+    checkState(firstLine.get(0).equals("GET"),
+        "Upgrade request must be a GET. Instead it was: " + firstLine + "\n" + s);
 
     for (int i = 1; i < lines.size(); i++) {
       String line = lines.get(i);
