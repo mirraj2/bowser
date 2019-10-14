@@ -181,12 +181,12 @@ public class WebServer {
           }
         }
       }
-
-      response.close();
     } catch (Exception e) {
       if (!exceptionHandler.handle(request, response, e)) {
         throw e;
       }
+    } finally {
+      response.close();
     }
   }
 
