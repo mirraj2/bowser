@@ -49,7 +49,7 @@ public class WebServer {
   private WebLogger logger = new DefaultWebLogger();
 
   private RequestHandler notFoundHandler = null;
-  private ExceptionHandler exceptionHandler = (a, b, c) -> false;
+  private ExceptionHandler exceptionHandler = (a, b, c, d) -> false;
 
   private final Head head;
 
@@ -140,6 +140,7 @@ public class WebServer {
   }
 
   private void handle(Request request, Response response) {
+    RequestHandler lastHandler = null;
     try {
       boolean handled = false;
 
@@ -156,6 +157,7 @@ public class WebServer {
       }
 
       for (RequestHandler handler : handlers) {
+        lastHandler = handler;
         if (handler.process(request, response)) {
           handled = true;
           if (debugHandlers) {
@@ -164,6 +166,7 @@ public class WebServer {
           break;
         }
       }
+      lastHandler = null;
 
       if (!handled) {
         if (request.isStaticResource()) {
@@ -182,7 +185,7 @@ public class WebServer {
         }
       }
     } catch (Exception e) {
-      if (!exceptionHandler.handle(request, response, e)) {
+      if (!exceptionHandler.handle(request, response, lastHandler, e)) {
         throw e;
       }
     } finally {

@@ -49,6 +49,10 @@ public class RouteHandler implements RequestHandler {
     return false;
   }
 
+  public Route getRoute() {
+    return route;
+  }
+
   @Override
   public String toString() {
     return route.toString();
