@@ -141,6 +141,10 @@ public class Request {
     return request.getValue(key);
   }
 
+  public boolean isAjax() {
+    return "XMLHttpRequest".equalsIgnoreCase(getHeader("X-Requested-With"));
+  }
+
   public HttpFile getFile() {
     return only(getFiles());
   }
