@@ -39,6 +39,10 @@ public abstract class Controller {
     folders.put(extension, folder);
   }
 
+  public byte[] getData(String path) {
+    return server.getResourceLoader().getData(path, this);
+  }
+
   public URL getResource(String path) {
     String folder = folders.get(getExtension(path));
     if (folder != null) {

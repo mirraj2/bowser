@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
 
-import bowser.handler.StaticContentHandler;
+import bowser.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
@@ -37,25 +37,25 @@ public class Template {
 
   private DomParser parser;
 
-  private Template(String s, StaticContentHandler loader, DomParser parser, boolean embedCSS) {
+  private Template(String s, Controller controller, DomParser parser, boolean embedCSS) {
     this.parser = parser;
     isRoot = true;
     root = parser.parse(s, isRoot);
 
-    init(root, loader, embedCSS);
+    init(root, controller, embedCSS);
   }
 
-  private void init(DomNode root, StaticContentHandler loader, boolean embedCSS) {
+  private void init(DomNode root, Controller controller, boolean embedCSS) {
     for (DomNode node : root.getAllNodes()) {
       if ("head".equals(node.tag)) {
         if (head == null) {
           head = node;
         } else {
-          Imports.appendToHead(head, node, loader, embedCSS);
+          Imports.appendToHead(head, node, controller, embedCSS);
           node.parent.remove(node);
         }
       } else if ("import".equals(node.tag)) {
-        List<DomNode> importedNodes = Imports.createImport(node, loader, parser);
+        List<DomNode> importedNodes = Imports.createImport(node, controller, parser);
         String iff = node.getAttribute("if");
         if (iff != null) {
           DomNode span = new DomNode("span");
@@ -65,7 +65,7 @@ public class Template {
         }
         node.parent.replace(node, importedNodes);
         for (DomNode importedNode : importedNodes) {
-          init(importedNode, loader, embedCSS);
+          init(importedNode, controller, embedCSS);
         }
       }
     }
@@ -409,12 +409,13 @@ public class Template {
   }
 
   public static Template compile(String source) {
-    return compile(source, null, null, false, false);
+    return compile(source, null, false, false);
   }
 
-  public static Template compile(String source, StaticContentHandler loader, Head head, boolean embedCSS,
+  public static Template compile(String source, Controller controller, boolean embedCSS,
       boolean debugMode) {
-    return new Template(source, loader, new DomParser(head, debugMode), embedCSS);
+    Head head = controller == null ? null : controller.getServer().getHead();
+    return new Template(source, controller, new DomParser(head, debugMode), embedCSS);
   }
 
 }

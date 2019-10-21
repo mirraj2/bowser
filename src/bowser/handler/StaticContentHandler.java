@@ -122,6 +122,10 @@ public class StaticContentHandler implements RequestHandler {
   }
 
   public byte[] getData(String path) {
+    return getData(path, null);
+  }
+
+  public byte[] getData(String path, Controller controller) {
     byte[] data = cache.get(path);
 
     if (data == NO_DATA) {
@@ -129,7 +133,7 @@ public class StaticContentHandler implements RequestHandler {
     }
 
     if (data == null) {
-      data = load(path);
+      data = load(path, controller);
       if (server.enableCaching) {
         cache.put(path, data);
       }
@@ -142,16 +146,26 @@ public class StaticContentHandler implements RequestHandler {
     return data;
   }
 
-  private byte[] load(String path) {
+  private byte[] load(String path, Controller controller) {
     if (path.startsWith("/")) {
       path = path.substring(1);
     }
+
+    // first try to look for the resource in the directory of the given Controller
+    if (controller != null) {
+      URL url = controller.getResource(path);
+      if (url != null) {
+        return IO.from(url).toByteArray();
+      }
+    }
+
     for (Controller c : server.controllers) {
       URL url = c.getResource(path);
       if (url != null) {
         return IO.from(url).toByteArray();
       }
     }
+
     Log.debug("Couldn't find: " + path);
     return NO_DATA;
   }
