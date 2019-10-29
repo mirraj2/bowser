@@ -58,6 +58,7 @@ public class GitHooks extends Controller {
   protected boolean handleCommit(String repo, Json commit) {
     boolean restart = false;
     String message = commit.get("message");
+    Log.debug("commit message: " + message);
 
     for (String word : Splitter.on(" ").split(message)) {
       if (word.startsWith("#")) {
