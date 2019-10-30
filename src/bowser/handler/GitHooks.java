@@ -3,6 +3,7 @@ package bowser.handler;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 
 import bowser.Controller;
@@ -60,7 +61,7 @@ public class GitHooks extends Controller {
     String message = commit.get("message");
     Log.debug("commit message: " + message);
 
-    for (String word : Splitter.on(" ,.").trimResults().omitEmptyStrings().split(message)) {
+    for (String word : Splitter.on(CharMatcher.anyOf(" ,.")).trimResults().omitEmptyStrings().split(message)) {
       if (word.startsWith("#")) {
         String tag = word.substring(1);
         if (tag.equalsIgnoreCase("deploy")) {
