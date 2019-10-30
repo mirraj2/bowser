@@ -135,7 +135,8 @@ public class ClientSocket {
       try {
         listenForMessages(in);
       } catch (Throwable t) {
-        if (!(t instanceof IOException) && !t.getMessage().contains("Bad rsv")) {
+        if (!(t instanceof IOException) && !(t instanceof DisconnectedException)
+            && !t.getMessage().contains("Bad rsv")) {
           t.printStackTrace();
         }
       } finally {
@@ -243,7 +244,11 @@ public class ClientSocket {
       }
       offset += numRead;
     }
-    checkState(offset == payloadLength, "Expected %s bytes, but was %s", payloadLength, offset);
+    
+    if(offset != payloadLength) {
+      Log.debug("Expected %s bytes, but was %s", payloadLength, offset);
+      throw new DisconnectedException();
+    }
 
     if (mask) {
       for (int i = 0; i < payloadLength; i++) {
@@ -349,6 +354,9 @@ public class ClientSocket {
     }
 
     onOpen.accept(this);
+  }
+  
+  private static final class DisconnectedException extends RuntimeException {
   }
 
 }
