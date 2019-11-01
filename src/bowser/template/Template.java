@@ -24,6 +24,7 @@ import bowser.node.Head;
 import bowser.node.TextNode;
 import ox.Json;
 import ox.Log;
+import ox.Money;
 import ox.Reflection;
 
 public class Template {
@@ -161,6 +162,8 @@ public class Template {
       return ((Iterable<?>) o).iterator().hasNext();
     } else if (o instanceof Number) {
       return ((Number) o).intValue() != 0;
+    } else if (o instanceof Money) {
+      return !((Money) o).isZero();
     } else {
       return true;
     }
