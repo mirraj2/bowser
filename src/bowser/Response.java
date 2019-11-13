@@ -20,6 +20,8 @@ public class Response {
 
   public String responseBody;
 
+  public Exception exception = null;
+
   private boolean gzip = false;
 
   public Response(org.simpleframework.http.Response response) {

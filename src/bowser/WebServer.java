@@ -83,6 +83,9 @@ public class WebServer {
     return this;
   }
 
+  /**
+   * Add an exception handler whose handle() function will be called if any handlers throw an exception.
+   */
   public WebServer exceptionHandler(ExceptionHandler handler) {
     this.exceptionHandler = checkNotNull(handler);
     return this;
