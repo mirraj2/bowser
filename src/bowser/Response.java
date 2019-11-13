@@ -20,6 +20,11 @@ public class Response {
 
   public String responseBody;
 
+  /**
+   * Populated by WebServer handle() when any of the other handlers throws an unchecked exception.
+   */
+  public Exception exception = null;
+
   private boolean gzip = false;
 
   public Response(org.simpleframework.http.Response response) {

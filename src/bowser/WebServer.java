@@ -7,7 +7,6 @@ import static ox.util.Utils.propagate;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -49,7 +48,7 @@ public class WebServer {
   private WebLogger logger = new DefaultWebLogger();
 
   private RequestHandler notFoundHandler = null;
-  private ExceptionHandler exceptionHandler = (a, b, c, d) -> false;
+  private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
   private final Head head;
 
@@ -83,6 +82,9 @@ public class WebServer {
     return this;
   }
 
+  /**
+   * Add an exception handler whose handle() function will be called if any handlers throw an exception.
+   */
   public WebServer exceptionHandler(ExceptionHandler handler) {
     this.exceptionHandler = checkNotNull(handler);
     return this;
@@ -185,7 +187,8 @@ public class WebServer {
         }
       }
     } catch (Exception e) {
-      if (!exceptionHandler.handle(request, response, lastHandler, e)) {
+      response.exception = e;
+      if (!exceptionHandler.handle(request, response, lastHandler)) {
         throw e;
       }
     } finally {
@@ -199,11 +202,9 @@ public class WebServer {
       Stopwatch watch = Stopwatch.createStarted();
       Request req = new Request(request);
       Response resp = new Response(response);
-      Throwable t = null;
       try {
         WebServer.this.handle(req, resp);
       } catch (final Throwable e) {
-        t = e;
         Throwable root = Throwables.getRootCause(e);
         if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
           e.printStackTrace();
@@ -225,7 +226,7 @@ public class WebServer {
         }
       }
       try {
-        logger.log(req, resp, Optional.ofNullable(t), watch);
+        logger.log(req, resp, watch);
       } catch (Exception e) {
         e.printStackTrace();
       }
