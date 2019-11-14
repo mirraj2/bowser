@@ -7,7 +7,6 @@ import static ox.util.Utils.propagate;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -202,11 +201,9 @@ public class WebServer {
       Stopwatch watch = Stopwatch.createStarted();
       Request req = new Request(request);
       Response resp = new Response(response);
-      Throwable t = null;
       try {
         WebServer.this.handle(req, resp);
       } catch (final Throwable e) {
-        t = e;
         Throwable root = Throwables.getRootCause(e);
         if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
           e.printStackTrace();
@@ -228,7 +225,7 @@ public class WebServer {
         }
       }
       try {
-        logger.log(req, resp, Optional.ofNullable(t), watch);
+        logger.log(req, resp, watch);
       } catch (Exception e) {
         e.printStackTrace();
       }
