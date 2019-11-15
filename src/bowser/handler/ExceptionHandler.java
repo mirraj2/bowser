@@ -13,6 +13,6 @@ public interface ExceptionHandler {
    * called. This results in rendering a plaintext error message to the response. If it returns true, then no further
    * action takes place.
    */
-  public boolean handle(Request request, Response response, RequestHandler handler, Exception e);
+  public boolean handle(Request request, Response response, RequestHandler handler);
 
 }

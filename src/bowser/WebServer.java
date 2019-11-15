@@ -48,7 +48,7 @@ public class WebServer {
   private WebLogger logger = new DefaultWebLogger();
 
   private RequestHandler notFoundHandler = null;
-  private ExceptionHandler exceptionHandler = (a, b, c, d) -> false;
+  private ExceptionHandler exceptionHandler = (a, b, c) -> false;
 
   private final Head head;
 
@@ -187,7 +187,8 @@ public class WebServer {
         }
       }
     } catch (Exception e) {
-      if (!exceptionHandler.handle(request, response, lastHandler, e)) {
+      response.exception = e;
+      if (!exceptionHandler.handle(request, response, lastHandler)) {
         throw e;
       }
     } finally {
