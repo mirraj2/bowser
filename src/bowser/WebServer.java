@@ -191,8 +191,6 @@ public class WebServer {
       if (!exceptionHandler.handle(request, response, lastHandler)) {
         throw e;
       }
-    } finally {
-      response.close();
     }
   }
 
@@ -224,6 +222,8 @@ public class WebServer {
             e1.printStackTrace();
           }
         }
+      } finally {
+        resp.close();
       }
       try {
         logger.log(req, resp, watch);
