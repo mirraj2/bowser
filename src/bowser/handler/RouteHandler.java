@@ -22,11 +22,6 @@ public class RouteHandler implements RequestHandler {
       return false;
     }
 
-    if (route.beforeHandler != null) {
-      if (route.beforeHandler.process(request, response)) {
-        return true;
-      }
-    }
     if (route.handler != null) {
       route.handler.handle(request, response);
       return true;

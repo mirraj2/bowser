@@ -417,7 +417,12 @@ public class Template {
 
   public static Template compile(String source, Controller controller, boolean embedCSS,
       boolean debugMode) {
-    Head head = controller == null ? null : controller.getServer().getHead();
+    return compile(source, controller, embedCSS, debugMode, true);
+  }
+
+  public static Template compile(String source, Controller controller, boolean embedCSS,
+      boolean debugMode, boolean renderHead) {
+    Head head = controller == null || !renderHead ? null : controller.getServer().getHead();
     return new Template(source, controller, new DomParser(head, debugMode), embedCSS);
   }
 

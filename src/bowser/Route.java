@@ -18,7 +18,6 @@ public class Route {
   public final Pattern regex;
 
   public String resource;
-  public RequestHandler beforeHandler;
   public Handler handler;
   public Data data = context -> {
   };
@@ -26,8 +25,8 @@ public class Route {
   private Template template;
   public byte[] resourceData;
 
-  private boolean nonStatic = false;
   private String host = "";
+  public boolean renderHead = true;
 
   public Route(Controller controller, String method, String path, boolean enableCaching) {
     this.controller = controller;
@@ -52,9 +51,6 @@ public class Route {
     if (!regex.matcher(request.path).matches()) {
       return false;
     }
-    if (nonStatic && request.isStaticResource()) {
-      return false;
-    }
     String h = request.getHost();
     if (!host.isEmpty() && (h == null || !h.endsWith(host))) {
       return false;
@@ -68,7 +64,7 @@ public class Route {
         URL url = controller.getResource(resource);
         checkNotNull(url, this + ": Could not find resource: " + resource);
         String source = IO.from(url).toString();
-        this.template = Template.compile(source, controller, false, false);
+        this.template = Template.compile(source, controller, false, false, renderHead);
       } catch (Exception e) {
         Log.error("Problem compiling template: " + resource);
         throw propagate(e);
@@ -77,18 +73,8 @@ public class Route {
     return this.template;
   }
 
-  public Route first(RequestHandler beforeHandler) {
-    this.beforeHandler = beforeHandler;
-    return this;
-  }
-
   public Route data(Data data) {
     this.data = data;
-    return this;
-  }
-
-  public Route nonStatic() {
-    nonStatic = true;
     return this;
   }
 
@@ -114,6 +100,11 @@ public class Route {
 
   public Route to(Handler handler) {
     this.handler = handler;
+    return this;
+  }
+
+  public Route headless() {
+    renderHead = false;
     return this;
   }
 
