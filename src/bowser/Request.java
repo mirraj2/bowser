@@ -121,7 +121,11 @@ public class Request {
   }
 
   public Json getJson() {
-    return new Json(getContent());
+    String s = getContent();
+    if (s.isEmpty()) {
+      return Json.object();
+    }
+    return new Json(s);
   }
 
   public String getContent() {

@@ -163,7 +163,13 @@ public class WebServer {
         if (handler.process(request, response)) {
           handled = true;
           if (debugHandlers) {
-            Log.debug("request handled by " + handler);
+            if (handler instanceof RouteHandler) {
+              RouteHandler route = (RouteHandler) handler;
+              Controller controller = route.getRoute().controller;
+              Log.debug("request handled by " + controller + " :: " + route);
+            } else {
+              Log.debug("request handled by " + handler + " :: " + handler.getClass());
+            }
           }
           break;
         }
