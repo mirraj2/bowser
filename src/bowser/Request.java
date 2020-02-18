@@ -146,7 +146,14 @@ public class Request {
   }
 
   public boolean isAjax() {
-    return "XMLHttpRequest".equalsIgnoreCase(getHeader("X-Requested-With"));
+    if (!getMethod().equals("GET")) {
+      return true;
+    }
+    String contentType = getHeader("Content-Type");
+    if (contentType != null && contentType.startsWith("application/x-www-form")) {
+      return true;
+    }
+    return false;
   }
 
   public HttpFile getFile() {

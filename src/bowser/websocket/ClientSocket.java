@@ -217,7 +217,7 @@ public class ClientSocket {
         in.read(bytes);
         long length = new BigInteger(bytes).longValue();
         if (length > Integer.MAX_VALUE) {
-          throw new RuntimeException("Payloadsize is to big...");
+          throw new RuntimeException("Payloadsize is too big...");
         } else {
           payloadlength = (int) length;
         }
