@@ -7,7 +7,6 @@ import java.io.File;
 import bowser.Controller;
 import bowser.Handler;
 import ox.IO;
-import ox.Log;
 import ox.OS;
 
 public class CertbotRenewals extends Controller {
@@ -22,7 +21,6 @@ public class CertbotRenewals extends Controller {
   // certbot certonly --webroot -w /root/.ender -d files.ender.com
   private final Handler handler = (request, response) -> {
     String key = request.getSegment(2);
-    Log.debug("Got certbot request: " + key);
 
     checkState(!key.contains("/") && !key.contains("."));
 

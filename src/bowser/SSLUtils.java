@@ -24,7 +24,21 @@ public class SSLUtils {
     checkState(dir.exists(), "Could not find letsencrypt dir: " + dir);
 
     File keystoreFile = new File(dir, "keystore.jks");
-    if (!keystoreFile.exists()) {
+    File pemFile = new File(dir, "fullchain.pem");
+
+    boolean generateKeystore = false;
+
+    if (keystoreFile.exists()) {
+      if (keystoreFile.lastModified() < pemFile.lastModified()) {
+        Log.info("SSUtils: It looks like a new PEM file was created. Regenerating the keystore.");
+        keystoreFile.delete();
+        generateKeystore = true;
+      }
+    } else {
+      generateKeystore = true;
+    }
+
+    if (generateKeystore) {
       Splitter splitter = Splitter.on(' ');
       try {
         String command = "openssl pkcs12 -export -out keystore.pkcs12 -in fullchain.pem -inkey privkey.pem -passout pass:"
