@@ -21,7 +21,10 @@ public class SSLUtils {
     String pass = "spamspam";
 
     File dir = new File("/etc/letsencrypt/live/" + domain);
-    checkState(dir.exists(), "Could not find letsencrypt dir: " + dir);
+    if (!dir.exists()) {
+      Log.warn("Could not find letsencrypt dir: " + dir);
+      return null;
+    }
 
     File keystoreFile = new File(dir, "keystore.jks");
     File pemFile = new File(dir, "fullchain.pem");
