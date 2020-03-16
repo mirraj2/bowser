@@ -196,7 +196,7 @@ public class DomNode {
     return this;
   }
 
-  public DomNode javascript(String name, Boolean deferScript) {
+  public DomNode javascript(String name, boolean deferScript) {
     DomNode s = new DomNode("script").attribute("src", name);
     if (deferScript) {
       s.attribute("defer");
