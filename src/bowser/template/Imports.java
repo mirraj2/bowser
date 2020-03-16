@@ -24,7 +24,17 @@ public class Imports {
         } else {
           s = "/" + jsImport;
         }
-      head.javascript(s);
+      head.javascript(s, false);
+    }
+    
+    for (String jsImport : split(headNode.getAttribute("jsdefer", ""))) {
+      String s;
+        if (jsImport.startsWith("/") || jsImport.startsWith("http")) {
+          s = jsImport;
+        } else {
+          s = "/" + jsImport;
+        }
+      head.javascript(s, true);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
