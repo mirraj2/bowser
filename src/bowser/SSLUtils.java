@@ -71,7 +71,7 @@ public class SSLUtils {
       KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
       keyManagerFactory.init(keystore, pass.toCharArray());
 
-      SSLContext ret = SSLContext.getInstance("SSLv3");
+      SSLContext ret = SSLContext.getInstance("TLSv1.2");
       TrustManagerFactory factory = TrustManagerFactory.getInstance(
           TrustManagerFactory.getDefaultAlgorithm());
       factory.init(keystore);
