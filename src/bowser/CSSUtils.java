@@ -43,7 +43,6 @@ public class CSSUtils {
         RuleSet rules = (RuleSet) item;
         for (CombinedSelector comboSelector : rules.getSelectors()) {
           SelectorImpl impl = new StringSelector(scopeSelector);
-          // impl.unlock().add(new MyElementClassImpl("DING"));
           comboSelector.add(0, impl);
           comboSelector.get(1).setCombinator(Combinator.DESCENDANT);
         }
