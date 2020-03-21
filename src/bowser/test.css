@@ -1,0 +1,85 @@
+td small {
+  opacity: 0.5;
+  margin-left: 8px;
+}
+
+td.unread>a,
+.foo.bar.ack>ding>dong {
+  padding: 0;
+}
+
+td.unread span {
+  padding: 4px 6px;
+  background: #ffc82e;
+  color: black;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+img.airbnb {
+  width: 16px;
+  margin: -2px 0 -2px 4px;
+  position: relative;
+  top: 1px;
+}
+
+@media (max-width: 660px) {
+  .properties tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto;
+    grid-auto-flow: row;
+    padding: 10px;
+  }
+
+  .properties tr[href] td:first-of-type,
+  .properties tr[href] td:last-of-type {
+    padding: 0;
+  }
+
+  .properties tr[href] td>a {
+    padding: 5px 10px;
+  }
+
+  .properties .unread {
+    grid-row: 1;
+    grid-column: 2;
+    text-align: right;
+  }
+
+  .properties tr[href] td.unread>a {
+    padding: 5px 10px 0;
+  }
+
+  .properties td.address {
+    /* padding-top: 4px; */
+    font-weight: bold;
+  }
+
+  .properties .firm {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .properties .amount-owed {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .properties td.amount-owed a:not(:empty)::before {
+    content: "Rent owed: ";
+  }
+
+  .properties .amount-owed a:empty {
+    padding: 0;
+  }
+
+  .properties .status {
+    grid-row: 2/4;
+    grid-column: 2;
+    text-align: right;
+    display: flex;
+    align-items: flex-end;
+  }
+}
