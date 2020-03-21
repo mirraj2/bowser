@@ -18,7 +18,6 @@ import bowser.Controller;
 import bowser.Request;
 import bowser.RequestHandler;
 import bowser.Response;
-import bowser.SCSSProcessor;
 import bowser.WebServer;
 import ox.IO;
 import ox.Log;
@@ -30,11 +29,9 @@ public class StaticContentHandler implements RequestHandler {
 
   private WebServer server;
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
-  private final SCSSProcessor scssProcessor;
 
   public StaticContentHandler(WebServer server) {
     this.server = server;
-    this.scssProcessor = new SCSSProcessor(this, server.enableCaching);
   }
 
   @Override
@@ -72,10 +69,6 @@ public class StaticContentHandler implements RequestHandler {
       if (server.enableCaching) {
         response.cacheFor(20, TimeUnit.MINUTES);
       }
-    }
-
-    if (path.endsWith(".scss")) {
-      data = scssProcessor.process(request.getOriginalPath(), data);
     }
 
     Pair<Long, Long> range = request.getRange();
