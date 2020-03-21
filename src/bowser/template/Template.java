@@ -17,11 +17,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
 
+import bowser.CSSUtils;
 import bowser.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
+import ox.IO;
 import ox.Json;
 import ox.Log;
 import ox.Money;
@@ -68,6 +70,19 @@ public class Template {
         for (DomNode importedNode : importedNodes) {
           init(importedNode, controller, embedCSS);
         }
+      } else if (node.hasAttribute("css")) {
+        String cssFileName = node.getAttribute("css");
+        String cssData = IO.from(controller.getServer().getResourceLoader().getData(cssFileName, controller))
+            .toString();
+        String scopedCSS = CSSUtils.addScope(cssData, "scope[css='" + cssFileName + "']");
+        node.removeAttribute("css");
+        DomNode scopeNode = new DomNode("scope").attribute("css", cssFileName);
+        DomNode styleNode = new DomNode("style").text(scopedCSS);
+        scopeNode.add(styleNode);
+        DomNode parent = node.parent;
+        parent.remove(node);
+        parent.add(scopeNode);
+        scopeNode.add(node);
       }
     }
   }
