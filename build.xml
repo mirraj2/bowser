@@ -7,11 +7,12 @@
     <property name="source" value="1.8"/>
     <path id="ox.classpath">
         <pathelement location="${ox.location}/bin"/>
-        <pathelement location="${ox.location}/lib/gson-2.8.2.jar"/>
-        <pathelement location="${ox.location}/lib/guava-27.0.1-jre.jar"/>
         <pathelement location="${ox.location}/lib/objenesis-2.1.jar"/>
+        <pathelement location="${ox.location}/lib/gson-2.8.2.jar"/>
         <pathelement location="${ox.location}/lib/slf4j-api-1.7.2.jar"/>
         <pathelement location="${ox.location}/lib/slf4j-simple-1.7.2.jar"/>
+        <pathelement location="${ox.location}/lib/guava-27.0.1-jre.jar"/>
+        <pathelement location="${ox.location}/lib/failureaccess-1.0.1.jar"/>
     </path>
     <path id="bowser.classpath">
         <pathelement location="bin"/>

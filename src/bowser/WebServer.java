@@ -82,6 +82,13 @@ public class WebServer {
     return this;
   }
 
+  public WebServer add(RequestHandler... handlers) {
+    for (RequestHandler handler : handlers) {
+      add(handler);
+    }
+    return this;
+  }
+
   /**
    * Add an exception handler whose handle() function will be called if any handlers throw an exception.
    */
