@@ -196,8 +196,12 @@ public class DomNode {
     return this;
   }
 
-  public DomNode javascript(String name) {
-    return add(new DomNode("script").attribute("src", name));
+  public DomNode javascript(String name, boolean deferScript) {
+    DomNode s = new DomNode("script").attribute("src", name);
+    if (deferScript) {
+      s.attribute("defer");
+    }
+    return add(s);    
   }
 
   public DomNode css(String name) {

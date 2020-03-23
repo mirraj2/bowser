@@ -16,15 +16,23 @@ import bowser.node.TextNode;
 
 public class Imports {
 
+  public static String normalizeJsPath(String path) {
+    if (path.startsWith("/") || path.startsWith("http")) {
+      return path;
+    }
+
+    return "/" + path;
+  }
+
   public static void appendToHead(DomNode head, DomNode headNode, Controller controller, boolean embedCSS) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
-      String s;
-        if (jsImport.startsWith("/") || jsImport.startsWith("http")) {
-          s = jsImport;
-        } else {
-          s = "/" + jsImport;
-        }
-      head.javascript(s);
+      String s = normalizeJsPath(jsImport);
+      head.javascript(s, false);
+    }
+    
+    for (String jsImport : split(headNode.getAttribute("jsdefer", ""))) {
+      String s = normalizeJsPath(jsImport);
+      head.javascript(s, true);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
