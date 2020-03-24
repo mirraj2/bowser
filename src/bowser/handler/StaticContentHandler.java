@@ -14,11 +14,11 @@ import org.simpleframework.http.Status;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-import bowser.Controller;
-import bowser.Request;
-import bowser.RequestHandler;
-import bowser.Response;
 import bowser.WebServer;
+import bowser.model.Controller;
+import bowser.model.Request;
+import bowser.model.RequestHandler;
+import bowser.model.Response;
 import ox.IO;
 import ox.Log;
 import ox.Pair;

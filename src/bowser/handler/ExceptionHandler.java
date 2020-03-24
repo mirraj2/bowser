@@ -1,8 +1,8 @@
 package bowser.handler;
 
-import bowser.Request;
-import bowser.RequestHandler;
-import bowser.Response;
+import bowser.model.Request;
+import bowser.model.RequestHandler;
+import bowser.model.Response;
 
 public interface ExceptionHandler {
 

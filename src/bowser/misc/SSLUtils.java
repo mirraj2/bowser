@@ -1,4 +1,4 @@
-package bowser;
+package bowser.misc;
 
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Utils.propagate;

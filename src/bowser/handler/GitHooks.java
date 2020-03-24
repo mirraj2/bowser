@@ -6,8 +6,8 @@ import java.util.List;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 
-import bowser.Controller;
-import bowser.Handler;
+import bowser.model.Controller;
+import bowser.model.Handler;
 import ox.Json;
 import ox.Log;
 

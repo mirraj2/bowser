@@ -1,6 +1,9 @@
-package bowser;
+package bowser.misc;
 
 import com.google.common.base.Stopwatch;
+
+import bowser.model.Request;
+import bowser.model.Response;
 
 public interface WebLogger {
 

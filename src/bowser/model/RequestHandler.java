@@ -1,4 +1,4 @@
-package bowser;
+package bowser.model;
 
 public interface RequestHandler {
 

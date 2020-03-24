@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import bowser.Request;
-import bowser.Response;
+import bowser.model.Request;
+import bowser.model.Response;
 
 public class Context {
 

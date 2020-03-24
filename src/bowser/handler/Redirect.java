@@ -1,8 +1,8 @@
 package bowser.handler;
 
-import bowser.Handler;
-import bowser.Request;
-import bowser.Response;
+import bowser.model.Handler;
+import bowser.model.Request;
+import bowser.model.Response;
 
 public class Redirect implements Handler {
 

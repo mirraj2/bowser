@@ -2,7 +2,7 @@ package bowser.handler;
 
 import java.util.regex.Pattern;
 
-import bowser.Request;
+import bowser.model.Request;
 
 public class MobileDetector {
 

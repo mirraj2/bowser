@@ -1,4 +1,4 @@
-package bowser;
+package bowser.misc;
 
 /**
  * This error message will be propagated to the user.

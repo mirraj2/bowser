@@ -17,8 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
 
-import bowser.CSSUtils;
-import bowser.Controller;
+import bowser.model.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;

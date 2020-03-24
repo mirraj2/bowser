@@ -1,4 +1,4 @@
-package bowser;
+package bowser.model;
 
 @FunctionalInterface
 public interface Handler extends RequestHandler {

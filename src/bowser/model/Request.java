@@ -1,4 +1,4 @@
-package bowser;
+package bowser.model;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;

@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.io.File;
 
-import bowser.Controller;
-import bowser.Handler;
+import bowser.model.Controller;
+import bowser.model.Handler;
 import ox.IO;
 import ox.OS;
 

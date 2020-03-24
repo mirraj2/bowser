@@ -1,4 +1,4 @@
-package bowser;
+package bowser.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;

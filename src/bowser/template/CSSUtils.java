@@ -1,4 +1,4 @@
-package bowser;
+package bowser.template;
 
 import static ox.util.Utils.only;
 import static ox.util.Utils.propagate;
@@ -95,7 +95,7 @@ public class CSSUtils {
   }
 
   public static void main(String[] args) {
-    String from = IO.from(CSSUtils.class, "test.css").toString();
+    String from = IO.from(CSSUtils.class, "cssutils-test.css").toString();
     DomNode root = new DomNode("chat").attribute("class", "test");
     String to = CSSUtils.addScope(root, from, ".ENDER_SCOPE");
     Log.debug(to);

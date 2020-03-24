@@ -1,4 +1,4 @@
-package bowser;
+package bowser.model;
 
 import static ox.util.Utils.getExtension;
 
@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+
+import bowser.WebServer;
 
 public abstract class Controller {
 

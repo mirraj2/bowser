@@ -9,7 +9,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
-import bowser.Controller;
+import bowser.model.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.TextNode;
