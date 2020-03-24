@@ -74,15 +74,8 @@ public class Template {
         String cssFileName = node.getAttribute("css");
         String cssData = IO.from(controller.getServer().getResourceLoader().getData(cssFileName, controller))
             .toString();
-        String scopedCSS = CSSUtils.addScope(node, cssData, "scope[css='" + cssFileName + "']");
-        node.removeAttribute("css");
-        DomNode scopeNode = new DomNode("scope").attribute("css", cssFileName);
-        DomNode styleNode = new DomNode("style").text(scopedCSS);
-        scopeNode.add(styleNode);
-        DomNode parent = node.parent;
-        parent.remove(node);
-        parent.add(scopeNode);
-        scopeNode.add(node);
+        String scopedCSS = CSSUtils.addScope(node, cssData, "[css='" + cssFileName + "']");
+        node.add(new DomNode("style").text(scopedCSS));
       }
     }
   }
