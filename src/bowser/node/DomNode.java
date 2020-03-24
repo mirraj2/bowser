@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -146,6 +147,14 @@ public class DomNode {
     attributes.remove(index);
     attributes.remove(index);
     return this;
+  }
+
+  public List<String> getClasses() {
+    String s = getAttribute("class");
+    if (s == null) {
+      return ImmutableList.of();
+    }
+    return Splitter.on(' ').omitEmptyStrings().trimResults().splitToList(s);
   }
 
   public DomNode text(String text) {

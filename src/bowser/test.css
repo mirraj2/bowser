@@ -17,11 +17,18 @@ td.unread span {
   vertical-align: top;
 }
 
-img.airbnb {
-  width: 16px;
-  margin: -2px 0 -2px 4px;
-  position: relative;
-  top: 1px;
+.test,
+.foo .bar .ack {
+  padding: 0px;
+}
+
+chat {
+  padding: 4px;
+}
+
+nomatch,
+.nomatch {
+  color: red;
 }
 
 @media (max-width: 660px) {

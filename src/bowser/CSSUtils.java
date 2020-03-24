@@ -1,13 +1,16 @@
 package bowser;
 
+import static ox.util.Utils.only;
 import static ox.util.Utils.propagate;
 
 import java.net.URL;
 
+import bowser.node.DomNode;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CombinedSelector;
 import cz.vutbr.web.css.Rule;
 import cz.vutbr.web.css.RuleSet;
+import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.SelectorImpl;
@@ -20,14 +23,14 @@ public class CSSUtils {
     System.setProperty("org.slf4j.simpleLogger.log.cz.vutbr.web.csskit", "warn");
   }
 
-  public static String addScope(String css, String scopeSelector) {
-    return addScope(css, scopeSelector, null);
+  public static String addScope(DomNode root, String css, String scopeSelector) {
+    return addScope(root, css, scopeSelector, null);
   }
 
-  public static String addScope(String css, String scopeSelector, String url) {
+  public static String addScope(DomNode root, String css, String scopeSelector, String url) {
     try {
       StyleSheet ss = CSSFactory.parseString(css, url == null ? null : new URL(url));
-      addScope(ss, scopeSelector);
+      addScope(root, ss, scopeSelector);
 
       StringBuilder sb = new StringBuilder();
       ss.forEach(rule -> sb.append(rule.toString()));
@@ -37,24 +40,44 @@ public class CSSUtils {
     }
   }
 
-  private static void addScope(Rule<?> rule, String scopeSelector) {
+  private static void addScope(DomNode root, Rule<?> rule, String scopeSelector) {
     rule.forEach(item -> {
       if (item instanceof RuleSet) {
         RuleSet rules = (RuleSet) item;
         for (CombinedSelector comboSelector : rules.getSelectors()) {
-          SelectorImpl impl = new StringSelector(scopeSelector);
-          comboSelector.add(0, impl);
-          comboSelector.get(1).setCombinator(Combinator.DESCENDANT);
+          if (matches(comboSelector, root)) {
+            comboSelector.set(0, new StringSelector(comboSelector.get(0).toString() + scopeSelector));
+          } else {
+            SelectorImpl impl = new StringSelector(scopeSelector);
+            comboSelector.add(0, impl);
+            comboSelector.get(1).setCombinator(Combinator.DESCENDANT);
+          }
         }
       } else {
         for (Object o : rule) {
           if (o instanceof Rule) {
-            addScope((Rule<?>) o, scopeSelector);
+            addScope(root, (Rule<?>) o, scopeSelector);
           }
         }
       }
     });
 
+  }
+
+  private static boolean matches(CombinedSelector combo, DomNode node) {
+    if (combo.size() != 1) {
+      return false;
+    }
+    Selector selector = only(combo);
+    if (selector.size() != 1) {
+      return false;
+    }
+    String s = selector.toString();
+    if (s.charAt(0) == '.') {
+      return node.getClasses().contains(s.substring(1));
+    } else {
+      return node.tag.equalsIgnoreCase(s);
+    }
   }
 
   public static class StringSelector extends SelectorImpl {
@@ -73,7 +96,8 @@ public class CSSUtils {
 
   public static void main(String[] args) {
     String from = IO.from(CSSUtils.class, "test.css").toString();
-    String to = CSSUtils.addScope(from, ".ENDER_SCOPE");
+    DomNode root = new DomNode("chat").attribute("class", "test");
+    String to = CSSUtils.addScope(root, from, ".ENDER_SCOPE");
     Log.debug(to);
   }
 }

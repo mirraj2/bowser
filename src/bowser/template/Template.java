@@ -74,7 +74,7 @@ public class Template {
         String cssFileName = node.getAttribute("css");
         String cssData = IO.from(controller.getServer().getResourceLoader().getData(cssFileName, controller))
             .toString();
-        String scopedCSS = CSSUtils.addScope(cssData, "scope[css='" + cssFileName + "']");
+        String scopedCSS = CSSUtils.addScope(node, cssData, "scope[css='" + cssFileName + "']");
         node.removeAttribute("css");
         DomNode scopeNode = new DomNode("scope").attribute("css", cssFileName);
         DomNode styleNode = new DomNode("style").text(scopedCSS);
