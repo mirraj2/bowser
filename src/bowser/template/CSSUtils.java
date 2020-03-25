@@ -1,6 +1,6 @@
 package bowser.template;
 
-import static ox.util.Utils.only;
+import static ox.util.Utils.first;
 import static ox.util.Utils.propagate;
 
 import java.net.URL;
@@ -65,10 +65,7 @@ public class CSSUtils {
   }
 
   private static boolean matches(CombinedSelector combo, DomNode node) {
-    if (combo.size() != 1) {
-      return false;
-    }
-    Selector selector = only(combo);
+    Selector selector = first(combo);
     if (selector.size() != 1) {
       return false;
     }
