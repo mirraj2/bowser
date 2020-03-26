@@ -49,7 +49,20 @@ public class Template {
 
   private void init(DomNode root, Controller controller, boolean embedCSS) {
     for (DomNode node : root.getAllNodes()) {
-      if ("head".equals(node.tag)) {
+      if ("js".equals(node.tag)) {
+        Iterable<String> jsFiles = Splitter.on(' ').split(node.getAttribute("src"));
+        if (node.hasAttribute("inline")) {
+          List<DomNode> jsNodes = Imports.importJSInline(jsFiles, controller);
+          node.parent.replace(node, jsNodes);
+        } else {
+          Imports.importJSToHead(jsFiles, head, node.hasAttribute("defer"));
+          node.parent.remove(node);
+        }
+      } else if ("css".equals(node.tag)) {
+        Iterable<String> cssFiles = Splitter.on(' ').split(node.getAttribute("src"));
+        Imports.importCSSToHead(cssFiles, head);
+        node.parent.remove(node);
+      } else if ("head".equals(node.tag)) {
         if (head == null) {
           head = node;
         } else {

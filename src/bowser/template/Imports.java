@@ -29,7 +29,7 @@ public class Imports {
       String s = normalizeJsPath(jsImport);
       head.javascript(s, false);
     }
-    
+
     for (String jsImport : split(headNode.getAttribute("jsdefer", ""))) {
       String s = normalizeJsPath(jsImport);
       head.javascript(s, true);
@@ -37,11 +37,11 @@ public class Imports {
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
       String s;
-        if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
-          s = cssImport;
-        } else {
-          s = "/" + cssImport;
-        }
+      if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
+        s = cssImport;
+      } else {
+        s = "/" + cssImport;
+      }
       if (embedCSS) {
         String data = new String(controller.getData(cssImport), Charsets.UTF_8);
         head.add(new DomNode("style").add(new TextNode("\n" + data)));
@@ -60,10 +60,28 @@ public class Imports {
     }
   }
 
-  public static List<DomNode> createImport(DomNode importNode, Controller controller, DomParser parser) {
-    List<DomNode> ret = Lists.newArrayList();
+  public static void importJSToHead(Iterable<String> jsFiles, DomNode head, boolean defer) {
+    for (String jsImport : jsFiles) {
+      String s = normalizeJsPath(jsImport);
+      head.javascript(s, defer);
+    }
+  }
 
-    for (String jsImport : split(importNode.getAttribute("js", ""))) {
+  public static void importCSSToHead(Iterable<String> cssFiles, DomNode head) {
+    cssFiles.forEach(cssImport -> {
+      String s;
+      if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
+        s = cssImport;
+      } else {
+        s = "/" + cssImport;
+      }
+      head.css(s);
+    });
+  }
+
+  public static List<DomNode> importJSInline(Iterable<String> jsFiles, Controller controller) {
+    List<DomNode> ret = Lists.newArrayList();
+    for (String jsImport : jsFiles) {
       if (!jsImport.startsWith("/")) {
         jsImport = "/" + jsImport;
       }
@@ -73,6 +91,14 @@ public class Imports {
       ret.add(new DomNode("script").add(new TextNode("\n" + s)));
       // ret.add(new DomNode("script").attribute("src", jsImport));
     }
+    return ret;
+  }
+
+  public static List<DomNode> createImport(DomNode importNode, Controller controller, DomParser parser) {
+    List<DomNode> ret = Lists.newArrayList();
+
+    ret.addAll(importJSInline(split(importNode.getAttribute("js", "")), controller));
+
     for (String htmlImport : split(importNode.getAttribute("html", ""))) {
       if (controller.getServer().showImportComments) {
         String comment = "\n\n<!-- BEGIN " + htmlImport + " -->\n";
