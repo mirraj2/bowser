@@ -66,10 +66,11 @@ public class CSSUtils {
 
   private static boolean matches(CombinedSelector combo, DomNode node) {
     Selector selector = first(combo);
-    if (selector.size() != 1) {
-      return false;
-    }
     String s = selector.toString();
+    int i = s.indexOf('[');
+    if (i != -1) {
+      s = s.substring(0, i);
+    }
     if (s.charAt(0) == '.') {
       return node.getClasses().contains(s.substring(1));
     } else {

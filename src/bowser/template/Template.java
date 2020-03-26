@@ -84,34 +84,40 @@ public class Template {
     if (isRoot) {
       sb.append("<!DOCTYPE html>\n");
     }
-    render(root, sb, 0, context);
+    render(root, sb, 0, false, context);
     return sb.toString();
   }
 
-  private void render(DomNode node, StringBuilder sb, int depth, Context context) {
-    String loop = node.getAttribute("loop");
-    if (loop != null && !"video".equals(node.tag)) {
-      renderLoop(node, sb, depth, context, loop);
-      return;
-    }
-
-    String iff = node.getAttribute("if");
-    if (iff != null) {
-      boolean b = resolveBoolean(iff, context);
-      if (b) {
-        node = new DomNode(node).removeAttribute("if");
-      } else {
+  private void render(DomNode node, StringBuilder sb, int depth, boolean insideTemplate, Context context) {
+    if (!insideTemplate) {
+      String loop = node.getAttribute("loop");
+      if (loop != null && !"video".equals(node.tag)) {
+        renderLoop(node, sb, depth, insideTemplate, context, loop);
         return;
+      }
+
+      String iff = node.getAttribute("if");
+      if (iff != null) {
+        boolean b = resolveBoolean(iff, context);
+        if (b) {
+          node = new DomNode(node).removeAttribute("if");
+        } else {
+          return;
+        }
       }
     }
 
     if (node instanceof TextNode) {
-      renderText((TextNode) node, sb, depth, context);
+      renderText((TextNode) node, sb, depth, insideTemplate, context);
     } else {
+      if (node.tag.equalsIgnoreCase("template")) {
+        insideTemplate = true;
+      }
+
       node.renderStartTag(sb, depth, replacer(context, "{", "}", true, true));
 
       for (DomNode child : node.getChildren()) {
-        render(child, sb, depth + 1, context);
+        render(child, sb, depth + 1, insideTemplate, context);
       }
 
       node.renderEndTag(sb, depth);
@@ -190,7 +196,8 @@ public class Template {
   }
 
   @SuppressWarnings("unchecked")
-  private void renderLoop(DomNode node, StringBuilder sb, int depth, Context context, String loop) {
+  private void renderLoop(DomNode node, StringBuilder sb, int depth, boolean insideTemplate, Context context,
+      String loop) {
     List<String> m = Splitter.on(' ').splitToList(loop);
     String variableName = m.get(0);
     checkState(m.get(1).equalsIgnoreCase("in"));
@@ -213,7 +220,7 @@ public class Template {
     if (data instanceof Map) {
       ((Map<?, ?>) data).entrySet().forEach((entry) -> {
         Object oldValue = context.put(variableName, entry);
-        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, insideTemplate, context);
         context.put(variableName, oldValue);
       });
     } else if (data instanceof Json && ((Json) data).isObject()) {
@@ -221,14 +228,14 @@ public class Template {
       for (String key : json) {
         Object oldVal1 = context.put(variableName, key);
         Object oldVal2 = context.put("value", json.getObject(key));
-        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, insideTemplate, context);
         context.put(variableName, oldVal1);
         context.put("value", oldVal2);
       }
     } else if (data instanceof Iterable) {
       for (Object o : (Iterable<?>) data) {
         Object oldValue = context.put(variableName, o);
-        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, insideTemplate, context);
         context.put(variableName, oldValue);
       }
     } else if (data instanceof Multimap) {
@@ -236,7 +243,7 @@ public class Template {
       for (Object key : multimap.keySet()) {
         Object oldVal1 = context.put(variableName, key);
         Object oldVal2 = context.put("values", multimap.get(key));
-        render(new DomNode(node).removeAttribute("loop"), sb, depth, context);
+        render(new DomNode(node).removeAttribute("loop"), sb, depth, insideTemplate, context);
         context.data.put(variableName, oldVal1);
         context.data.put("values", oldVal2);
       }
@@ -245,13 +252,13 @@ public class Template {
     }
   }
 
-  private void renderText(TextNode node, StringBuilder sb, int depth, Context context) {
-    if (node.parent.tag.equals("style")) {
-      sb.append(node.content);
+  private void renderText(TextNode node, StringBuilder sb, int depth, boolean insideTemplate, Context context) {
+    String text = node.content;
+
+    if (insideTemplate || node.parent.tag.equals("style")) {
+      sb.append(text);
       return;
     }
-
-    String text = node.content;
 
     if (node.parent.tag.equals("script") || node.parent.tag.equals("svg")) {
       Function<String, String> replacer = replacer(context, "$$(", ")", false, false);
@@ -260,9 +267,6 @@ public class Template {
       Function<String, String> replacer = replacer(context, "$$(", ")", false, true);
       text = replacer.apply(text);
     } else {
-      Function<String, String> noEscapeReplacer = replacer(context, "{{", "}}", true, false);
-      text = noEscapeReplacer.apply(text);
-
       boolean escapeHtml = true;
       if (node.parent.hasAttribute("allowHtml")) {
         escapeHtml = false;

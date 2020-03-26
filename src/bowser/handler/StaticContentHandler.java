@@ -19,6 +19,7 @@ import bowser.model.Controller;
 import bowser.model.Request;
 import bowser.model.RequestHandler;
 import bowser.model.Response;
+import bowser.template.Template;
 import ox.IO;
 import ox.Log;
 import ox.Pair;
@@ -157,6 +158,10 @@ public class StaticContentHandler implements RequestHandler {
       if (url != null) {
         return IO.from(url).toByteArray();
       }
+    }
+
+    if (path.equals("bowser.js")) {
+      return IO.from(Template.class, "bowser.js").toByteArray();
     }
 
     Log.debug("Couldn't find: " + path);
