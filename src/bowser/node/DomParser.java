@@ -23,7 +23,7 @@ public class DomParser {
   public DomNode parse(String s, boolean isRoot) {
     DomNode root;
     if (isRoot && head != null) {
-      DomNode headCopy = head.copy();
+      Head headCopy = head.copy();
 
       root = new DomNode("html").attribute("lang", "en");
       root.add(new TextNode("\n"));
@@ -38,14 +38,10 @@ public class DomParser {
     return root;
   }
 
-  private void parse(DomNode head, DomNode parent, String s, int start, int end) {
+  private void parse(Head head, DomNode parent, String s, int start, int end) {
     if (start == end) {
       return;
     }
-
-    // if (debugMode) {
-    // Log.debug("parent is " + parent.tag + " :: PARSING: " + s.substring(start, end));
-    // }
 
     if (s.charAt(start) != '<') {
       int tagIndex = end;
@@ -104,6 +100,15 @@ public class DomParser {
         parse(head, node, s, endTag + 1, endTagIndex); // add a child
       }
       endTag = endTagIndex + 2 + node.tag.length();
+    }
+
+    if (node.tag.equalsIgnoreCase("title")) {
+      if (head == null) {
+        Log.warn("<head> is null, skipping title tag.");
+      } else {
+        parent.remove(node);
+        head.add(node);
+      }
     }
 
     parse(head, parent, s, endTag + 1, end);

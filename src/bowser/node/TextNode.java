@@ -13,4 +13,9 @@ public class TextNode extends DomNode {
     sb.append(content);
   }
 
+  @Override
+  public String text() {
+    return content;
+  }
+
 }

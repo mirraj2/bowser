@@ -41,6 +41,7 @@ public class Template {
 
   private Template(String s, Controller controller, DomParser parser, boolean embedCSS) {
     this.parser = parser;
+
     isRoot = true;
     root = parser.parse(s, isRoot);
 

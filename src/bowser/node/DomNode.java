@@ -68,12 +68,15 @@ public class DomNode {
     return add(Arrays.asList(children));
   }
 
+  public DomNode add(DomNode child) {
+    checkNotNull(child);
+    this.children.add(child);
+    child.parent = this;
+    return this;
+  }
+
   public DomNode add(Iterable<DomNode> children) {
-    for (DomNode child : children) {
-      checkNotNull(child);
-      this.children.add(child);
-      child.parent = this;
-    }
+    children.forEach(this::add);
     return this;
   }
 
@@ -158,8 +161,17 @@ public class DomNode {
   }
 
   public DomNode text(String text) {
+    children.clear();
     add(new TextNode(text));
     return this;
+  }
+
+  public String text() {
+    StringBuilder sb = new StringBuilder();
+    children.forEach(child -> {
+      sb.append(child.text());
+    });
+    return sb.toString();
   }
 
   public DomNode id(String id) {
@@ -306,12 +318,16 @@ public class DomNode {
       return this;
     }
     DomNode ret = new DomNode(tag);
-    ret.attributes.addAll(attributes);
-    ret.generateWhitespace = generateWhitespace;
-    for (DomNode child : children) {
-      ret.add(child.copy());
-    }
+    copyInto(ret);
     return ret;
+  }
+
+  protected void copyInto(DomNode node) {
+    node.attributes.addAll(attributes);
+    node.generateWhitespace = generateWhitespace;
+    for (DomNode child : children) {
+      node.add(child.copy());
+    }
   }
 
 }
