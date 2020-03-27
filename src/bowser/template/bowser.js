@@ -2,12 +2,17 @@ $.fn.render = function(data) {
   let ret = $("<div>");
   $($(this).prop("content")).children().each(function() {
     Bowser.render(this, ret, data);
+
   });
   return ret.children();
 }
 
 const Bowser = function() {
   function render(node, output, context) {
+    if (node.nodeType == Node.COMMENT_NODE) {
+      return;
+    }
+
     if (node.nodeType == Node.TEXT_NODE) {
       let clone = node.cloneNode();
       clone.textContent = stringReplace(clone.textContent, context);
