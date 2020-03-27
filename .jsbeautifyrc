@@ -1,0 +1,34 @@
+{
+  // These rules apply to any supported code that is going to be be prettified,
+  // and have the lowest level of precedence (meaning any of the settings in
+  // the 'html', 'css', 'js', 'json' and 'custom' categories override these).
+
+  // You can add other .jsbeautifyrc rules in this section too.
+
+  // End output with newline
+  "end_with_newline": true,
+
+  // Character(s) to use as line terminators.
+  "eol": "\n",
+
+  // Initial indentation level
+  "indent_level": 0,
+
+  // Indentation character
+  "indent_char": " ",
+
+  // Indentation size
+  "indent_size": 2,
+
+  // Indent with tabs, overrides `indent_size` and `indent_char`
+  "indent_with_tabs": false,
+
+  // Maximum number of line breaks to be preserved in one chunk (0 disables)
+  "max_preserve_newlines": 0,
+
+  // Whether existing line breaks before elements should be preserved (only works before elements, not inside tags or for text)
+  "preserve_newlines": true,
+
+  // Lines should wrap at next opportunity after this number of characters (0 disables)
+  "wrap_line_length": 0
+}
