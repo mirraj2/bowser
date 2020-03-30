@@ -25,7 +25,20 @@ const Bowser = function() {
       return;
     }
 
-    let clone = node.cloneNode();
+    let clone = null;
+    if (node.hasAttribute("if")) {
+      const b = resolveBoolean(node.getAttribute("if"), context);
+      // console.log(node.getAttribute("if") + " --> " + b);
+      if (b) {
+        clone = node.cloneNode();
+        clone.removeAttribute("if");
+      } else {
+        return;
+      }
+    } else {
+      clone = node.cloneNode();
+    }
+
     for (var i = 0; i < clone.attributes.length; i++) {
       let attribute = clone.attributes[i];
       attribute.value = stringReplace(attribute.value, context);
@@ -34,6 +47,47 @@ const Bowser = function() {
       render(child, clone, context);
     });
     output.append(clone);
+  }
+
+  function resolveBoolean(s, context) {
+    s = s.trim();
+
+    let i = s.indexOf("&&");
+    if (i != -1) {
+      let a = s.substring(0, i);
+      let b = s.substring(i + 2);
+      return resolveBoolean(a, context) && resolveBoolean(b, context);
+    }
+
+    i = s.indexOf("||");
+    if (i != -1) {
+      let a = s.substring(0, i);
+      let b = s.substring(i + 2);
+      return resolveBoolean(a, context) || resolveBoolean(b, context);
+    }
+
+    i = s.indexOf("==");
+    if (i != -1) {
+      let a = s.substring(0, i);
+      let b = s.substring(i + 2);
+
+      let o1 = resolve(a, context);
+      let o2 = resolve(b, context);
+      return o1 === o2;
+    }
+
+    if (s.startsWith("!")) {
+      return !resolveBoolean(s.substring(1), context);
+    }
+
+    let o = resolve(s, context);
+    if (o === null) {
+      return false;
+    }
+    if (Array.isArray(o)) {
+      return o.length > 0;
+    }
+    return Boolean(o);
   }
 
   function renderLoop(node, output, context) {
