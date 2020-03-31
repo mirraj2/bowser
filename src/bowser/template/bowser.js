@@ -119,8 +119,8 @@ const Bowser = function() {
 
   function resolve(expression, context) {
     let reference = null;
-    if (expression.charAt(0) === "'") {
-      return expression.substring(1, expression.length - 1)
+    if (expression.charAt(0) === "'" && expression.charAt(expression.length - 1) === "'") {
+      return expression.substring(1, expression.length - 1);
     }
     expression.split(".").forEach(function(s) {
       try {
