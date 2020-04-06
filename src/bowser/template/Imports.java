@@ -16,7 +16,7 @@ import bowser.node.TextNode;
 
 public class Imports {
 
-  public static String normalizeJsPath(String path) {
+  public static String normalizePath(String path) {
     if (path.startsWith("/") || path.startsWith("http")) {
       return path;
     }
@@ -26,22 +26,17 @@ public class Imports {
 
   public static void appendToHead(DomNode head, DomNode headNode, Controller controller, boolean embedCSS) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
-      String s = normalizeJsPath(jsImport);
+      String s = normalizePath(jsImport);
       head.javascript(s, false);
     }
 
     for (String jsImport : split(headNode.getAttribute("jsdefer", ""))) {
-      String s = normalizeJsPath(jsImport);
+      String s = normalizePath(jsImport);
       head.javascript(s, true);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
-      String s;
-      if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
-        s = cssImport;
-      } else {
-        s = "/" + cssImport;
-      }
+      String s = normalizePath(cssImport);
       if (embedCSS) {
         String data = new String(controller.getData(cssImport), Charsets.UTF_8);
         head.add(new DomNode("style").add(new TextNode("\n" + data)));
@@ -62,21 +57,16 @@ public class Imports {
 
   public static void importJSToHead(Iterable<String> jsFiles, DomNode head, boolean defer) {
     for (String jsImport : jsFiles) {
-      String s = normalizeJsPath(jsImport);
+      String s = normalizePath(jsImport);
       head.javascript(s, defer);
     }
   }
 
   public static void importCSSToHead(Iterable<String> cssFiles, DomNode head) {
-    cssFiles.forEach(cssImport -> {
-      String s;
-      if (cssImport.startsWith("/") || cssImport.startsWith("http")) {
-        s = cssImport;
-      } else {
-        s = "/" + cssImport;
-      }
+    for (String cssImport : cssFiles) {
+      String s = normalizePath(cssImport);
       head.css(s);
-    });
+    }
   }
 
   public static List<DomNode> importJSInline(Iterable<String> jsFiles, Controller controller) {
