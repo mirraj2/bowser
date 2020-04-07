@@ -23,8 +23,8 @@ public class DomNode {
   public DomNode parent;
 
   public final String tag;
-  private final List<String> attributes = new ArrayList<>(0);
-  private final List<DomNode> children = Lists.newArrayList();
+  protected final List<String> attributes = new ArrayList<>(0);
+  protected final List<DomNode> children = Lists.newArrayList();
 
   public boolean generateWhitespace = false;
 
