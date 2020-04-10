@@ -11,20 +11,28 @@ import ox.OS;
 
 public class CertbotRenewals extends Controller {
 
-  private static final File appDir = OS.getAppFolder("ender");
+  private File rootFolder;
+
+  public CertbotRenewals() {
+    this(OS.getHomeFolder());
+  }
+
+  public CertbotRenewals(File rootFolder) {
+    this.rootFolder = rootFolder;
+  }
 
   @Override
   public void init() {
     route("GET", "/.well-known/acme-challenge/*").to(handler);
   }
 
-  // certbot certonly --webroot -w /root/.ender -d files.ender.com
+  // certbot certonly --webroot -w ~/ -d files.ender.com
   private final Handler handler = (request, response) -> {
     String key = request.getSegment(2);
 
     checkState(!key.contains("/") && !key.contains("."));
 
-    File file = new File(appDir, ".well-known/acme-challenge/" + key);
+    File file = new File(rootFolder, ".well-known/acme-challenge/" + key);
     checkState(file.exists());
 
     IO.from(file).to(response.getOutputStream());
