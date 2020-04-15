@@ -131,7 +131,7 @@ public class WebServer {
   public WebServer googleAnalytics(String googleAnalyticsId, String adwordsTagId) {
     checkNotEmpty(normalize(googleAnalyticsId));
 
-    head.add(new DomNode("script").attribute("src",
+    head.add(new DomNode("script").attribute("async").attribute("src",
         "https://www.googletagmanager.com/gtag/js?id=" + googleAnalyticsId));
 
     String script = "window.dataLayer = window.dataLayer || [];\n" +
