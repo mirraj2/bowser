@@ -34,7 +34,7 @@ public class CertbotRenewals extends Controller {
     checkState(!key.contains("/") && !key.contains("."));
 
     File dir = new File(rootFolder, ".well-known/acme-challenge");
-    File file = new File(dir, key);
+    File file = findFile(dir, key);
     if (!file.exists()) {
       Log.debug(key);
       Log.debug(dir + " exists: " + dir.exists());
@@ -47,5 +47,14 @@ public class CertbotRenewals extends Controller {
 
     IO.from(file).to(response.getOutputStream());
   };
+
+  private File findFile(File dir, String name) {
+    for (File file : dir.listFiles()) {
+      if (file.getName().equalsIgnoreCase(name)) {
+        return file;
+      }
+    }
+    return new File(dir, name);
+  }
 
 }
