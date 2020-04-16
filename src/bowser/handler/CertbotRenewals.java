@@ -7,6 +7,7 @@ import java.io.File;
 import bowser.model.Controller;
 import bowser.model.Handler;
 import ox.IO;
+import ox.Log;
 import ox.OS;
 
 public class CertbotRenewals extends Controller {
@@ -32,8 +33,17 @@ public class CertbotRenewals extends Controller {
 
     checkState(!key.contains("/") && !key.contains("."));
 
-    File file = new File(rootFolder, ".well-known/acme-challenge/" + key);
-    checkState(file.exists());
+    File dir = new File(rootFolder, ".well-known/acme-challenge");
+    File file = new File(dir, key);
+    if (!file.exists()) {
+      Log.debug(key);
+      Log.debug(dir + " exists: " + dir.exists());
+      Log.debug("All files in dir:");
+      for (File f : dir.listFiles()) {
+        Log.debug(f);
+      }
+      throw new RuntimeException("Could not find certbot renewal file: " + file);
+    }
 
     IO.from(file).to(response.getOutputStream());
   };
