@@ -120,7 +120,11 @@ const Bowser = function() {
         let oldValue = context[variableName];
         context[variableName] = this;
         render(node, output, context);
-        context[variableName] = oldValue;
+        if (oldValue == null) {
+          delete context[variableName];
+        } else {
+          context[variableName] = oldValue;
+        }
       });
     } finally {
       node.setAttribute("loop", loop);

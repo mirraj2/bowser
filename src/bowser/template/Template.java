@@ -142,16 +142,12 @@ public class Template {
     s = s.trim();
     int i = s.indexOf("&&");
     if (i != -1) {
-      String a = s.substring(0, i);
-      String b = s.substring(i + 2);
-      return resolveBoolean(a, context) && resolveBoolean(b, context);
+      return resolveBoolean(s.substring(0, i), context) && resolveBoolean(s.substring(i + 2), context);
     }
 
     i = s.indexOf("||");
     if (i != -1) {
-      String a = s.substring(0, i);
-      String b = s.substring(i + 2);
-      return resolveBoolean(a, context) || resolveBoolean(b, context);
+      return resolveBoolean(s.substring(0, i), context) || resolveBoolean(s.substring(i + 2), context);
     }
 
     i = s.indexOf("==");
@@ -159,9 +155,15 @@ public class Template {
       String a = s.substring(0, i);
       String b = s.substring(i + 2);
 
-      Object o1 = resolve(a, context);
-      Object o2 = resolve(b, context);
-      return equals(o1, o2);
+      return equals(resolve(a, context), resolve(b, context));
+    }
+
+    i = s.indexOf("!=");
+    if (i != -1) {
+      String a = s.substring(0, i);
+      String b = s.substring(i + 2);
+
+      return !equals(resolve(a, context), resolve(b, context));
     }
 
     if (s.startsWith("!")) {
