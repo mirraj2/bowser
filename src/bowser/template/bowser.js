@@ -86,6 +86,20 @@ const Bowser = function() {
       return o1 === o2;
     }
 
+    i = s.indexOf(">=");
+    if (i != -1) {
+      const aNum = resolve(s.substring(0, i), context);
+      const bNum = resolve(s.substring(i + 2), context);
+      return aNum >= bNum;
+    }
+
+    i = s.indexOf(">");
+    if (i != -1) {
+      const aNum = resolve(s.substring(0, i), context);
+      const bNum = resolve(s.substring(i + 1), context);
+      return aNum > bNum;
+    }
+
     if (s.startsWith("!")) {
       return !resolveBoolean(s.substring(1), context);
     }
@@ -136,6 +150,11 @@ const Bowser = function() {
     if (expression.charAt(0) === "'" && expression.charAt(expression.length - 1) === "'") {
       return expression.substring(1, expression.length - 1);
     }
+
+    if (expression.match(/^\d/)) {
+      return parseInt(expression);
+    }
+
     expression.split(".").forEach(function(s) {
       try {
         if (reference == null) {

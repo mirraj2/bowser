@@ -166,18 +166,18 @@ public class Template {
       return !equals(resolve(a, context), resolve(b, context));
     }
 
-    i = s.indexOf(">");
-    if (i != -1) {
-      Number aNum = resolve(s.substring(0, i), context);
-      Number bNum = resolve(s.substring(i + 1), context);
-      return aNum.doubleValue() > bNum.doubleValue();
-    }
-
     i = s.indexOf(">=");
     if (i != -1) {
       Number aNum = resolve(s.substring(0, i), context);
       Number bNum = resolve(s.substring(i + 2), context);
       return aNum.doubleValue() >= bNum.doubleValue();
+    }
+
+    i = s.indexOf(">");
+    if (i != -1) {
+      Number aNum = resolve(s.substring(0, i), context);
+      Number bNum = resolve(s.substring(i + 1), context);
+      return aNum.doubleValue() > bNum.doubleValue();
     }
 
     if (s.startsWith("!")) {
