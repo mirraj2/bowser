@@ -138,6 +138,7 @@ public class Template {
     }
   }
 
+  // TODO jason, rewrite this
   private boolean resolveBoolean(String s, Context context) {
     s = s.trim();
     int i = s.indexOf("&&");
@@ -162,8 +163,21 @@ public class Template {
     if (i != -1) {
       String a = s.substring(0, i);
       String b = s.substring(i + 2);
-
       return !equals(resolve(a, context), resolve(b, context));
+    }
+
+    i = s.indexOf(">");
+    if (i != -1) {
+      Number aNum = resolve(s.substring(0, i), context);
+      Number bNum = resolve(s.substring(i + 1), context);
+      return aNum.doubleValue() > bNum.doubleValue();
+    }
+
+    i = s.indexOf(">=");
+    if (i != -1) {
+      Number aNum = resolve(s.substring(0, i), context);
+      Number bNum = resolve(s.substring(i + 2), context);
+      return aNum.doubleValue() >= bNum.doubleValue();
     }
 
     if (s.startsWith("!")) {
@@ -352,12 +366,20 @@ public class Template {
   private <T> T resolve(String expression, Context context) {
     expression = trim(expression);
 
+    if (expression.isEmpty()) {
+      return null;
+    }
+
     if (expression.startsWith("'") && expression.endsWith("'")) {
       return (T) expression.substring(1, expression.length() - 1);
     }
 
     if (expression.equals("null")) {
       return null;
+    }
+
+    if (Character.isDigit(expression.charAt(0))) {
+      return (T) Long.valueOf(expression);
     }
 
     Iterator<String> iter = Splitter.on('.').split(expression).iterator();

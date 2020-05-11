@@ -65,7 +65,7 @@ public class DomParser {
       return;
     }
 
-    int endTag = s.indexOf('>', start);
+    int endTag = findEndOfStartTag(s, start);
 
     String tagData = s.substring(start + 1, endTag);
     List<String> m = split(tagData, ' ');
@@ -112,6 +112,25 @@ public class DomParser {
     }
 
     parse(head, parent, s, endTag + 1, end);
+  }
+
+  private int findEndOfStartTag(String s, int start) {
+    boolean insideQuotes = false;
+    for (int i = start; i < s.length(); i++) {
+      char c = s.charAt(i);
+      if (insideQuotes) {
+        if (c == '"') {
+          insideQuotes = false;
+        }
+      } else {
+        if (c == '>') {
+          return i;
+        } else if (c == '"') {
+          insideQuotes = true;
+        }
+      }
+    }
+    throw new RuntimeException("Could not find end of start tag!");
   }
 
   private Integer findEndTag(String tag, String s, int start, int end) {
