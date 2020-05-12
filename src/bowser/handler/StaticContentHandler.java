@@ -47,7 +47,7 @@ public class StaticContentHandler implements RequestHandler {
 
     if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
-    } else if (path.endsWith(".js")) {
+    } else if (path.endsWith(".js") || path.endsWith(".mjs")) {
       response.contentType("text/javascript");
     } else if (path.endsWith(".mp4")) {
       response.setCompressed(false);
@@ -66,7 +66,7 @@ public class StaticContentHandler implements RequestHandler {
       if (server.enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
-    } else if (path.endsWith(".css") || path.endsWith(".scss") || path.endsWith(".js") || path.endsWith(".min.map")) {
+    } else if (path.endsWith(".css") || path.endsWith(".scss") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".min.map")) {
       if (server.enableCaching) {
         response.cacheFor(20, TimeUnit.MINUTES);
       }
