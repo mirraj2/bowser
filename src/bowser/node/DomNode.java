@@ -222,6 +222,9 @@ public class DomNode {
     if (defer) {
       s.attribute("defer");
     }
+    if (name.endsWith(".mjs")) {
+      s.attribute("type", "module");
+    }
     return add(s);    
   }
 
