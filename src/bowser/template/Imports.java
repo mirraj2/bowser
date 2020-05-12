@@ -30,11 +30,6 @@ public class Imports {
       head.javascript(s, false);
     }
 
-    for (String jsImport : split(headNode.getAttribute("jsdefer", ""))) {
-      String s = normalizePath(jsImport);
-      head.javascript(s, true);
-    }
-
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
       String s = normalizePath(cssImport);
       if (embedCSS) {
