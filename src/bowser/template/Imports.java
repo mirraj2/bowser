@@ -73,7 +73,11 @@ public class Imports {
       byte[] jsBytes = controller.getData(jsImport);
       checkNotNull(jsBytes, "Could not find: " + jsImport);
       String s = new String(jsBytes, StandardCharsets.UTF_8);
-      ret.add(new DomNode("script").add(new TextNode("\n" + s)));
+      DomNode script = new DomNode("script").add(new TextNode("\n" + s));
+      if (jsImport.endsWith(".mjs")) {
+        script.attribute("type", "module");
+      }
+      ret.add(script);
       // ret.add(new DomNode("script").attribute("src", jsImport));
     }
     return ret;
