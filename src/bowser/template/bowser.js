@@ -1,11 +1,12 @@
-$.fn.render = function(data) {
-  let ret = $("<div>");
-  $($(this).prop("content")).children().each(function() {
-    Bowser.render(this, ret, data);
-
-  });
-  return ret.children();
-}
+$.fn.extend({
+  render: function(data) {
+    let ret = $("<div>");
+    $($(this).prop("content")).children().each(function() {
+      Bowser.render(this, ret, data);
+    });
+    return ret.children();
+  }
+});
 
 const Bowser = function() {
   function render(node, output, context) {
