@@ -47,4 +47,9 @@ public class HttpFile {
     return IO.from(getInputStream()).toJson();
   }
 
+  @Override
+  public String toString() {
+    return getName();
+  }
+
 }
