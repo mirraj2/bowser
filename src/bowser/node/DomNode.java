@@ -16,6 +16,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
+import bowser.template.Imports.MediaType;
+
 public class DomNode {
 
   private static final CharMatcher IS_NEWLINE = CharMatcher.is('\n');
@@ -225,11 +227,18 @@ public class DomNode {
     if (name.endsWith(".mjs")) {
       s.attribute("type", "module");
     }
-    return add(s);    
+    return add(s);
   }
 
   public DomNode css(String name) {
-    add(new DomNode("link").attribute("href", name).attribute("rel", "stylesheet"));
+    return css(name, MediaType.SCREEN);
+  }
+
+  public DomNode css(String name, MediaType mediaType) {
+    add(new DomNode("link")
+        .attribute("href", name)
+        .attribute("rel", "stylesheet")
+        .attribute("media", mediaType.toString()));
     return this;
   }
 

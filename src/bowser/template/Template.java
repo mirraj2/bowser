@@ -22,6 +22,7 @@ import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
+import bowser.template.Imports.MediaType;
 import ox.IO;
 import ox.Json;
 import ox.Log;
@@ -61,7 +62,8 @@ public class Template {
         }
       } else if ("css".equals(node.tag)) {
         Iterable<String> cssFiles = Splitter.on(' ').split(node.getAttribute("src"));
-        Imports.importCSSToHead(cssFiles, head);
+        MediaType mediaType = node.hasAttribute("print") ? MediaType.PRINT : MediaType.SCREEN;
+        Imports.importCSSToHead(cssFiles, head, mediaType);
         node.parent.remove(node);
       } else if ("head".equals(node.tag)) {
         if (head == null) {

@@ -57,10 +57,10 @@ public class Imports {
     }
   }
 
-  public static void importCSSToHead(Iterable<String> cssFiles, DomNode head) {
+  public static void importCSSToHead(Iterable<String> cssFiles, DomNode head, MediaType mediaType) {
     for (String cssImport : cssFiles) {
       String s = normalizePath(cssImport);
-      head.css(s);
+      head.css(s, mediaType);
     }
   }
 
@@ -109,6 +109,15 @@ public class Imports {
 
   private static Iterable<String> split(String s) {
     return Splitter.on(' ').omitEmptyStrings().trimResults().split(s);
+  }
+
+  public static enum MediaType{
+    SCREEN, PRINT;
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
   }
 
 }
