@@ -147,7 +147,8 @@ const Bowser = function() {
   }
 
   function resolve(expression, context) {
-    let reference = null;
+    expression = expression.trim();
+
     if (expression.charAt(0) === "'" && expression.charAt(expression.length - 1) === "'") {
       return expression.substring(1, expression.length - 1);
     }
@@ -156,6 +157,7 @@ const Bowser = function() {
       return parseInt(expression);
     }
 
+    let reference = null;
     expression.split(".").forEach(function(s) {
       try {
         if (reference == null) {
