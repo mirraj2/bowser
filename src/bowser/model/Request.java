@@ -6,6 +6,7 @@ import static ox.util.Utils.only;
 import static ox.util.Utils.propagate;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,6 +132,14 @@ public class Request {
   public String getContent() {
     try {
       return request.getContent();
+    } catch (IOException e) {
+      throw propagate(e);
+    }
+  }
+
+  public InputStream getInputStream() {
+    try {
+      return request.getInputStream();
     } catch (IOException e) {
       throw propagate(e);
     }
