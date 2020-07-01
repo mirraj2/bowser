@@ -130,7 +130,9 @@ public class Template {
         insideTemplate = true;
       }
 
-      node.renderStartTag(sb, depth, replacer(context, "{", "}", true, true));
+      Function<String, String> a = replacer(context, "{", "}", true, true);
+      Function<String, String> b = replacer(context, "$$(", ")", true, true);
+      node.renderStartTag(sb, depth, a.andThen(b));
 
       for (DomNode child : node.getChildren()) {
         render(child, sb, depth + 1, insideTemplate, context);
@@ -303,8 +305,8 @@ public class Template {
       if (node.parent.hasAttribute("allowHtml")) {
         escapeHtml = false;
       }
-      Function<String, String> replacer = replacer(context, "{", "}", true, escapeHtml);
-      text = replacer.apply(text);
+      text = replacer(context, "$$(", ")", true, escapeHtml).apply(text);
+      text = replacer(context, "{", "}", true, escapeHtml).apply(text);
     }
 
     sb.append(text);
