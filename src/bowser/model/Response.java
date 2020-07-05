@@ -1,5 +1,6 @@
 package bowser.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
 
 import java.io.File;
@@ -134,6 +135,7 @@ public class Response {
   }
 
   public Response write(String text) {
+    checkNotNull(text);
     this.responseBody = text;
     IO.from(text).to(getOutputStream());
     return this;
