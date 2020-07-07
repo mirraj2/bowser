@@ -67,7 +67,7 @@ const Bowser = function() {
       return resolveBoolean(a, context) || resolveBoolean(b, context);
     }
 
-    i = s.indexOf("!==");
+    i = s.indexOf("!=");
     if (i != -1) {
       let a = s.substring(0, i);
       let b = s.substring(i + 2);
