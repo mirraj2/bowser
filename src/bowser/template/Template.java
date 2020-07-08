@@ -374,6 +374,8 @@ public class Template {
       return null;
     }
 
+    checkState(!expression.contains(" "), "Invalid variable: " + expression);
+
     if (expression.startsWith("'") && expression.endsWith("'")) {
       return (T) expression.substring(1, expression.length() - 1);
     }

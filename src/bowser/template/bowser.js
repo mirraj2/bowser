@@ -17,7 +17,12 @@ const Bowser = function() {
     if (node.nodeType == Node.TEXT_NODE) {
       let clone = node.cloneNode();
       clone.textContent = stringReplace(clone.textContent, context);
-      output.append(clone);
+      if (node.parentElement.hasAttribute("allowHtml")) {
+        $("<div>").html(clone.textContent).appendTo(output);
+      } else {
+        output.append(clone);
+      }
+
       return;
     }
 
