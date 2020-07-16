@@ -63,6 +63,8 @@ public class Head extends DomNode {
 
     ret.add(new DomNode("title").text(title));
     ret.add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
+    ret.add(new DomNode("link").attribute("rel", "icon").attribute("type", "image/png")
+        .attribute("href", "/favicon.png"));
 
     ret.generateWhitespace = true;
 

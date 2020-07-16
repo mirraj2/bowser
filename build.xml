@@ -20,8 +20,6 @@
         <pathelement location="lib/css/antlr4-runtime-4.5.3.jar"/>
         <pathelement location="lib/css/jstyleparser-3.5.jar"/>
         <pathelement location="lib/css/unbescape-1.1.6.RELEASE.jar"/>
-        <pathelement location="lib/css/jsass/commons-io-2.6.jar"/>
-        <pathelement location="lib/css/jsass/jsass-5.9.2.jar"/>
         <path refid="ox.classpath"/>
     </path>
     <target name="init">
