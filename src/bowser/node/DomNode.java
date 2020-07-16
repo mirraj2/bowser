@@ -149,8 +149,10 @@ public class DomNode {
 
   public DomNode removeAttribute(String key) {
     int index = attributeIndex(key);
-    attributes.remove(index);
-    attributes.remove(index);
+    if (index != -1) {
+      attributes.remove(index);
+      attributes.remove(index);
+    }
     return this;
   }
 
@@ -198,6 +200,9 @@ public class DomNode {
     return attribute(key, null);
   }
 
+  /**
+   * Adds an attribute, but does NOT overwrite an existing value, unlike a hashmap.
+   */
   public DomNode attribute(String key, Object value) {
     attributes.add(key);
     if (value == null) {
@@ -208,6 +213,11 @@ public class DomNode {
       attributes.add(s);
     }
     return this;
+  }
+
+  public DomNode replaceAttribute(String key, Object value) {
+    removeAttribute(key);
+    return attribute(key, value);
   }
 
   public DomNode style(String key, String value) {
@@ -340,6 +350,18 @@ public class DomNode {
     for (DomNode child : children) {
       node.add(child.copy());
     }
+  }
+
+  public boolean contains(DomNode node) {
+    if (node == this) {
+      return true;
+    }
+    for (DomNode child : children) {
+      if (child.contains(node)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

@@ -31,11 +31,31 @@ public class DomParser {
       DomNode body = new DomNode("body");
       root.add(body);
       parse(headCopy, body, s, 0, s.length());
+      processMetaTags(root, headCopy);
     } else {
       root = new DomNode("div");
       parse(null, root, s, 0, s.length());
     }
     return root;
+  }
+
+  private void processMetaTags(DomNode root, Head head) {
+    root.find("meta").forEach(meta -> {
+      if (!head.contains(meta)) {
+        if (meta.parent != null) {
+          String iff = meta.parent.getAttribute("if", "");
+          String metaIff = meta.getAttribute("if", "");
+          if (!iff.isEmpty()) {
+            if (metaIff.isEmpty()) {
+              meta.attribute("if", iff);
+            } else {
+              meta.replaceAttribute("if", iff + " && " + metaIff);
+            }
+          }
+        }
+        head.add(meta);
+      }
+    });
   }
 
   private void parse(Head head, DomNode parent, String s, int start, int end) {
@@ -81,15 +101,7 @@ public class DomParser {
       }
     }
 
-    if (node.tag.equalsIgnoreCase("meta")) {
-      if (head == null) {
-        Log.warn("<head> is null, skipping meta tag.");
-      } else {
-        head.add(node);
-      }
-    } else {
-      parent.add(node);
-    }
+    parent.add(node);
 
     Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
     if (endTagIndex != null) {
