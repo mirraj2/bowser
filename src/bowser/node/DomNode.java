@@ -260,14 +260,9 @@ public class DomNode {
   }
 
   /**
-   * Add a <link href="abc.css" rel="stylesheet" media="screen"> tag to the node.
-   * 
-   * Provides deduplicating: if there is already a <link href="abc.css...> tag in this node, this request is ignored.
+   * See {@link #css(String, MediaType)}
    */
   public DomNode css(String name) {
-    if (isDuplicateCSS(name)) {
-      return this;
-    }
     return css(name, MediaType.SCREEN);
   }
 
@@ -280,7 +275,14 @@ public class DomNode {
     return false;
   }
 
+  /**
+   * Add a <link href="abc.css", rel="stylesheet", media=mediaType> tag to the node. Provides deduplicating: if a link
+   * with the same href already exists on the node, this call is ignored.
+   */
   public DomNode css(String name, MediaType mediaType) {
+    if (isDuplicateCSS(name)) {
+      return this;
+    }
     add(new DomNode("link")
         .attribute("href", name)
         .attribute("rel", "stylesheet")
