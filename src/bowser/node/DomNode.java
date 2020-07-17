@@ -230,6 +230,12 @@ public class DomNode {
     return this;
   }
 
+  /**
+   * Adds a \<js\> tag to the calling node (typically the document \<head\>).
+   * 
+   * This method also provides deduplicating. Hence if abc.js is added to the (say, head) node twice, the second call to
+   * this function is ignored.
+   */
   public DomNode javascript(String name, boolean defer) {
     DomNode s = new DomNode("script").attribute("src", name);
     if (isDuplicateJS(name)) {
@@ -253,8 +259,25 @@ public class DomNode {
     return false;
   }
 
+  /**
+   * Add a <link href="abc.css" rel="stylesheet" media="screen"> tag to the node.
+   * 
+   * Provides deduplicating: if there is already a <link href="abc.css...> tag in this node, this request is ignored.
+   */
   public DomNode css(String name) {
+    if (isDuplicateCSS(name)) {
+      return this;
+    }
     return css(name, MediaType.SCREEN);
+  }
+
+  private boolean isDuplicateCSS(String cssSrc) {
+    for (DomNode child : this.getChildren()) {
+      if ("link".equals(child.tag) && Objects.equals(child.getAttribute("href"), cssSrc)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public DomNode css(String name, MediaType mediaType) {
