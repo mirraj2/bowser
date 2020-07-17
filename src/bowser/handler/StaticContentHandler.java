@@ -14,8 +14,8 @@ import org.simpleframework.http.Status;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-import bowser.SCSSProcessor;
 import bowser.WebServer;
+import bowser.misc.SCSSProcessor;
 import bowser.model.Controller;
 import bowser.model.Request;
 import bowser.model.RequestHandler;
@@ -40,7 +40,7 @@ public class StaticContentHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
-    byte[] data = getData(request.getOriginalPath());
+    byte[] data = getData(request.path);
 
     if (data == null) {
       return false;
@@ -69,9 +69,14 @@ public class StaticContentHandler implements RequestHandler {
       if (server.enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
-    } else if (path.endsWith(".css") || path.endsWith(".scss") || path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".min.map")) {
+    } else if (path.endsWith(".scss") || path.endsWith(".mjs") || path.endsWith(".min.map")) {
       if (server.enableCaching) {
         response.cacheFor(20, TimeUnit.MINUTES);
+      }
+    } else if (path.endsWith(".js") || path.endsWith(".css")) {
+      if (server.enableCaching) {
+        // because we have cache busting for js files, we can set the longest possible cache duration
+        response.cacheFor(365, TimeUnit.DAYS);
       }
     }
 

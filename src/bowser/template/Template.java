@@ -14,9 +14,11 @@ import java.util.function.Function;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
 
+import bowser.misc.CacheBuster;
 import bowser.model.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
@@ -50,6 +52,7 @@ public class Template {
   }
 
   private void init(DomNode root, Controller controller, boolean embedCSS) {
+    CacheBuster buster = controller.getServer().getCacheBuster();
     for (DomNode node : root.getAllNodes()) {
       if ("js".equals(node.tag)) {
         Iterable<String> jsFiles = Splitter.on(' ').split(node.getAttribute("src"));
@@ -57,11 +60,13 @@ public class Template {
           List<DomNode> jsNodes = Imports.importJSInline(jsFiles, controller);
           node.parent.replace(node, jsNodes);
         } else {
+          jsFiles = Iterables.transform(jsFiles, jsFile -> buster.hashPath(jsFile, controller));
           Imports.importJSToHead(jsFiles, head, node.hasAttribute("defer"));
           node.parent.remove(node);
         }
       } else if ("css".equals(node.tag)) {
         Iterable<String> cssFiles = Splitter.on(' ').split(node.getAttribute("src"));
+        cssFiles = Iterables.transform(cssFiles, cssFile -> buster.hashPath(cssFile, controller));
         MediaType mediaType = node.hasAttribute("print") ? MediaType.PRINT : MediaType.SCREEN;
         Imports.importCSSToHead(cssFiles, head, mediaType);
         node.parent.remove(node);

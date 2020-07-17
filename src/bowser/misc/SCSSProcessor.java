@@ -1,4 +1,4 @@
-package bowser;
+package bowser.misc;
 
 import static ox.util.Utils.propagate;
 

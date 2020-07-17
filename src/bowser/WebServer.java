@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import bowser.handler.ExceptionHandler;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
+import bowser.misc.CacheBuster;
 import bowser.misc.DefaultWebLogger;
 import bowser.misc.UserReadableError;
 import bowser.misc.WebLogger;
@@ -60,10 +61,13 @@ public class WebServer {
 
   private final Head head;
 
+  private final CacheBuster cacheBuster;
+
   public WebServer(String appName, int port, boolean enableCaching) {
     this.port = port;
     this.enableCaching = enableCaching;
     this.staticContentHandler = new StaticContentHandler(this);
+    this.cacheBuster = new CacheBuster(staticContentHandler);
     head = Head.defaults(appName);
   }
 
@@ -152,6 +156,10 @@ public class WebServer {
     return staticContentHandler;
   }
 
+  public CacheBuster getCacheBuster() {
+    return cacheBuster;
+  }
+
   public Head getHead() {
     return head;
   }
@@ -193,6 +201,7 @@ public class WebServer {
 
       if (!handled) {
         if (request.isStaticResource()) {
+          request.path = cacheBuster.unhashPath(request.path);
           handled = staticContentHandler.process(request, response);
         }
       }
