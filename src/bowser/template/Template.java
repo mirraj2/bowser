@@ -52,7 +52,7 @@ public class Template {
   }
 
   private void init(DomNode root, Controller controller, boolean embedCSS) {
-    CacheBuster buster = controller.getServer().getCacheBuster();
+    CacheBuster buster = controller == null ? null : controller.getServer().getCacheBuster();
     for (DomNode node : root.getAllNodes()) {
       if ("js".equals(node.tag)) {
         Iterable<String> jsFiles = Splitter.on(' ').split(node.getAttribute("src"));
@@ -60,13 +60,17 @@ public class Template {
           List<DomNode> jsNodes = Imports.importJSInline(jsFiles, controller);
           node.parent.replace(node, jsNodes);
         } else {
-          jsFiles = Iterables.transform(jsFiles, jsFile -> buster.hashPath(jsFile, controller));
+          if (buster != null) {
+            jsFiles = Iterables.transform(jsFiles, jsFile -> buster.hashPath(jsFile, controller));
+          }
           Imports.importJSToHead(jsFiles, head, node.hasAttribute("defer"));
           node.parent.remove(node);
         }
       } else if ("css".equals(node.tag)) {
         Iterable<String> cssFiles = Splitter.on(' ').split(node.getAttribute("src"));
-        cssFiles = Iterables.transform(cssFiles, cssFile -> buster.hashPath(cssFile, controller));
+        if (buster != null) {
+          cssFiles = Iterables.transform(cssFiles, cssFile -> buster.hashPath(cssFile, controller));
+        }
         MediaType mediaType = node.hasAttribute("print") ? MediaType.PRINT : MediaType.SCREEN;
         Imports.importCSSToHead(cssFiles, head, mediaType);
         node.parent.remove(node);
