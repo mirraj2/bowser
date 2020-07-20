@@ -26,7 +26,7 @@ public class CacheBuster {
   }
 
   public String hashPath(String path, Controller controller) {
-    if (!path.startsWith("/")) {
+    if (!path.startsWith("/") && !path.startsWith("http:") && !path.startsWith("https:")) {
       path = "/" + path;
     }
     byte[] data = resourceLoader.getData(path, controller);
