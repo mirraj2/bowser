@@ -208,13 +208,7 @@ public class WebServer {
 
       if (!handled) {
         Log.info("Not found: " + request);
-        if (notFoundHandler == null) {
-          response.status(Status.NOT_FOUND);
-        } else {
-          if (!notFoundHandler.process(request, response)) {
-            response.status(Status.NOT_FOUND);
-          }
-        }
+        response.status(Status.NOT_FOUND);
       }
     } catch (Exception e) {
       response.exception = e;
