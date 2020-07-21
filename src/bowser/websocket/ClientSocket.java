@@ -116,6 +116,10 @@ public class ClientSocket {
     return this;
   }
 
+  public String getIP() {
+    return socket.getRemoteSocketAddress().toString();
+  }
+
   private void listen() {
     executor.execute(() -> {
       InputStream in = null;
@@ -335,6 +339,7 @@ public class ClientSocket {
 
     String websocketKey = headers.get("Sec-WebSocket-Key");
 
+    @SuppressWarnings("deprecation")
     HashCode hash = Hashing.sha1().hashString(websocketKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11", Charsets.UTF_8);
 
     String acceptCode = BaseEncoding.base64().encode(hash.asBytes());
