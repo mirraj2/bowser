@@ -184,4 +184,8 @@ public class StaticContentHandler implements RequestHandler {
     return server;
   }
 
+  public SCSSProcessor getScssProcessor() {
+    return scssProcessor;
+  }
+
 }

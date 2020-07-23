@@ -41,9 +41,11 @@ public class Template {
   private boolean isRoot;
 
   private DomParser parser;
+  private final CSSScoper scoper;
 
   private Template(String s, Controller controller, DomParser parser, boolean embedCSS) {
     this.parser = parser;
+    this.scoper = new CSSScoper(controller.getServer().getResourceLoader().getScssProcessor());
 
     isRoot = true;
     root = parser.parse(s, isRoot);
@@ -98,7 +100,7 @@ public class Template {
         String cssFileName = node.getAttribute("css");
         String cssData = IO.from(controller.getServer().getResourceLoader().getData(cssFileName, controller))
             .toString();
-        String scopedCSS = CSSUtils.addScope(node, cssData, "[css='" + cssFileName + "']");
+        String scopedCSS = scoper.addScope(node, cssData, cssFileName);
         node.add(new DomNode("style").text(scopedCSS));
       }
     }

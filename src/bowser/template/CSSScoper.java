@@ -4,7 +4,9 @@ import static ox.util.Utils.first;
 import static ox.util.Utils.propagate;
 
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
+import bowser.misc.SCSSProcessor;
 import bowser.node.DomNode;
 import cz.vutbr.web.css.CSSFactory;
 import cz.vutbr.web.css.CombinedSelector;
@@ -14,22 +16,31 @@ import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.SelectorImpl;
-import ox.IO;
-import ox.Log;
 
-public class CSSUtils {
+public class CSSScoper {
 
   static {
     System.setProperty("org.slf4j.simpleLogger.log.cz.vutbr.web.csskit", "warn");
   }
 
-  public static String addScope(DomNode root, String css, String scopeSelector) {
-    return addScope(root, css, scopeSelector, null);
+  private final SCSSProcessor processor;
+
+  public CSSScoper(SCSSProcessor processor) {
+    this.processor = processor;
   }
 
-  public static String addScope(DomNode root, String css, String scopeSelector, String url) {
+  public String addScope(DomNode root, String css, String cssFileName) {
+    return addScope(root, css, cssFileName, null);
+  }
+
+  public String addScope(DomNode root, String css, String cssFileName, String url) {
+    if (cssFileName.endsWith(".scss")) {
+      byte[] data = processor.process(cssFileName, css.getBytes(StandardCharsets.UTF_8));
+      css = new String(data, StandardCharsets.UTF_8);
+    }
     try {
       StyleSheet ss = CSSFactory.parseString(css, url == null ? null : new URL(url));
+      String scopeSelector = "[css='" + cssFileName + "']";
       addScope(root, ss, scopeSelector);
 
       StringBuilder sb = new StringBuilder();
@@ -40,7 +51,7 @@ public class CSSUtils {
     }
   }
 
-  private static void addScope(DomNode root, Rule<?> rule, String scopeSelector) {
+  private void addScope(DomNode root, Rule<?> rule, String scopeSelector) {
     rule.forEach(item -> {
       if (item instanceof RuleSet) {
         RuleSet rules = (RuleSet) item;
@@ -92,10 +103,10 @@ public class CSSUtils {
     }
   }
 
-  public static void main(String[] args) {
-    String from = IO.from(CSSUtils.class, "cssutils-test.css").toString();
-    DomNode root = new DomNode("chat").attribute("class", "test");
-    String to = CSSUtils.addScope(root, from, ".ENDER_SCOPE");
-    Log.debug(to);
-  }
+  // public static void main(String[] args) {
+  // String from = IO.from(CSSUtils.class, "cssutils-test.css").toString();
+  // DomNode root = new DomNode("chat").attribute("class", "test");
+  // String to = CSSUtils.addScope(root, from, ".ENDER_SCOPE");
+  // Log.debug(to);
+  // }
 }
