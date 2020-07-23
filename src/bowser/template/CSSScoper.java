@@ -82,7 +82,7 @@ public class CSSScoper {
     if (i != -1) {
       s = s.substring(0, i);
     }
-    if (s.charAt(0) == '.') {
+    if (!s.isEmpty() && s.charAt(0) == '.') {
       return node.getClasses().contains(s.substring(1));
     } else {
       return node.tag.equalsIgnoreCase(s);
