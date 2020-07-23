@@ -65,10 +65,8 @@ public class CSSScoper {
           }
         }
       } else {
-        for (Object o : rule) {
-          if (o instanceof Rule) {
-            addScope(root, (Rule<?>) o, scopeSelector);
-          }
+        if (item instanceof Rule) {
+          addScope(root, (Rule<?>) item, scopeSelector);
         }
       }
     });
