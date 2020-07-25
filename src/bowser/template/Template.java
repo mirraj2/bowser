@@ -87,7 +87,7 @@ public class Template {
         List<DomNode> importedNodes = Imports.createImport(node, controller, parser);
         String iff = node.getAttribute("if");
         if (iff != null) {
-          DomNode span = new DomNode("span");
+          DomNode span = new DomNode("if");
           span.add(importedNodes);
           span.attribute("if", iff);
           importedNodes = ImmutableList.of(span);
@@ -143,13 +143,19 @@ public class Template {
 
       Function<String, String> a = replacer(context, "{", "}", true, true);
       Function<String, String> b = replacer(context, "$$(", ")", true, true);
-      node.renderStartTag(sb, depth, a.andThen(b));
+
+      boolean ifTag = node.tag.equals("if");
+      if (!ifTag) {
+        node.renderStartTag(sb, depth, a.andThen(b));
+      }
 
       for (DomNode child : node.getChildren()) {
         render(child, sb, depth + 1, insideTemplate, context);
       }
 
-      node.renderEndTag(sb, depth);
+      if (!ifTag) {
+        node.renderEndTag(sb, depth);
+      }
     }
   }
 
