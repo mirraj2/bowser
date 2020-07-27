@@ -104,11 +104,11 @@ public class MessagesPage extends Controller {
 And here is the HTML that uses the data that we've put into the context.
 
 ```html
-<h1>Hello {user.firstName}</h1>
-<h2>You have {messages.size()} messages.</h2>
+<h1>Hello $$(user.firstName)</h1>
+<h2>You have $$(messages.size()) messages.</h2>
 <div loop="message in messages" class="message">
-  <p>{message.title}</p>
-  <p>{message.body}</p>
+  <p>$$(message.title)</p>
+  <p>$$(message.body)</p>
 </div>
 ```
 
@@ -119,18 +119,17 @@ So far you've seen that you can loop through objects, that you can insert variab
 ```html
 <head js="fancy.js" css="fancy.css">
 <p>The text above allows us to import javascript and css files into the 'head'</p>
-<p>Insert a variable: {user.name}</p>
-<p>Call a method: {user.getAddress()}</p>
+<p>Insert a variable: $$(user.name)</p>
+<p>Call a method: $$(user.getAddress())</p>
 <div if="items.hasData()">
-  <h2>You have {items.size()} items.</h2>
-  <span loop="item in items">{item.name}</span>
+  <h2>You have $$(items.size()) items.</h2>
+  <span loop="item in items">$$(item.name)</span>
 </div>
 <p if="items.isEmpty()">You have no items.</p>
 <p if="!items.isEmpty()">Another way of saying hasData()</p>
 <script>
   var text = "In javascript, this is how you replace variables.";
   var dynamic = "Hello $$(user.name)";
-  var text2 = "It is just like in the HTML except with two dollar signs. Someday I'll change the way this is escaped to something better :p";
 </script>
 <p>You can also import javascript/html from other files like this:</p>
 <import js="mario.js">

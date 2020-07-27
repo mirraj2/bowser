@@ -141,12 +141,11 @@ public class Template {
         insideTemplate = true;
       }
 
-      Function<String, String> a = replacer(context, "{", "}", true, true);
-      Function<String, String> b = replacer(context, "$$(", ")", true, true);
+      Function<String, String> replacer = replacer(context, "$$(", ")", true, true);
 
       boolean ifTag = node.tag.equals("if");
       if (!ifTag) {
-        node.renderStartTag(sb, depth, a.andThen(b));
+        node.renderStartTag(sb, depth, replacer);
       }
 
       for (DomNode child : node.getChildren()) {
@@ -322,7 +321,6 @@ public class Template {
         escapeHtml = false;
       }
       text = replacer(context, "$$(", ")", true, escapeHtml).apply(text);
-      text = replacer(context, "{", "}", true, escapeHtml).apply(text);
     }
 
     sb.append(text);
