@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import com.google.common.base.Functions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -142,6 +143,9 @@ public class Template {
       }
 
       Function<String, String> replacer = replacer(context, "$$(", ")", true, true);
+      if (insideTemplate) {
+        replacer = Functions.identity();
+      }
 
       boolean ifTag = node.tag.equals("if");
       if (!ifTag) {
