@@ -138,9 +138,6 @@ public class Template {
     if (node instanceof TextNode) {
       renderText((TextNode) node, sb, depth, insideTemplate, context);
     } else {
-      if (node.tag.equalsIgnoreCase("template")) {
-        insideTemplate = true;
-      }
 
       Function<String, String> replacer = replacer(context, "$$(", ")", true, true);
       if (insideTemplate) {
@@ -152,6 +149,9 @@ public class Template {
         node.renderStartTag(sb, depth, replacer);
       }
 
+      if (node.tag.equalsIgnoreCase("template")) {
+        insideTemplate = true;
+      }
       for (DomNode child : node.getChildren()) {
         render(child, sb, depth + 1, insideTemplate, context);
       }
