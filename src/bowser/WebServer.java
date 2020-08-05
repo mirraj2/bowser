@@ -209,6 +209,9 @@ public class WebServer {
       if (!handled) {
         Log.info("Not found: " + request);
         response.status(Status.NOT_FOUND);
+        if (notFoundHandler != null) {
+          notFoundHandler.process(request, response);
+        }
       }
     } catch (Exception e) {
       response.exception = e;
