@@ -5,6 +5,9 @@ import static ox.util.Utils.propagate;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import com.google.common.base.Splitter;
 
 import bowser.misc.SCSSProcessor;
 import bowser.node.DomNode;
@@ -81,7 +84,13 @@ public class CSSScoper {
       s = s.substring(0, i);
     }
     if (!s.isEmpty() && s.charAt(0) == '.') {
-      return node.getClasses().contains(s.substring(1));
+      List<String> classes = node.getClasses();
+      for (String c : Splitter.on('.').trimResults().omitEmptyStrings().split(s)) {
+        if (!classes.contains(c)) {
+          return false;
+        }
+      }
+      return true;
     } else {
       return node.tag.equalsIgnoreCase(s);
     }
