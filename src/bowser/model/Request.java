@@ -158,6 +158,9 @@ public class Request {
     if (!getMethod().equals("GET")) {
       return true;
     }
+    if ("XMLHttpRequest".equals(getHeader("X-Requested-With"))) {
+      return true;
+    }
     String contentType = getHeader("Content-Type");
     if (contentType != null && contentType.startsWith("application/x-www-form")) {
       return true;
