@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/simple-5.1.5.jar" sourcepath="open-src/simple.zip"/>
 	<classpathentry kind="lib" path="lib/css/antlr4-runtime-4.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/css/jstyleparser-3.5.jar" sourcepath="open-src/jstyleparser-3.5-sources.jar"/>
 	<classpathentry kind="lib" path="lib/css/unbescape-1.1.6.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/css/jsass/commons-io-2.6.jar"/>
 	<classpathentry kind="lib" path="lib/css/jsass/jsass-5.9.2.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ox"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

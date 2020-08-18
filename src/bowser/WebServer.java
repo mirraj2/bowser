@@ -42,10 +42,6 @@ import ox.Threads;
 
 public class WebServer {
 
-  static {
-    System.setProperty("jdk.tls.disabledAlgorithms", "TLSv1, TLSv1.1");
-  }
-
   public static boolean debugHandlers = false;
 
   public final int port;
