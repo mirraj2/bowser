@@ -2,20 +2,18 @@ package bowser.handler;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.io.File;
-
 import bowser.model.Controller;
 import bowser.model.Handler;
+import ox.File;
 import ox.IO;
 import ox.Log;
-import ox.OS;
 
 public class CertbotRenewals extends Controller {
 
   private File rootFolder;
 
   public CertbotRenewals() {
-    this(OS.getHomeFolder());
+    this(File.home());
   }
 
   public CertbotRenewals(File rootFolder) {
@@ -33,13 +31,13 @@ public class CertbotRenewals extends Controller {
 
     checkState(!key.contains("/") && !key.contains("."));
 
-    File dir = new File(rootFolder, ".well-known/acme-challenge");
+    File dir = rootFolder.child(".well-known/acme-challenge");
     File file = findFile(dir, key);
     if (!file.exists()) {
       Log.debug(key);
       Log.debug(dir + " exists: " + dir.exists());
       Log.debug("All files in dir:");
-      for (File f : dir.listFiles()) {
+      for (File f : dir.children()) {
         Log.debug(f);
       }
       throw new RuntimeException("Could not find certbot renewal file: " + file);
@@ -49,12 +47,12 @@ public class CertbotRenewals extends Controller {
   };
 
   private File findFile(File dir, String name) {
-    for (File file : dir.listFiles()) {
+    for (File file : dir.children()) {
       if (file.getName().equalsIgnoreCase(name)) {
         return file;
       }
     }
-    return new File(dir, name);
+    return dir.child(name);
   }
 
 }
