@@ -16,7 +16,7 @@ public class CertbotRenewals extends Controller {
     this(File.home());
   }
 
-  public CertbotRenewals(File rootFolder) {
+  private CertbotRenewals(File rootFolder) {
     this.rootFolder = rootFolder;
   }
 
