@@ -3,8 +3,8 @@
     <property environment="env"/>
     <property name="ox.location" value="../ox"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="11"/>
-    <property name="source" value="11"/>
+    <property name="target" value="8"/>
+    <property name="source" value="8"/>
     <path id="ox.classpath">
         <pathelement location="${ox.location}/bin"/>
         <pathelement location="${ox.location}/lib/objenesis-2.1.jar"/>
