@@ -123,10 +123,14 @@ public class Request {
 
   public Json getJson() {
     String s = getContent();
-    if (s.isEmpty()) {
-      return Json.object();
+    Json ret;
+    if (s.startsWith("{")) {
+      ret = new Json(s);
+    } else {
+      ret = Json.object();
     }
-    return new Json(s);
+    getQuery().forEach((k, v) -> ret.with(k, v));
+    return ret;
   }
 
   public String getContent() {
