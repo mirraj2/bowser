@@ -124,7 +124,7 @@ public class Request {
   public Json getJson() {
     String s = getContent();
     Json ret;
-    if (s.startsWith("{")) {
+    if (s.startsWith("{") || s.startsWith("[")) {
       ret = new Json(s);
     } else {
       ret = Json.object();
