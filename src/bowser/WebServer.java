@@ -170,6 +170,7 @@ public class WebServer {
       boolean handled = false;
 
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
+      response.header("Access-Control-Allow-Credentials", "true");
       response.header("X-Frame-Options", "SAMEORIGIN");
       if (sslContext != null) {
         long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
