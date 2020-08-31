@@ -129,7 +129,9 @@ public class Request {
     } else {
       ret = Json.object();
     }
-    getQuery().forEach((k, v) -> ret.with(k, v));
+    if (ret.isObject()) {
+      getQuery().forEach((k, v) -> ret.with(k, v));
+    }
     return ret;
   }
 
