@@ -130,7 +130,13 @@ public class Request {
       ret = Json.object();
     }
     if (ret.isObject()) {
-      getQuery().forEach((k, v) -> ret.with(k, v));
+      getQuery().forEach((k, v) -> {
+        // for some reason, when the json is stringified, it shows up like this:
+        // { "string": "a", "{\"string\":\"a\"}": "" }
+        if (!v.isEmpty() || k.charAt(0) != '{') {
+          ret.with(k, v);
+        }
+      });
     }
     return ret;
   }
