@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.ClosedChannelException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -50,7 +51,10 @@ public class StaticContentHandler implements RequestHandler {
 
     if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
-    } else if (path.endsWith(".js") || path.endsWith(".mjs")) {
+    } else if (path.endsWith(".js")) {
+      response.contentType("text/javascript");
+    } else if (path.endsWith(".mjs")) {
+      data = server.getCacheBuster().hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
       response.contentType("text/javascript");
     } else if (path.endsWith(".mp4")) {
       response.setCompressed(false);

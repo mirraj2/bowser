@@ -2,6 +2,7 @@ package bowser.misc;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -9,6 +10,7 @@ import com.google.common.hash.Hashing;
 
 import bowser.handler.StaticContentHandler;
 import bowser.model.Controller;
+import ox.util.Regex;
 
 /**
  * Changes resource paths on the fly in order to bust caches for old files.
@@ -47,6 +49,25 @@ public class CacheBuster {
 
   public String unhashPath(String path) {
     return nameMap.getOrDefault(path, path);
+  }
+
+  /**
+   * Goes through an mjs file and replaces paths with hashed ones.
+   */
+  public String hashMJSImports(byte[] data) {
+    String s = new String(data, StandardCharsets.UTF_8);
+
+    String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\n)*?\\}|\\w+) from )?\"(.*)\";", s, match -> {
+      String fullMatch = match.group(0);
+      int start = match.start();
+      int i = match.start(1) - start;
+      int j = match.end(1) - start;
+
+      String path = hashPath(match.group(1), null);
+      return fullMatch.substring(0, i) + path + fullMatch.substring(j);
+    });
+    
+    return ret;
   }
 
 }

@@ -72,13 +72,16 @@ public class Imports {
       }
       byte[] jsBytes = controller.getData(jsImport);
       checkNotNull(jsBytes, "Could not find: " + jsImport);
-      String s = new String(jsBytes, StandardCharsets.UTF_8);
-      DomNode script = new DomNode("script").add(new TextNode("\n" + s));
+      DomNode script = new DomNode("script");
+      String s;
       if (jsImport.endsWith(".mjs")) {
         script.attribute("type", "module");
+        s = controller.getServer().getCacheBuster().hashMJSImports(jsBytes);
+      } else {
+        s = new String(jsBytes, StandardCharsets.UTF_8);
       }
+      script.add(new TextNode("\n" + s));
       ret.add(script);
-      // ret.add(new DomNode("script").attribute("src", jsImport));
     }
     return ret;
   }
