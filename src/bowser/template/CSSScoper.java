@@ -19,6 +19,8 @@ import cz.vutbr.web.css.Selector;
 import cz.vutbr.web.css.Selector.Combinator;
 import cz.vutbr.web.css.StyleSheet;
 import cz.vutbr.web.csskit.SelectorImpl;
+import ox.IO;
+import ox.Log;
 
 public class CSSScoper {
 
@@ -110,10 +112,10 @@ public class CSSScoper {
     }
   }
 
-  // public static void main(String[] args) {
-  // String from = IO.from(CSSUtils.class, "cssutils-test.css").toString();
-  // DomNode root = new DomNode("chat").attribute("class", "test");
-  // String to = CSSUtils.addScope(root, from, ".ENDER_SCOPE");
-  // Log.debug(to);
-  // }
+  public static void main(String[] args) {
+    String file = "cssscoper-test.css";
+    String from = IO.from(CSSScoper.class, file).toString();
+    DomNode root = new DomNode("chat").attribute("class", "test");
+    Log.debug(new CSSScoper(new SCSSProcessor(null, false)).addScope(root, from, file));
+  }
 }

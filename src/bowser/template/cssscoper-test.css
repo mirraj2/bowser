@@ -22,8 +22,16 @@ td.unread span {
   padding: 0px;
 }
 
+* {
+  color: blue;
+}
+
 chat {
   padding: 4px;
+}
+
+chat>* {
+  color: green;
 }
 
 nomatch,
