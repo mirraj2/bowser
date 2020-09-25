@@ -309,7 +309,7 @@ public class ClientSocket {
       buf.put(payload);
     }
 
-    buf.flip();
+    ((java.nio.Buffer) buf).flip();
 
     return buf.array();
   }
