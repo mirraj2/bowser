@@ -52,4 +52,8 @@ public class HttpFile {
     return getName();
   }
 
+  public Part getPart() {
+    return delegate;
+  }
+
 }

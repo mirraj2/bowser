@@ -205,15 +205,19 @@ public class WebServer {
           request.path = cacheBuster.unhashPath(request.path);
           handled = staticContentHandler.process(request, response);
         }
-      }
-
-      if (!handled) {
-        Log.info("Not found: " + request);
-        response.status(Status.NOT_FOUND);
-        if (notFoundHandler != null) {
-          notFoundHandler.process(request, response);
+        if (!handled) {
+          Log.info("Not found: " + request);
+          response.status(Status.NOT_FOUND);
+          if (notFoundHandler != null) {
+            handled = notFoundHandler.process(request, response);
+          }
+          if (!handled) {
+            response.write("Not found: " + request);
+            handled = true;
+          }
         }
       }
+
     } catch (Exception e) {
       response.exception = e;
       if (!exceptionHandler.handle(request, response, lastHandler)) {
