@@ -46,7 +46,8 @@ public class WebServer {
 
   public final int port;
   public final boolean enableCaching;
-  public final boolean showImportComments = false;
+  public boolean showImportComments = false;
+  public boolean includeRouteDebugInfo = false;
   public final List<Controller> controllers = Lists.newArrayList();
 
   private final List<RequestHandler> handlers = Lists.newArrayList();
@@ -125,6 +126,12 @@ public class WebServer {
 
   public WebServer logger(WebLogger logger) {
     this.logger = logger;
+    return this;
+  }
+
+  public WebServer devMode() {
+    showImportComments = true;
+    includeRouteDebugInfo = true;
     return this;
   }
 
