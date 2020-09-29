@@ -26,6 +26,14 @@ public class RouteHandler implements RequestHandler {
       return false;
     }
 
+    if (server.includeRouteDebugInfo) {
+      request.put("bowser", Json.object()
+          .with("method", route.method)
+          .with("path", route.path)
+          .with("controller", route.controller.getClass().getSimpleName() + ".java")
+          .with("resource", route.resource));
+    }
+
     if (route.handler != null) {
       route.handler.handle(request, response);
       return true;
@@ -34,13 +42,6 @@ public class RouteHandler implements RequestHandler {
     if (template != null) {
       Context context = new Context(request, response);
       route.data.fill(context);
-      if (server.includeRouteDebugInfo) {
-        context.put("bowser", Json.object()
-            .with("method", route.method)
-            .with("path", route.path)
-            .with("controller", route.controller.getClass().getSimpleName() + ".java")
-            .with("resource", route.resource));
-      }
       if (!response.response.isCommitted()) {
         response.noCache();
         response.write(template.render(context));
