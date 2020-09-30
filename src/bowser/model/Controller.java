@@ -3,8 +3,10 @@ package bowser.model;
 import static ox.util.Utils.getExtension;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import bowser.WebServer;
@@ -13,6 +15,7 @@ public abstract class Controller {
 
   private WebServer server;
   private final Map<String, String> folders = Maps.newHashMap();
+  private final List<Route> routes = Lists.newArrayList();
 
   public final void init(WebServer server) {
     this.server = server;
@@ -23,6 +26,7 @@ public abstract class Controller {
 
   protected Route route(String method, String path) {
     Route ret = new Route(this, method, path, server.enableCaching);
+    routes.add(ret);
     server.add(ret);
     return ret;
   }
