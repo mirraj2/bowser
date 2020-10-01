@@ -191,6 +191,12 @@ public class Request {
     return part;
   }
 
+  public String getPartContent(String partName) {
+    HttpPart part = getPart(partName);
+    checkState(!part.isFile());
+    return part == null ? null : part.getContent();
+  }
+
   public HttpPart getPart(String partName) {
     Part part = request.getPart(partName);
     return part == null ? null : new HttpPart(part);
@@ -204,7 +210,7 @@ public class Request {
     return ret;
   }
 
-  public List<HttpPart> getFiles(){
+  public List<HttpPart> getFiles() {
     return getParts().filter(HttpPart::isFile);
   }
 
