@@ -11,11 +11,11 @@ import org.simpleframework.http.Part;
 import ox.IO;
 import ox.Json;
 
-public class HttpFile {
+public class HttpPart {
 
   private final Part delegate;
 
-  HttpFile(Part part) {
+  HttpPart(Part part) {
     this.delegate = part;
   }
 
@@ -45,6 +45,10 @@ public class HttpFile {
 
   public Json toJson() {
     return IO.from(getInputStream()).toJson();
+  }
+
+  public boolean isFile() {
+    return delegate.isFile();
   }
 
   @Override

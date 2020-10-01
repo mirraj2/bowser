@@ -1,5 +1,6 @@
 package bowser.model;
 
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static ox.util.Utils.only;
@@ -18,13 +19,13 @@ import org.simpleframework.http.Query;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import bowser.handler.MobileDetector;
 import ox.Json;
 import ox.Pair;
+import ox.XList;
 import ox.util.Images;
 
 public class Request {
@@ -180,22 +181,31 @@ public class Request {
     return false;
   }
 
-  public HttpFile getFile() {
-    return only(getFiles());
+  public HttpPart getPart() {
+    return only(getParts());
   }
 
-  public HttpFile getFile(String fileName) {
-    Part part = request.getPart(fileName);
-    return part == null ? null : new HttpFile(part);
+  public HttpPart getFile(String partName) {
+    HttpPart part = getPart(partName);
+    checkState(part.isFile());
+    return part;
   }
 
-  public List<HttpFile> getFiles() {
-    List<HttpFile> ret = Lists.newArrayList();
+  public HttpPart getPart(String partName) {
+    Part part = request.getPart(partName);
+    return part == null ? null : new HttpPart(part);
+  }
+
+  public XList<HttpPart> getParts() {
+    XList<HttpPart> ret = XList.create();
     for (Part part : request.getParts()) {
-      ret.add(new HttpFile(part));
+      ret.add(new HttpPart(part));
     }
     return ret;
+  }
 
+  public List<HttpPart> getFiles(){
+    return getParts().filter(HttpPart::isFile);
   }
 
   public Map<String, String> getHeaders() {
