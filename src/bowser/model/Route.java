@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import bowser.template.Data;
 import bowser.template.Template;
 import ox.IO;
+import ox.Json;
 import ox.Log;
 
 public class Route {
@@ -111,5 +112,13 @@ public class Route {
   @Override
   public String toString() {
     return method + " " + path;
+  }
+
+  public Json toJson() {
+    return Json.object()
+        .with("method", this.method)
+        .with("path", this.path)
+        .with("controller", this.controller.getClass().getSimpleName() + ".java")
+        .with("resource", this.resource);
   }
 }

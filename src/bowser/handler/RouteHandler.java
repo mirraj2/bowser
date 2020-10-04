@@ -8,7 +8,6 @@ import bowser.model.Route;
 import bowser.template.Context;
 import bowser.template.Template;
 import ox.IO;
-import ox.Json;
 
 public class RouteHandler implements RequestHandler {
 
@@ -27,11 +26,7 @@ public class RouteHandler implements RequestHandler {
     }
 
     if (server.includeRouteDebugInfo) {
-      request.put("bowser", Json.object()
-          .with("method", route.method)
-          .with("path", route.path)
-          .with("controller", route.controller.getClass().getSimpleName() + ".java")
-          .with("resource", route.resource));
+      request.put("bowser", route.toJson());
     }
 
     if (route.handler != null) {

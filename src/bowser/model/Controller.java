@@ -57,4 +57,8 @@ public abstract class Controller {
     return getClass().getResource(path);
   }
 
+  public List<Route> getRoutes() {
+    return routes;
+  }
+
 }
