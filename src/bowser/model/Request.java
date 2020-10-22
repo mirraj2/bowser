@@ -204,7 +204,7 @@ public class Request {
     return ret;
   }
 
-  public List<HttpPart> getFiles(){
+  public List<HttpPart> getFiles() {
     return getParts().filter(HttpPart::isFile);
   }
 
