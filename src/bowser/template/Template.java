@@ -2,6 +2,7 @@ package bowser.template;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.size;
+import static ox.util.Utils.isNullOrEmpty;
 import static ox.util.Utils.propagate;
 import static ox.util.Utils.trim;
 
@@ -122,7 +123,7 @@ public class Template {
   private void render(DomNode node, StringBuilder sb, int depth, boolean insideTemplate, Context context) {
     if (!insideTemplate) {
       String loop = node.getAttribute("loop");
-      if (loop != null && !"video".equals(node.tag)) {
+      if (!isNullOrEmpty(loop)) {
         renderLoop(node, sb, depth, insideTemplate, context, loop);
         return;
       }

@@ -361,7 +361,7 @@ public class ClientSocket {
     onOpen.accept(this);
   }
   
-  private static final class DisconnectedException extends RuntimeException {
+  public static final class DisconnectedException extends RuntimeException {
   }
 
 }
