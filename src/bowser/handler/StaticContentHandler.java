@@ -41,9 +41,6 @@ public class StaticContentHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
-    if (request.path.contains("ender-react")) {
-      Log.debug("We are here.");
-    }
     byte[] data = getData(request.path);
 
     if (data == null) {
