@@ -172,6 +172,10 @@ public class WebServer {
   }
 
   private void handle(Request request, Response response) {
+    Log.debug("Request: " + request.path);
+    if (request.path.contains("ender-react")) {
+      Log.debug("We are here.");
+    }
     RequestHandler lastHandler = null;
     try {
       boolean handled = false;
@@ -226,6 +230,7 @@ public class WebServer {
       }
 
     } catch (Exception e) {
+      Log.debug("Exception: on request path: " + request.path);
       response.exception = e;
       if (!exceptionHandler.handle(request, response, lastHandler)) {
         throw e;

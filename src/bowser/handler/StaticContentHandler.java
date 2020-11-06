@@ -41,6 +41,9 @@ public class StaticContentHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
+    if (request.path.contains("ender-react")) {
+      Log.debug("We are here.");
+    }
     byte[] data = getData(request.path);
 
     if (data == null) {
@@ -51,7 +54,7 @@ public class StaticContentHandler implements RequestHandler {
 
     if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
-    } else if (path.endsWith(".js")) {
+    } else if (path.endsWith(".js") || path.endsWith(".min.mjs")) {
       response.contentType("text/javascript");
     } else if (path.endsWith(".mjs")) {
       data = server.getCacheBuster().hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
