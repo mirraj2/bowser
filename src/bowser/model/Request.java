@@ -25,8 +25,8 @@ import com.google.common.collect.Sets;
 import bowser.handler.MobileDetector;
 import ox.Json;
 import ox.Pair;
-import ox.XList;
 import ox.util.Images;
+import ox.x.XList;
 
 public class Request {
 

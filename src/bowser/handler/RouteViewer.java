@@ -6,7 +6,7 @@ import bowser.model.Controller;
 import bowser.model.Route;
 import bowser.template.Data;
 import ox.Json;
-import ox.XList;
+import ox.x.XList;
 
 /**
  * A webpage that lets you see which Controllers have registered which routes.
