@@ -157,7 +157,7 @@ public class StaticContentHandler implements RequestHandler {
   }
 
   private byte[] load(String path, Controller controller) {
-    if (path.startsWith("/")) {
+    if (path.charAt(0) == '/') {
       path = path.substring(1);
     }
 
@@ -169,11 +169,9 @@ public class StaticContentHandler implements RequestHandler {
       }
     }
 
-    for (Controller c : server.controllers) {
-      URL url = c.getResource(path);
-      if (url != null) {
-        return IO.from(url).toByteArray();
-      }
+    URL url = pathToUrl(path);
+    if (url != null) {
+      return IO.from(url).toByteArray();
     }
 
     if (path.equals("bowser.js")) {
@@ -182,6 +180,20 @@ public class StaticContentHandler implements RequestHandler {
 
     Log.debug("Couldn't find: " + path);
     return NO_DATA;
+  }
+
+  public URL pathToUrl(String path) {
+    if (path.charAt(0) == '/') {
+      path = path.substring(1);
+    }
+
+    for (Controller c : server.controllers) {
+      URL url = c.getResource(path);
+      if (url != null) {
+        return url;
+      }
+    }
+    return null;
   }
 
   public WebServer getServer() {

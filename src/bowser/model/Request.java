@@ -3,6 +3,7 @@ package bowser.model;
 import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
+import static ox.util.Utils.getExtension;
 import static ox.util.Utils.only;
 import static ox.util.Utils.propagate;
 
@@ -240,11 +241,7 @@ public class Request {
   }
 
   public boolean isStaticResource() {
-    int i = path.lastIndexOf(".");
-    if (i == -1) {
-      return false;
-    }
-    String extension = path.substring(i + 1);
+    String extension = getExtension(path);
     return staticExtensions.contains(extension);
   }
 
