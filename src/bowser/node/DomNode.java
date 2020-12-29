@@ -30,6 +30,7 @@ public class DomNode {
   protected final List<DomNode> children = Lists.newArrayList();
 
   public boolean generateWhitespace = false;
+  public boolean selfClosingNode = false;
 
   public DomNode() {
     this("");
@@ -292,8 +293,10 @@ public class DomNode {
 
   public void render(StringBuilder sb, int depth) {
     renderStartTag(sb, depth);
-    renderContent(sb, depth);
-    renderEndTag(sb, depth);
+    if (!selfClosingNode) {
+      renderContent(sb, depth);
+      renderEndTag(sb, depth);
+    }
     if (shouldGenWhitespace()) {
       sb.append("\n");
     }
@@ -317,6 +320,9 @@ public class DomNode {
       if (value != null) {
         sb.append("=\"").append(value).append("\"");
       }
+    }
+    if (selfClosingNode) {
+      sb.append(" /");
     }
     sb.append('>');
 

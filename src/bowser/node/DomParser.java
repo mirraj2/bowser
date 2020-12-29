@@ -103,7 +103,15 @@ public class DomParser {
 
     parent.add(node);
 
-    Integer endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
+    Integer endTagIndex;
+    if (s.charAt(endTag - 1) == '/') {
+      // self-closing tag.
+      node.selfClosingNode = true;
+      endTagIndex = null;
+    } else {
+      endTagIndex = findEndTag(node.tag, s, endTag + 1, end);
+    }
+
     if (endTagIndex != null) {
       if (node.tag.equalsIgnoreCase("script") /* || node.tag.equalsIgnoreCase("template") */
           || node.tag.equalsIgnoreCase("code") || node.tag.equalsIgnoreCase("svg")) {
@@ -127,7 +135,7 @@ public class DomParser {
     parse(head, parent, s, endTag + 1, end);
   }
 
-  private int findEndOfStartTag(String s, int start) {
+  public static int findEndOfStartTag(String s, int start) {
     boolean insideQuotes = false;
     for (int i = start; i < s.length(); i++) {
       char c = s.charAt(i);
@@ -146,7 +154,7 @@ public class DomParser {
     throw new RuntimeException("Could not find end of start tag!");
   }
 
-  private Integer findEndTag(String tag, String s, int start, int end) {
+  public static Integer findEndTag(String tag, String s, int start, int end) {
     int n = 1;
     while (true) {
       int i = s.indexOf("<" + tag, start);
@@ -184,7 +192,7 @@ public class DomParser {
    * Same as a normal string split, except it doesn't split if inside a quoted literal. Important for things like
    * class="big red" href="blah.com", as we don't want to split apart "big red" at the space.
    */
-  private static List<String> split(String s, char z) {
+  public static List<String> split(String s, char z) {
     List<String> ret = Lists.newArrayList();
     StringBuilder sb = new StringBuilder();
     boolean escaped = false;
