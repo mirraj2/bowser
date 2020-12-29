@@ -14,6 +14,11 @@ public class TextNode extends DomNode {
   }
 
   @Override
+  public String toString() {
+    return "<t>" + content + "</t>";
+  }
+
+  @Override
   public String text() {
     return content;
   }
