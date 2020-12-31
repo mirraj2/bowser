@@ -245,7 +245,7 @@ public class DomNode {
     if (defer) {
       s.attribute("defer");
     }
-    if (name.endsWith(".mjs")) {
+    if (name.endsWith(".mjs") || name.endsWith(".jsx")) {
       s.attribute("type", "module");
     }
     return add(s);

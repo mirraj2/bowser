@@ -73,13 +73,9 @@ public class StaticContentHandler implements RequestHandler {
       if (server.enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
-    } else if (path.endsWith(".scss") || path.endsWith(".mjs") || path.endsWith(".min.map")) {
+    } else if (path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".css") || path.endsWith(".scss")) {
       if (server.enableCaching) {
-        response.cacheFor(20, TimeUnit.MINUTES);
-      }
-    } else if (path.endsWith(".js") || path.endsWith(".css")) {
-      if (server.enableCaching) {
-        // because we have cache busting for js files, we can set the longest possible cache duration
+        // because we have cache busting for these files, we can set the longest possible cache duration
         response.cacheFor(365, TimeUnit.DAYS);
       }
     }
