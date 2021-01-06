@@ -39,6 +39,10 @@ public class CacheBuster {
       return path;
     }
 
+    if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
+      data = hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
+    }
+
     String hash = Hashing.murmur3_32().hashBytes(data).toString();
     int i = path.lastIndexOf('.');
     checkState(i != -1, path);
