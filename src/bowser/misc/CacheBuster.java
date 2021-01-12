@@ -68,6 +68,9 @@ public class CacheBuster {
       int j = match.end(1) - start;
 
       String path = hashPath(match.group(1), null);
+      if (path.endsWith(".scss")) {
+        path += ".js";
+      }
       return fullMatch.substring(0, i) + path + fullMatch.substring(j);
     });
     

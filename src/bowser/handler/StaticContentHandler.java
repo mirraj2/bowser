@@ -41,13 +41,19 @@ public class StaticContentHandler implements RequestHandler {
 
   @Override
   public boolean process(Request request, Response response) {
-    byte[] data = getData(request.path);
+    String path = request.path;
+    boolean jsWrappedCss = path.endsWith(".scss.js");
+
+    if (jsWrappedCss) {
+      path = server.getCacheBuster().unhashPath(request.path);
+      path = path.substring(0, path.length() - 3);
+    }
+
+    byte[] data = getData(path);
 
     if (data == null) {
       return false;
     }
-
-    String path = request.path;
 
     if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
@@ -82,6 +88,11 @@ public class StaticContentHandler implements RequestHandler {
 
     if (path.endsWith(".scss")) {
       data = scssProcessor.process(request.getOriginalPath(), data);
+      if (jsWrappedCss) {
+        String wrapped = "importSCSS(`" + new String(data, StandardCharsets.UTF_8) + "`);";
+        data = wrapped.getBytes(StandardCharsets.UTF_8);
+        response.contentType("text/javascript");
+      }
     }
 
     Pair<Long, Long> range = request.getRange();
@@ -132,6 +143,8 @@ public class StaticContentHandler implements RequestHandler {
   }
 
   public byte[] getData(String path, Controller controller) {
+    path = server.getCacheBuster().unhashPath(path);
+
     byte[] data = cache.get(path);
 
     if (data == NO_DATA) {

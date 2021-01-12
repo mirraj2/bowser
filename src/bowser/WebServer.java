@@ -209,7 +209,6 @@ public class WebServer {
 
       if (!handled) {
         if (request.isStaticResource()) {
-          request.path = cacheBuster.unhashPath(request.path);
           handled = staticContentHandler.process(request, response);
         }
         if (!handled) {
