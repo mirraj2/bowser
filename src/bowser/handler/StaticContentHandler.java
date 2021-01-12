@@ -89,7 +89,7 @@ public class StaticContentHandler implements RequestHandler {
     if (path.endsWith(".scss")) {
       data = scssProcessor.process(request.getOriginalPath(), data);
       if (jsWrappedCss) {
-        String wrapped = "importSCSS(`" + new String(data, StandardCharsets.UTF_8) + "`);";
+        String wrapped = "importCSS(`" + new String(data, StandardCharsets.UTF_8) + "`);";
         data = wrapped.getBytes(StandardCharsets.UTF_8);
         response.contentType("text/javascript");
       }
