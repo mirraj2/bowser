@@ -31,6 +31,7 @@ import com.google.common.io.BaseEncoding;
 
 import ox.Json;
 import ox.Log;
+import ox.x.XMap;
 
 public class ClientSocket {
 
@@ -63,8 +64,8 @@ public class ClientSocket {
     return headers.getOrDefault(key, "");
   }
 
-  public Map<String, String> getCookies() {
-    Map<String, String> ret = Maps.newLinkedHashMap();
+  public XMap<String, String> getCookies() {
+    XMap<String, String> ret = XMap.create();
     for (String s : Splitter.on("; ").omitEmptyStrings().split(getHeader("Cookie"))) {
       int i = s.indexOf('=');
       ret.put(s.substring(0, i), s.substring(i + 1));
