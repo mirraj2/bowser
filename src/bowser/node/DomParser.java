@@ -157,8 +157,8 @@ public class DomParser {
   public static Integer findEndTag(String tag, String s, int start, int end) {
     int n = 1;
     while (true) {
-      int i = s.indexOf("<" + tag, start);
-      int j = s.indexOf("</" + tag, start);
+      int i = findNextTagIndex("<" + tag, s, start, end);
+      int j = findNextTagIndex("</" + tag, s, start, end);
 
       boolean startTag = i < end && i != -1;
       boolean endTag = j < end && j != -1;
@@ -185,6 +185,22 @@ public class DomParser {
           return j;
         }
       }
+    }
+  }
+
+  private static int findNextTagIndex(String tag, String s, int start, int end) {
+    int i = start - 1;
+    while (true) {
+      i = s.indexOf(tag, i + 1);
+      if (i == -1) {
+        return i;
+      }
+      char nextChar = s.charAt(i + tag.length());
+      if (nextChar != ' ' && nextChar != '>') {
+        // fake match
+        continue;
+      }
+      return i;
     }
   }
 
