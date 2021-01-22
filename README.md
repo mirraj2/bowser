@@ -2,7 +2,7 @@
 
 ## Introduction
 
-First of all, I want to describe the motivation for this project given that there are already many java web servers out there. In my opinion, Jetty and Tomcat are bloated and have terrible APIs. Spring made me want to shoot myself. If you enjoy XML configuration files, endless annotations, and AntiFactoryPatternCreatorDelegators, you may like using one of those aforementioned frameworks.  If you want something incredibly simple and elegant, use SimpleFramework. If you want to use something like SimpleFramework, but with routing and templating on top, this library might be for you.
+First of all, I want to describe the motivation for this project given that there are already many java web servers out there. In my opinion, Jetty and Tomcat are bloated and have terrible APIs. Spring made me want to shoot myself. If you enjoy XML configuration files, endless annotations, and AntiFactoryPatternCreatorDelegators, you may like using one of those aforementioned frameworks. If you want something incredibly simple and elegant, use SimpleFramework. If you want to use something like SimpleFramework, but with routing and templating on top, this library might be for you.
 
 ## Creating a webserver
 
@@ -55,14 +55,14 @@ public class HomePage extends Controller {
     route("GET", "/home").to("home.html");
     route("POST", "/login").to(login);
   }
-  
+
   private final Handler login = (request, response) -> {
     String username = request.param("username");
     String password = request.param("password");
-    
+
     //check the username and password against the database
     //in this example, assume we have something called 'userDB'
-    
+
     if(userDB.isValidLogin(username, password)){
       response.cookie("token", userDB.generateToken());
     } else {
@@ -84,15 +84,15 @@ public class MessagesPage extends Controller {
   public void init(){
     route("GET", "/messages").to("messages.html").data(messages);
   }
-  
+
   private final Data messages = context -> {
     //for this example, let's assume that we have databases called 'userDB' and 'messageDB'
-  
+
     //get the user making this request
     User user = userDB.getUser(context.request.param("token"));
-  
+
     List<Message> messages = messageDB.getMessages(user.id);
-    
+
     //when you put something into the context, it becomes accessible by the HTML.
     context.put("user", user);
     context.put("messages", messages);
@@ -117,8 +117,10 @@ And here is the HTML that uses the data that we've put into the context.
 So far you've seen that you can loop through objects, that you can insert variables, and that you can call size() on a collection. In this example, we'll go through all the other random things that Bowser supports.
 
 ```html
-<head js="fancy.js" css="fancy.css">
-<p>The text above allows us to import javascript and css files into the 'head'</p>
+<head js="fancy.js" css="fancy.css" />
+<p>
+  The text above allows us to import javascript and css files into the 'head'
+</p>
 <p>Insert a variable: $$(user.name)</p>
 <p>Call a method: $$(user.getAddress())</p>
 <div if="items.hasData()">
@@ -132,8 +134,8 @@ So far you've seen that you can loop through objects, that you can insert variab
   var dynamic = "Hello $$(user.name)";
 </script>
 <p>You can also import javascript/html from other files like this:</p>
-<import js="mario.js">
-<import html="chat-widget.html">
+<import js="mario.js" />
+<import html="chat-widget.html" />
 ```
 
 ## Websockets
