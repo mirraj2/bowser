@@ -1,4 +1,4 @@
-![bowser](http://leviathyn.com/wp-content/uploads/2013/01/Bowser_picture-555x472.png)
+![bowser](https://leviathyn.com/wp-content/uploads/2013/01/Bowser_picture-555x472.png)
 
 ## Introduction
 
@@ -60,8 +60,8 @@ public class HomePage extends Controller {
     String username = request.param("username");
     String password = request.param("password");
 
-    //check the username and password against the database
-    //in this example, assume we have something called 'userDB'
+    // check the username and password against the database
+    // in this example, assume we have something called 'userDB'
 
     if(userDB.isValidLogin(username, password)){
       response.cookie("token", userDB.generateToken());
@@ -86,14 +86,14 @@ public class MessagesPage extends Controller {
   }
 
   private final Data messages = context -> {
-    //for this example, let's assume that we have databases called 'userDB' and 'messageDB'
+    // for this example, let's assume that we have databases called 'userDB' and 'messageDB'
 
-    //get the user making this request
+    // get the user making this request
     User user = userDB.getUser(context.request.param("token"));
 
     List<Message> messages = messageDB.getMessages(user.id);
 
-    //when you put something into the context, it becomes accessible by the HTML.
+    // when you put something into the context, it becomes accessible by the HTML.
     context.put("user", user);
     context.put("messages", messages);
   };
@@ -112,15 +112,78 @@ And here is the HTML that uses the data that we've put into the context.
 </div>
 ```
 
-## A super fancy template example
+## Super fancy template examples
 
 So far you've seen that you can loop through objects, that you can insert variables, and that you can call size() on a collection. In this example, we'll go through all the other random things that Bowser supports.
 
+### Link and embed resources into the page
+
 ```html
-<head js="fancy.js" css="fancy.css" />
-<p>
-  The text above allows us to import javascript and css files into the 'head'
-</p>
+<!-- template -->
+<body>
+  <js src="fancy1.js https://cdndomain/library.js fancy2.js" />
+  <css src="style1.css style2.css" />
+
+  <p>First block of body content</p>
+  <js defer src="fancy3.js" />
+  <js inline src="fancy4.js" />
+
+  <p>Second block of body content</p>
+  <js src="module1.mjs" />
+  <js inline src="module2.mjs" />
+
+  <css print src="print.css" />
+
+  <p>
+    You can also hoist any content to the head by using a head tag inside the
+    body:
+  </p>
+  <head>
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      const a = "b";
+    </script>
+  </head>
+  <div>Last element on the page</div>
+</body>
+
+<!-- output -->
+<head>
+  <meta name="theme-color" content="#ffffff" />
+  <link href="style1.css" rel="stylesheet" media="screen" />
+  <link href="style2.css" rel="stylesheet" media="screen" />
+  <link href="print.css" rel="stylesheet" media="print" />
+  <script src="fancy1.js"></script>
+  <script src="https://cdndomain/library.js"></script>
+  <script src="fancy2.js"></script>
+  <script src="fancy3.js" defer></script>
+  <script src="module1.mjs" type="module"></script>
+  <script>
+    const a = "b";
+  </script>
+</head>
+<body>
+  <p>First block of body content</p>
+  <script>
+    // the content of fancy4.js
+  </script>
+
+  <p>Second block of body content</p>
+  <script type="module">
+    // the content of module2.mjs
+  </script>
+
+  <p>
+    You can also hoist any content to the head by using a head tag inside the
+    body:
+  </p>
+  <div>Last element on the page</div>
+</body>
+```
+
+### Insert variables into your page
+
+```html
 <p>Insert a variable: $$(user.name)</p>
 <p>Call a method: $$(user.getAddress())</p>
 <div if="items.hasData()">
@@ -129,13 +192,11 @@ So far you've seen that you can loop through objects, that you can insert variab
 </div>
 <p if="items.isEmpty()">You have no items.</p>
 <p if="!items.isEmpty()">Another way of saying hasData()</p>
+
 <script>
-  var text = "In javascript, this is how you replace variables.";
-  var dynamic = "Hello $$(user.name)";
+  // in javascript, this is how you replace variables
+  let dynamic = "Hello $$(user.name)!";
 </script>
-<p>You can also import javascript/html from other files like this:</p>
-<import js="mario.js" />
-<import html="chat-widget.html" />
 ```
 
 ## Websockets
