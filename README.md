@@ -134,6 +134,10 @@ So far you've seen that you can loop through objects, that you can insert variab
 
   <css print src="print.css" />
 
+  <div class="content-from-another-file">
+    <import html="file.html" />
+  </div>
+
   <p>
     You can also hoist any content to the head by using a head tag inside the
     body:
@@ -172,6 +176,10 @@ So far you've seen that you can loop through objects, that you can insert variab
   <script type="module">
     // the content of module2.mjs
   </script>
+
+  <div class="content-from-another-file">
+    <div>Contents of file.html</div>
+  </div>
 
   <p>
     You can also hoist any content to the head by using a head tag inside the
