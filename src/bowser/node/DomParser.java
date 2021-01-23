@@ -88,6 +88,9 @@ public class DomParser {
     int endTag = findEndOfStartTag(s, start);
 
     String tagData = s.substring(start + 1, endTag);
+    if (tagData.endsWith("/")) {
+      tagData = tagData.substring(0, tagData.length() - 1);
+    }
     List<String> m = split(tagData, ' ');
 
     DomNode node = new DomNode(m.get(0));
