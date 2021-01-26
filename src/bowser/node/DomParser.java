@@ -52,6 +52,7 @@ public class DomParser {
               meta.replaceAttribute("if", iff + " && " + metaIff);
             }
           }
+          meta.parent.remove(meta);
         }
         head.add(meta);
       }
