@@ -142,7 +142,7 @@ public class Response {
   }
 
   public Response sendAttachment(File file) {
-    header("Content-Disposition", "attachment; filename='" + file.getName() + "';");
+    header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\";");
     IO.from(file).to(getOutputStream());
     return this;
   }
