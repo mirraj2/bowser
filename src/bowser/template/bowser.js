@@ -24,6 +24,11 @@ const Bowser = function() {
       }
 
       return;
+    } else if (node.nodeType == Node.ELEMENT_NODE) {
+      if (node.nodeName === "TEMPLATE") {
+        output.append(node.cloneNode(true));
+        return;
+      }
     }
 
     if (node.hasAttribute("loop")) {
