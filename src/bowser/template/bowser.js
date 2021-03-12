@@ -163,9 +163,11 @@ const Bowser = function() {
     }
 
     let reference = null;
-    expression.split(".").forEach(function(s) {
+    let parts = expression.split(".");
+    for (var i = 0; i < parts.length; i++) {
+      const s = parts[i];
       try {
-        if (reference == null) {
+        if (i == 0) {
           reference = context[s];
         } else {
           reference = reference[s];
@@ -174,7 +176,7 @@ const Bowser = function() {
         console.error("Problem resolving expression: " + expression);
         throw e;
       }
-    });
+    }
     // console.log(expression + " -> " + reference);
     return reference;
   }
