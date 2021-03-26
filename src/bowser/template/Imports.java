@@ -13,6 +13,7 @@ import bowser.model.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.TextNode;
+import ox.Log;
 
 public class Imports {
 
@@ -99,7 +100,13 @@ public class Imports {
       byte[] data = controller.getData(htmlImport);
       checkNotNull(data, "Couldn't find: " + htmlImport);
       String html = new String(data, StandardCharsets.UTF_8);
-      DomNode n = parser.parse(html, false);
+      DomNode n;
+      try {
+        n = parser.parse(html, false);
+      } catch (Throwable t) {
+        Log.error("Problem importing: " + htmlImport);
+        throw t;
+      }
       ret.addAll(n.getChildren());
       if (controller.getServer().showImportComments) {
         String endComment = "\n<!-- END " + htmlImport + " -->";
