@@ -14,6 +14,7 @@ import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.TextNode;
 import ox.Log;
+import ox.x.XOptional;
 
 public class Imports {
 
@@ -58,10 +59,10 @@ public class Imports {
     }
   }
 
-  public static void importCSSToHead(Iterable<String> cssFiles, DomNode head, MediaType mediaType) {
+  public static void importCSSToHead(Iterable<String> cssFiles, DomNode head, XOptional<MediaType> maybeMediaType) {
     for (String cssImport : cssFiles) {
       String s = normalizePath(cssImport);
-      head.css(s, mediaType);
+      head.css(s, maybeMediaType);
     }
   }
 
