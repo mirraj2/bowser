@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import bowser.template.Imports.MediaType;
+import ox.x.XOptional;
 
 public class DomNode {
 
@@ -264,7 +265,7 @@ public class DomNode {
    * See {@link #css(String, MediaType)}
    */
   public DomNode css(String name) {
-    return css(name, MediaType.SCREEN);
+    return css(name, XOptional.empty());
   }
 
   private boolean isDuplicateCSS(String cssSrc) {
@@ -280,14 +281,15 @@ public class DomNode {
    * Add a <link href="abc.css", rel="stylesheet", media=mediaType> tag to the node. Provides deduplicating: if a link
    * with the same href already exists on the node, this call is ignored.
    */
-  public DomNode css(String name, MediaType mediaType) {
+  public DomNode css(String name, XOptional<MediaType> maybeMediaType) {
     if (isDuplicateCSS(name)) {
       return this;
     }
-    add(new DomNode("link")
+    DomNode node = new DomNode("link")
         .attribute("href", name)
-        .attribute("rel", "stylesheet")
-        .attribute("media", mediaType.toString()));
+        .attribute("rel", "stylesheet");
+    maybeMediaType.ifPresent(mediaType -> node.attribute("media", mediaType.toString()));
+    add(node);
     return this;
   }
 

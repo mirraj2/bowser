@@ -32,6 +32,7 @@ import ox.Json;
 import ox.Log;
 import ox.Money;
 import ox.Reflection;
+import ox.x.XOptional;
 
 public class Template {
 
@@ -76,7 +77,8 @@ public class Template {
         if (buster != null) {
           cssFiles = Iterables.transform(cssFiles, cssFile -> buster.hashPath(cssFile, controller));
         }
-        MediaType mediaType = node.hasAttribute("print") ? MediaType.PRINT : MediaType.SCREEN;
+        XOptional<MediaType> mediaType = node.hasAttribute("print") ? XOptional.of(MediaType.PRINT)
+            : node.hasAttribute("screen") ? XOptional.of(MediaType.SCREEN) : XOptional.empty();
         Imports.importCSSToHead(cssFiles, head, mediaType);
         node.parent.remove(node);
       } else if ("head".equals(node.tag)) {
