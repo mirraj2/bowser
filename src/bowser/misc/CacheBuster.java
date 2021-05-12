@@ -61,7 +61,7 @@ public class CacheBuster {
   public String hashMJSImports(byte[] data) {
     String s = new String(data, StandardCharsets.UTF_8);
 
-    String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\n)*?\\}|\\w+) from )?\"(.*)\";", s, match -> {
+    String ret = Regex.replaceAll("import (?:[^\\\"\\n]+)\\\"(.*)\\\";", s, match -> {
       String fullMatch = match.group(0);
       int start = match.start();
       int i = match.start(1) - start;
