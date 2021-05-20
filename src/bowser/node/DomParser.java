@@ -200,7 +200,7 @@ public class DomParser {
         return i;
       }
       char nextChar = s.charAt(i + tag.length());
-      if (nextChar != ' ' && nextChar != '>') {
+      if (nextChar != ' ' && nextChar != '\n' && nextChar != '>') {
         // fake match
         continue;
       }
