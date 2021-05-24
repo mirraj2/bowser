@@ -63,7 +63,14 @@ public class Request {
   }
 
   public String getIP() {
-    return request.getClientAddress().getAddress().getHostAddress();
+    String ret = request.getClientAddress().getAddress().getHostAddress();
+    if (ret.equals("127.0.0.1")) {
+      String proxyIP = getHeader("X-Real-IP");
+      if (proxyIP != null) {
+        return proxyIP;
+      }
+    }
+    return ret;
   }
 
   public String getOriginalPath() {
