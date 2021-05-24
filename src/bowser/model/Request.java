@@ -28,6 +28,7 @@ import ox.Json;
 import ox.Pair;
 import ox.util.Images;
 import ox.x.XList;
+import ox.x.XMap;
 
 public class Request {
 
@@ -209,8 +210,8 @@ public class Request {
     return getParts().filter(HttpPart::isFile);
   }
 
-  public Map<String, String> getHeaders() {
-    Map<String, String> ret = Maps.newLinkedHashMap();
+  public XMap<String, String> getHeaders() {
+    XMap<String, String> ret = XMap.create();
     request.getNames().forEach(name -> {
       ret.put(name, request.getValue(name));
     });
