@@ -35,4 +35,9 @@ public class Context {
     return data.put(key, value);
   }
 
+  @Override
+  public String toString() {
+    return data.toString();
+  }
+
 }
