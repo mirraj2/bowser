@@ -278,6 +278,13 @@ public class WebServer {
       handler.load();
     });
 
+    // we wait until after we load all the handlers before turning off caching of the hashes
+    // this is so developers get fast server startup times while at the same time allowing
+    // them to change files and not have the wrong hashes be cached.
+    if (!this.enableCaching) {
+      getCacheBuster().disableCache();
+    }
+
     try {
       Server server = new ContainerServer(container);
       new SocketConnection(server).connect(new InetSocketAddress(port), sslContext);

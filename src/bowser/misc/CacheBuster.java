@@ -21,7 +21,14 @@ import ox.util.Regex;
 public class CacheBuster {
 
   private final StaticContentHandler resourceLoader;
+
+  // used for unhashing a path
   private final Map<String, String> nameMap = Maps.newConcurrentMap();
+
+  // speed up the hashPath() method
+  private final Map<String, String> hashCache = Maps.newConcurrentMap();
+
+  private boolean enableCache = true;
 
   public CacheBuster(StaticContentHandler resourceLoader) {
     this.resourceLoader = resourceLoader;
@@ -31,23 +38,39 @@ public class CacheBuster {
     if (path.startsWith("http:") || path.startsWith("https:")) {
       return path;
     }
+
+    String key = controller == null ? path : controller.getClass().getSimpleName() + ":" + path;
+
+    String ret;
+    if (enableCache) {
+      ret = hashCache.get(key);
+      if (ret != null) {
+        return ret;
+      }
+    }
+
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
     byte[] data = resourceLoader.getData(path, controller);
     if (data == null) {
-      return path;
+      ret = path;
+    } else {
+      if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
+        data = hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
+      }
+
+      String hash = Hashing.murmur3_32().hashBytes(data).toString();
+      int i = path.lastIndexOf('.');
+      checkState(i != -1, path);
+      ret = path.substring(0, i) + "-" + hash + path.substring(i);
+      nameMap.put(ret, path);
     }
 
-    if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
-      data = hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
+    if (enableCache) {
+      hashCache.put(key, ret);
     }
 
-    String hash = Hashing.murmur3_32().hashBytes(data).toString();
-    int i = path.lastIndexOf('.');
-    checkState(i != -1, path);
-    String ret = path.substring(0, i) + "-" + hash + path.substring(i);
-    nameMap.put(ret, path);
     return ret;
   }
 
@@ -73,8 +96,14 @@ public class CacheBuster {
       }
       return fullMatch.substring(0, i) + path + fullMatch.substring(j);
     });
-    
+
     return ret;
+  }
+
+  public CacheBuster disableCache() {
+    enableCache = false;
+    hashCache.clear();
+    return this;
   }
 
 }
