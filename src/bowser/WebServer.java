@@ -7,6 +7,7 @@ import static ox.util.Utils.propagate;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
@@ -21,6 +22,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import bowser.handler.ExceptionHandler;
 import bowser.handler.RouteHandler;
@@ -51,6 +53,8 @@ public class WebServer {
   public final List<Controller> controllers = Lists.newArrayList();
 
   private final List<RequestHandler> handlers = Lists.newArrayList();
+  private final Map<String, Controller> routeControllers = Maps.newHashMap();
+
   private StaticContentHandler staticContentHandler;
 
   private SSLContext sslContext;
@@ -278,6 +282,8 @@ public class WebServer {
 
   @SuppressWarnings("resource")
   public WebServer start() {
+    checkForDuplicatePaths();
+
     Threads.get(8).input(handlers).run(handler -> {
       handler.load();
     });
@@ -297,6 +303,27 @@ public class WebServer {
     }
 
     return this;
+  }
+
+  private void checkForDuplicatePaths() {
+    for (RequestHandler handler : handlers) {
+      if (handler instanceof RouteHandler) {
+        Route route = ((RouteHandler) handler).getRoute();
+        String path = route.method + " " + route.path.toLowerCase();
+        if (!route.host.isEmpty()) {
+          path = route.host + " " + path;
+        }
+        Controller existingController = routeControllers.put(path, route.controller);
+        if (existingController != null) {
+          if (existingController == route.controller) {
+            throw new RuntimeException(
+                existingController.getClass().getSimpleName() + " tried to register the same path twice: " + path);
+          }
+          throw new RuntimeException(String.format("Multiple controllers tried to register path [%s]: %s and %s",
+              path, existingController.getClass().getSimpleName(), route.controller.getClass().getSimpleName()));
+        }
+      }
+    }
   }
 
   public static WebServer redirectToHttps() {

@@ -26,7 +26,7 @@ public class Route {
   private Template template;
   public byte[] resourceData;
 
-  private String host = "";
+  public String host = "";
   public boolean renderHead = true;
 
   public Route(Controller controller, String method, String path, boolean enableCaching) {
