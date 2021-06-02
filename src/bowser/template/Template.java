@@ -39,7 +39,7 @@ public class Template {
   public static boolean mobileDisplay = false;
 
   private final DomNode root;
-  private DomNode head = null;
+  private Head head = null;
 
   private boolean isRoot;
 
@@ -55,6 +55,9 @@ public class Template {
     root = parser.parse(s, isRoot);
 
     init(root, controller, embedCSS);
+    if (head != null) {
+      head.sortChildren();
+    }
   }
 
   private void init(DomNode root, Controller controller, boolean embedCSS) {
@@ -83,7 +86,7 @@ public class Template {
         node.parent.remove(node);
       } else if ("head".equals(node.tag)) {
         if (head == null) {
-          head = node;
+          head = (Head) node;
         } else {
           Imports.appendToHead(head, node, controller, embedCSS);
           node.parent.remove(node);

@@ -1,8 +1,16 @@
 package bowser.node;
 
+import java.util.Map;
+
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Maps;
+
 import bowser.template.Template;
+import ox.x.XList;
 
 public class Head extends DomNode {
+
+  private static final XList<String> TAG_ORDERING = XList.of("meta", "title", "link", "script");
 
   private DomNode titleNode;
 
@@ -10,19 +18,23 @@ public class Head extends DomNode {
     super("head");
   }
 
+  public void sortChildren() {
+    Map<DomNode, Integer> originalIndices = Maps.newIdentityHashMap();
+    for (int i = 0; i < children.size(); i++) {
+      originalIndices.put(children.get(i), i);
+    }
+
+    this.children.sort((a, b) -> {
+      return ComparisonChain.start()
+          .compare(TAG_ORDERING.indexOf(a.tag.toLowerCase()), TAG_ORDERING.indexOf(b.tag.toLowerCase()))
+          .compare(originalIndices.get(a), originalIndices.get(b))
+          .result();
+    });
+  }
+
   @Override
   public DomNode add(DomNode child) {
-    if (child.tag.equalsIgnoreCase("script")) {
-      child.parent = this;
-      int i = getIndexOfLastChild("script");
-      if (i == -1) {
-        i = getIndexOfLastChild("link"); // ensure the scripts go after the css
-      }
-      this.children.add(i + 1, child);
-    } else if (child.tag.equalsIgnoreCase("link")) {
-      child.parent = this;
-      this.children.add(getIndexOfLastChild("link") + 1, child);
-    } else if (child.tag.equalsIgnoreCase("title")) {
+    if (child.tag.equalsIgnoreCase("title")) {
       if (titleNode == null) {
         titleNode = child;
         super.add(titleNode);
@@ -33,15 +45,6 @@ public class Head extends DomNode {
       super.add(child);
     }
     return this;
-  }
-
-  private int getIndexOfLastChild(String tag) {
-    for (int i = children.size() - 1; i >= 0; i--) {
-      if (children.get(i).tag.equalsIgnoreCase(tag)) {
-        return i;
-      }
-    }
-    return -1;
   }
 
   @Override
