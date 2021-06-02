@@ -129,9 +129,13 @@ public class WebServer {
     return this;
   }
 
-  public WebServer devMode() {
-    showImportComments = true;
-    includeRouteDebugInfo = true;
+  public WebServer showImportComments() {
+    this.showImportComments = true;
+    return this;
+  }
+
+  public WebServer includeRouteDebugInfo() {
+    this.includeRouteDebugInfo = true;
     return this;
   }
 
