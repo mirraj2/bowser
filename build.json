@@ -1,0 +1,5 @@
+{
+  "jsass-5.9.2.jar": {
+    "include": ["io/bit3/jsass", "darwin/libjsass.dylib", "linux-x64/libjsass.so"]
+  }
+}
