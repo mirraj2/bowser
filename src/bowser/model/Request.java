@@ -213,7 +213,7 @@ public class Request {
     return ret;
   }
 
-  public List<HttpPart> getFiles() {
+  public XList<HttpPart> getFiles() {
     return getParts().filter(HttpPart::isFile);
   }
 
