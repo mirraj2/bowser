@@ -13,7 +13,7 @@ import bowser.WebServer;
 
 public abstract class Controller {
 
-  private WebServer server;
+  protected WebServer server;
   private final Map<String, String> folders = Maps.newHashMap();
   private final List<Route> routes = Lists.newArrayList();
 
@@ -25,10 +25,13 @@ public abstract class Controller {
   public abstract void init();
 
   protected Route route(String method, String path) {
-    Route ret = new Route(this, method, path, server.enableCaching);
-    routes.add(ret);
-    server.add(ret);
-    return ret;
+    return addRoute(new Route(this, method, path, server.enableCaching));
+  }
+
+  protected Route addRoute(Route route) {
+    routes.add(route);
+    server.add(route);
+    return route;
   }
 
   public WebServer getServer() {
