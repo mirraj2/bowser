@@ -19,7 +19,7 @@ public class Response {
 
   public final org.simpleframework.http.Response response;
 
-  public String responseBody;
+  public String responseBody = null;
 
   /**
    * Populated by WebServer handle() when any of the other handlers throws an unchecked exception.
@@ -137,7 +137,6 @@ public class Response {
   public Response write(String text) {
     checkNotNull(text);
     this.responseBody = text;
-    IO.from(text).to(getOutputStream());
     return this;
   }
 
@@ -148,6 +147,16 @@ public class Response {
   }
 
   public Response close() {
+    // we used to write the responseBody immediately, but this caused race conditions with routes that acquired database
+    // transaction locks. Writing the response after all database locks are released is the safest.
+    if (responseBody != null) {
+      try {
+        IO.from(responseBody).to(getOutputStream());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
     try {
       response.close();
       return this;
