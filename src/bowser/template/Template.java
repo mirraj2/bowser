@@ -135,6 +135,9 @@ public class Template {
 
       String iff = node.getAttribute("if");
       if (iff != null) {
+        if (iff.startsWith("$$(")) {
+          throw new IllegalStateException("An if-attribute in the html should not be wrapped in $$()");
+        }
         boolean b = resolveBoolean(iff, context);
         if (b) {
           node = new DomNode(node).removeAttribute("if");
@@ -382,6 +385,7 @@ public class Template {
 
   private String evaluate(String variableName, Context context, boolean nullToEmpty, boolean escapeHtml) {
     Object o = resolve(variableName, context);
+    // Log.debug(variableName + " = " + o);
     if (o == null && nullToEmpty) {
       return "";
     }
