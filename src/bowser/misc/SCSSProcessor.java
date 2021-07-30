@@ -1,5 +1,6 @@
 package bowser.misc;
 
+import static ox.util.Utils.normalize;
 import static ox.util.Utils.propagate;
 
 import java.net.URI;
@@ -47,7 +48,7 @@ public class SCSSProcessor {
     String input = new String(data, StandardCharsets.UTF_8);
     try {
       final Output output = compiler.compileString(input, null, null, options);
-      byte[] ret = output.getCss().getBytes(StandardCharsets.UTF_8);
+      byte[] ret = normalize(output.getCss()).getBytes(StandardCharsets.UTF_8);
       if (enableCaching) {
         cache.put(path, ret);
       }

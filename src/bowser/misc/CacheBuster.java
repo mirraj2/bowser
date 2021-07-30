@@ -84,18 +84,22 @@ public class CacheBuster {
   public String hashMJSImports(byte[] data) {
     String s = new String(data, StandardCharsets.UTF_8);
 
-    String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\n)*?\\}|\\w+) from )?\"(.*)\";", s, match -> {
-      String fullMatch = match.group(0);
-      int start = match.start();
-      int i = match.start(1) - start;
-      int j = match.end(1) - start;
+    String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\\n)*?\\}|\\w+) from )?\\\"(.*)\\\";|import\\(\"(.*)\"\\)", s,
+        match -> {
+          String fullMatch = match.group(0);
+          int start = match.start();
 
-      String path = hashPath(match.group(1), null);
-      if (path.endsWith(".scss")) {
-        path += ".js";
-      }
-      return fullMatch.substring(0, i) + path + fullMatch.substring(j);
-    });
+          int groupIndex = match.group(1) != null ? 1 : 2;
+
+          int i = match.start(groupIndex) - start;
+          int j = match.end(groupIndex) - start;
+
+          String path = hashPath(match.group(groupIndex), null);
+          if (path.endsWith(".scss")) {
+            path += ".js";
+          }
+          return fullMatch.substring(0, i) + path + fullMatch.substring(j);
+        });
 
     return ret;
   }
