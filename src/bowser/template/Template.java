@@ -383,12 +383,18 @@ public class Template {
     };
   }
 
+  @SuppressWarnings("unchecked")
   private String evaluate(String variableName, Context context, boolean nullToEmpty, boolean escapeHtml) {
     Object o = resolve(variableName, context);
     // Log.debug(variableName + " = " + o);
     if (o == null && nullToEmpty) {
       return "";
     }
+
+    if (o instanceof XOptional) {
+      o = ((XOptional<Object>) o).compute(Function.identity(), "");
+    }
+
     // Log.debug(variableName + " = " + o);
     String ret = String.valueOf(o);
     if (ret != null && (escapeHtml || ret.toLowerCase().contains("<script>"))) {
