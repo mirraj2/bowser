@@ -139,6 +139,7 @@ public class Template {
           throw new IllegalStateException("An if-attribute in the html should not be wrapped in $$()");
         }
         boolean b = resolveBoolean(iff, context);
+        // Log.debug(iff + " -> " + b);
         if (b) {
           node = new DomNode(node).removeAttribute("if");
         } else {
