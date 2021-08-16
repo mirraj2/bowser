@@ -5,7 +5,6 @@ import java.util.Map;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
 
-import bowser.template.Template;
 import ox.x.XList;
 
 public class Head extends DomNode {
@@ -59,10 +58,7 @@ public class Head extends DomNode {
 
     ret.add(new DomNode("meta").attribute("charset", "utf-8"));
 
-    String viewport = "width=device-width, initial-scale=1";
-    if (Template.mobileDisplay) {
-      viewport += ", maximum-scale=1";
-    }
+    String viewport = "width=device-width, initial-scale=1, maximum-scale=1";
 
     ret.add(new DomNode("title").text(title));
     ret.add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
