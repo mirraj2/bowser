@@ -2,6 +2,7 @@ package bowser.misc;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.google.common.hash.Hashing;
 
 import bowser.handler.StaticContentHandler;
 import bowser.model.Controller;
+import ox.File;
 import ox.util.Regex;
 
 /**
@@ -28,25 +30,35 @@ public class CacheBuster {
   // speed up the hashPath() method
   private final Map<String, String> hashCache = Maps.newConcurrentMap();
 
-  private boolean enableCache = true;
+  private final Map<String, Long> lastModifiedTimestamps = Maps.newConcurrentMap();
+
+  private CacheEvictionPolicy cacheEvictionPolicy = CacheEvictionPolicy.NO_EVICT;
 
   public CacheBuster(StaticContentHandler resourceLoader) {
     this.resourceLoader = resourceLoader;
   }
 
   public String hashPath(String path, Controller controller) {
+    return hashPath(path, controller, 0);
+  }
+
+  private String hashPath(String path, Controller controller, int depth) {
     if (path.startsWith("http:") || path.startsWith("https:")) {
       return path;
     }
 
     String key = controller == null ? path : controller.getClass().getSimpleName() + ":" + path;
 
-    String ret;
-    if (enableCache) {
-      ret = hashCache.get(key);
-      if (ret != null) {
-        return ret;
+    if (cacheEvictionPolicy == CacheEvictionPolicy.CHECK_FOR_OUT_OF_DATE_FILES) {
+      if (isCacheOutOfDate(path, controller)) {
+        hashCache.remove(key);
       }
+    }
+
+    String ret = hashCache.get(key);
+
+    if (ret != null) {
+      return ret;
     }
 
     if (!path.startsWith("/")) {
@@ -57,7 +69,7 @@ public class CacheBuster {
       ret = path;
     } else {
       if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
-        data = hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
+        data = hashMJSImports(data, depth).getBytes(StandardCharsets.UTF_8);
       }
 
       String hash = Hashing.murmur3_32().hashBytes(data).toString();
@@ -67,9 +79,7 @@ public class CacheBuster {
       nameMap.put(ret, path);
     }
 
-    if (enableCache) {
-      hashCache.put(key, ret);
-    }
+    hashCache.put(key, ret);
 
     return ret;
   }
@@ -78,15 +88,22 @@ public class CacheBuster {
     return nameMap.getOrDefault(path, path);
   }
 
+  static int counter = 0;
+
+  public String hashMJSImports(byte[] data) {
+    return hashMJSImports(data, 0);
+  }
+
   /**
    * Goes through an mjs file and replaces paths with hashed ones.
    */
-  public String hashMJSImports(byte[] data) {
+  private String hashMJSImports(byte[] data, int depth) {
     String s = new String(data, StandardCharsets.UTF_8);
 
     String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\\n)*?\\}|\\w+) from )?\\\"(.*)\\\";|import\\(\"(.*)\"\\)", s,
         match -> {
           String fullMatch = match.group(0);
+          // Log.debug(Joiner.on(' ').join(Collections.nCopies(depth, " ")) + fullMatch);
           int start = match.start();
 
           int groupIndex = match.group(1) != null ? 1 : 2;
@@ -94,7 +111,7 @@ public class CacheBuster {
           int i = match.start(groupIndex) - start;
           int j = match.end(groupIndex) - start;
 
-          String path = hashPath(match.group(groupIndex), null);
+          String path = hashPath(match.group(groupIndex), null, depth + 1);
           if (path.endsWith(".scss")) {
             path += ".js";
           }
@@ -104,10 +121,37 @@ public class CacheBuster {
     return ret;
   }
 
-  public CacheBuster disableCache() {
-    enableCache = false;
+  private boolean isCacheOutOfDate(String path, Controller controller) {
+    URL url = null;
+    if (controller != null) {
+      url = controller.getResource(path);
+    }
+    if (url == null) {
+      url = resourceLoader.pathToUrl(path);
+    }
+    if (url == null) {
+      return false;
+    }
+    File file = File.fromURL(url);
+    long lastTimestamp = lastModifiedTimestamps.getOrDefault(file.getPath(), 0L);
+    long currentTimestamp = file.getLastModifiedTimestamp();
+    if (currentTimestamp > lastTimestamp) {
+      lastModifiedTimestamps.put(file.getPath(), currentTimestamp);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public CacheBuster checkForOutOfDateFiles() {
+    cacheEvictionPolicy = CacheEvictionPolicy.CHECK_FOR_OUT_OF_DATE_FILES;
     hashCache.clear();
+    lastModifiedTimestamps.clear();
     return this;
+  }
+
+  private static enum CacheEvictionPolicy {
+    NO_EVICT, CHECK_FOR_OUT_OF_DATE_FILES;
   }
 
 }
