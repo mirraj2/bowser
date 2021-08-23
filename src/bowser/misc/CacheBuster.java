@@ -2,7 +2,6 @@ package bowser.misc;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import com.google.common.hash.Hashing;
 
 import bowser.handler.StaticContentHandler;
 import bowser.model.Controller;
-import ox.File;
 import ox.util.Regex;
 
 /**
@@ -28,11 +26,10 @@ public class CacheBuster {
   private final Map<String, String> nameMap = Maps.newConcurrentMap();
 
   // speed up the hashPath() method
-  private final Map<String, String> hashCache = Maps.newConcurrentMap();
+  private final Map<String, String> globalCache = Maps.newConcurrentMap();
+  private final ThreadLocal<Map<String, String>> threadCache = new ThreadLocal<>();
 
-  private final Map<String, Long> lastModifiedTimestamps = Maps.newConcurrentMap();
-
-  private CacheEvictionPolicy cacheEvictionPolicy = CacheEvictionPolicy.NO_EVICT;
+  private CachePolicy cacheEvictionPolicy = CachePolicy.GLOBAL_CACHE;
 
   public CacheBuster(StaticContentHandler resourceLoader) {
     this.resourceLoader = resourceLoader;
@@ -48,18 +45,15 @@ public class CacheBuster {
     }
 
     String key = controller == null ? path : controller.getClass().getSimpleName() + ":" + path;
+    Map<String, String> cache = getOrCreateCache();
 
-    if (cacheEvictionPolicy == CacheEvictionPolicy.CHECK_FOR_OUT_OF_DATE_FILES) {
-      if (isCacheOutOfDate(path, controller)) {
-        hashCache.remove(key);
-      }
-    }
-
-    String ret = hashCache.get(key);
+    String ret = cache.get(key);
 
     if (ret != null) {
       return ret;
     }
+
+    // Log.debug(Thread.currentThread() + " LOAD: " + key);
 
     if (!path.startsWith("/")) {
       path = "/" + path;
@@ -79,7 +73,8 @@ public class CacheBuster {
       nameMap.put(ret, path);
     }
 
-    hashCache.put(key, ret);
+    cache.put(key, ret);
+    // Log.debug(Thread.currentThread() + " DONE: " + key);
 
     return ret;
   }
@@ -121,37 +116,35 @@ public class CacheBuster {
     return ret;
   }
 
-  private boolean isCacheOutOfDate(String path, Controller controller) {
-    URL url = null;
-    if (controller != null) {
-      url = controller.getResource(path);
+  private Map<String, String> getOrCreateCache() {
+    if (cacheEvictionPolicy == CachePolicy.GLOBAL_CACHE) {
+      return globalCache;
     }
-    if (url == null) {
-      url = resourceLoader.pathToUrl(path);
+    Map<String, String> ret = threadCache.get();
+    if (ret == null) {
+      ret = Maps.newHashMap();
+      threadCache.set(ret);
     }
-    if (url == null) {
-      return false;
-    }
-    File file = File.fromURL(url);
-    long lastTimestamp = lastModifiedTimestamps.getOrDefault(file.getPath(), 0L);
-    long currentTimestamp = file.getLastModifiedTimestamp();
-    if (currentTimestamp > lastTimestamp) {
-      lastModifiedTimestamps.put(file.getPath(), currentTimestamp);
-      return true;
-    } else {
-      return false;
-    }
+    return ret;
   }
 
-  public CacheBuster checkForOutOfDateFiles() {
-    cacheEvictionPolicy = CacheEvictionPolicy.CHECK_FOR_OUT_OF_DATE_FILES;
-    hashCache.clear();
-    lastModifiedTimestamps.clear();
+  /**
+   * Cache is temporary, only for a given request.
+   */
+  public CacheBuster requestBasedCache() {
+    cacheEvictionPolicy = CachePolicy.REQUEST_BASED_CACHE;
+    globalCache.clear();
     return this;
   }
 
-  private static enum CacheEvictionPolicy {
-    NO_EVICT, CHECK_FOR_OUT_OF_DATE_FILES;
+  public void onRequestFinished() {
+    if (cacheEvictionPolicy == CachePolicy.REQUEST_BASED_CACHE) {
+      threadCache.set(null);
+    }
+  }
+
+  private static enum CachePolicy {
+    GLOBAL_CACHE, REQUEST_BASED_CACHE;
   }
 
 }

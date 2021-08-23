@@ -41,6 +41,8 @@ import bowser.node.Head;
 import bowser.template.Template;
 import ox.Log;
 import ox.Threads;
+import ox.x.XList;
+import ox.x.XMultimap;
 
 public class WebServer {
 
@@ -271,6 +273,7 @@ public class WebServer {
         }
       } finally {
         resp.close();
+        cacheBuster.onRequestFinished();
       }
       try {
         logger.log(req, resp, watch);
@@ -284,13 +287,22 @@ public class WebServer {
   public WebServer start() {
     checkForDuplicatePaths();
 
-    if (!this.enableCaching) {
-      getCacheBuster().checkForOutOfDateFiles();
-    }
-
-    Threads.get(8).input(handlers).run(handler -> {
-      handler.load();
+    XMultimap<String, RequestHandler> resourceHandlers = XList.create(handlers).indexMultimap(handler -> {
+      if (handler instanceof RouteHandler) {
+        RouteHandler rh = (RouteHandler) handler;
+        return rh.getRoute().resource;
+      }
+      return null;
     });
+
+    Threads.get(16).input(resourceHandlers.keySet().toList().shuffleSelf()).run(resource -> {
+      XList<RequestHandler> handlers = resourceHandlers.get(resource);
+      handlers.forEach(handler -> handler.load());
+    });
+
+    if (!this.enableCaching) {
+      getCacheBuster().requestBasedCache();
+    }
 
     try {
       Server server = new ContainerServer(container);
