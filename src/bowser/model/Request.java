@@ -90,6 +90,10 @@ public class Request {
     return segments.get(index);
   }
 
+  public String getString(int index) {
+    return getSegment(index);
+  }
+
   public int getInt(int index) {
     return parseInt(getSegment(index));
   }
