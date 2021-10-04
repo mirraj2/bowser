@@ -12,5 +12,4 @@ public class UserReadableError extends RuntimeException {
   public UserReadableError(String msg, Throwable cause) {
     super(msg, cause);
   }
-
 }
