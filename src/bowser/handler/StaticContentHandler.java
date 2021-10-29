@@ -33,10 +33,11 @@ public class StaticContentHandler implements RequestHandler {
   private WebServer server;
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
   private final SCSSProcessor scssProcessor;
+  private boolean enableCaching = true;
 
   public StaticContentHandler(WebServer server) {
     this.server = server;
-    this.scssProcessor = new SCSSProcessor(this, server.enableCaching);
+    this.scssProcessor = new SCSSProcessor(this, enableCaching);
   }
 
   @Override
@@ -72,15 +73,15 @@ public class StaticContentHandler implements RequestHandler {
     if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
         || path.endsWith(".gif") || path.endsWith(".otf") || path.endsWith(".woff")) {
       response.setCompressed(false);
-      if (server.enableCaching) {
+      if (enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
     } else if (path.endsWith(".svg")) {
-      if (server.enableCaching) {
+      if (enableCaching) {
         response.cacheFor(1, TimeUnit.DAYS);
       }
     } else if (path.endsWith(".js") || path.endsWith(".mjs") || path.endsWith(".css") || path.endsWith(".scss")) {
-      if (server.enableCaching) {
+      if (enableCaching) {
         // because we have cache busting for these files, we can set the longest possible cache duration
         response.cacheFor(365, TimeUnit.DAYS);
       }
@@ -153,7 +154,7 @@ public class StaticContentHandler implements RequestHandler {
 
     if (data == null) {
       data = load(path, controller);
-      if (server.enableCaching) {
+      if (enableCaching) {
         cache.put(path, data);
       }
     }
@@ -203,6 +204,15 @@ public class StaticContentHandler implements RequestHandler {
       }
     }
     return null;
+  }
+
+  public StaticContentHandler setCachingEnabled(boolean b) {
+    this.enableCaching = b;
+    scssProcessor.setCachingEnabled(b);
+    if (!b) {
+      cache.clear();
+    }
+    return this;
   }
 
   public WebServer getServer() {

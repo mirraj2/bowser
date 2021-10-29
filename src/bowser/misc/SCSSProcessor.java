@@ -27,10 +27,11 @@ import io.bit3.jsass.importer.Import;
 public class SCSSProcessor {
 
   private final StaticContentHandler staticContentHandler;
-  private final boolean enableCaching;
   private final Compiler compiler = new Compiler();
   private final Options options = new Options();
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
+
+  private boolean enableCaching;
 
   public SCSSProcessor(StaticContentHandler staticContentHandler, boolean enableCaching) {
     this.staticContentHandler = staticContentHandler;
@@ -71,6 +72,13 @@ public class SCSSProcessor {
 
     Import ret = new Import(uri, uri, source);
     return Collections.singleton(ret);
+  }
+
+  public void setCachingEnabled(boolean b) {
+    this.enableCaching = b;
+    if (!b) {
+      cache.clear();
+    }
   }
 
 }

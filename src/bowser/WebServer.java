@@ -287,21 +287,19 @@ public class WebServer {
   public WebServer start() {
     checkForDuplicatePaths();
 
-    XMultimap<String, RequestHandler> resourceHandlers = XList.create(handlers).indexMultimap(handler -> {
-      if (handler instanceof RouteHandler) {
-        RouteHandler rh = (RouteHandler) handler;
-        return rh.getRoute().resource;
-      }
-      return null;
-    });
-
-    Threads.get(16).input(resourceHandlers.keySet().toList().shuffleSelf()).run(resource -> {
-      XList<RequestHandler> handlers = resourceHandlers.get(resource);
-      handlers.forEach(handler -> handler.load());
-    });
+    if (enableCaching) {
+      // warm the cache
+      preloadHandlers();
+    } else {
+      Threads.run(() -> {
+        // we are only running this to surface any errors loading any of the routes.
+        preloadHandlers();
+      });
+    }
 
     if (!this.enableCaching) {
       getCacheBuster().requestBasedCache();
+      staticContentHandler.setCachingEnabled(false);
     }
 
     try {
@@ -312,6 +310,24 @@ public class WebServer {
     }
 
     return this;
+  }
+
+  private void preloadHandlers() {
+    XMultimap<String, RequestHandler> resourceHandlers = XList.create(handlers).indexMultimap(handler -> {
+      if (handler instanceof RouteHandler) {
+        RouteHandler rh = (RouteHandler) handler;
+        return rh.getRoute().resource;
+      }
+      return null;
+    });
+
+    Threads.get(8).input(resourceHandlers.keySet().toList().shuffleSelf()).run(resource -> {
+      XList<RequestHandler> handlers = resourceHandlers.get(resource);
+      handlers.forEach(handler -> {
+        handler.load();
+      });
+      handlers.forEach(handler -> handler.load());
+    });
   }
 
   private void checkForDuplicatePaths() {
