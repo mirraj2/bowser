@@ -24,7 +24,7 @@ public class Response {
   /**
    * Populated by WebServer handle() when any of the other handlers throws an unchecked exception.
    */
-  public Exception exception = null;
+  public Throwable exception = null;
 
   private boolean gzip = false;
 

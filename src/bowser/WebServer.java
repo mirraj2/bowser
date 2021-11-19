@@ -235,10 +235,10 @@ public class WebServer {
         }
       }
 
-    } catch (Exception e) {
-      response.exception = e;
+    } catch (Throwable t) {
+      response.exception = t;
       if (!exceptionHandler.handle(request, response, lastHandler)) {
-        throw e;
+        throw t;
       }
     }
   }
@@ -277,7 +277,7 @@ public class WebServer {
       }
       try {
         logger.log(req, resp, watch);
-      } catch (Exception e) {
+      } catch (Throwable e) {
         e.printStackTrace();
       }
     }
