@@ -31,6 +31,8 @@ public class CacheBuster {
 
   private CachePolicy cacheEvictionPolicy = CachePolicy.GLOBAL_CACHE;
 
+  private boolean inlineSCSS = false;
+
   public CacheBuster(StaticContentHandler resourceLoader) {
     this.resourceLoader = resourceLoader;
   }
@@ -109,9 +111,18 @@ public class CacheBuster {
 
           String path = hashPath(match.group(groupIndex), null, depth + 1);
           if (path.endsWith(".scss")) {
-            path += ".js";
+            if (inlineSCSS) {
+              byte[] styleData = resourceLoader.getData(path, null);
+              styleData = resourceLoader.getScssProcessor().process(path, styleData);
+              String ss = new String(styleData, StandardCharsets.UTF_8);
+              return "window.importCSS(`" + ss + "`)";
+            } else {
+              return fullMatch.substring(0, i) + path + ".js" + fullMatch.substring(j);
+
+            }
+          } else {
+            return fullMatch.substring(0, i) + path + fullMatch.substring(j);
           }
-          return fullMatch.substring(0, i) + path + fullMatch.substring(j);
         });
 
     return ret;
@@ -138,11 +149,17 @@ public class CacheBuster {
     return this;
   }
 
+  public CacheBuster inlineCSS() {
+    this.inlineSCSS = true;
+    return this;
+  }
+
   public void onRequestFinished() {
     if (cacheEvictionPolicy == CachePolicy.REQUEST_BASED_CACHE) {
       threadCache.set(null);
     }
   }
+
 
   private static enum CachePolicy {
     GLOBAL_CACHE, REQUEST_BASED_CACHE;
