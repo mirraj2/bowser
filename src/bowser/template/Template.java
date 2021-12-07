@@ -72,7 +72,7 @@ public class Template {
           if (buster != null) {
             jsFiles = Iterables.transform(jsFiles, jsFile -> buster.hashPath(jsFile, controller));
           }
-          Imports.importJSToHead(jsFiles, head, node.hasAttribute("defer"));
+          Imports.importJSToHead(jsFiles, head, node.hasAttribute("defer"), node.hasAttribute("module"));
           node.parent.remove(node);
         }
       } else if ("css".equals(node.tag)) {

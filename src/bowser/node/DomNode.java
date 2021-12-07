@@ -238,7 +238,7 @@ public class DomNode {
    * This method also provides deduplicating. Hence if abc.js is added to the (say, head) node twice, the second call to
    * this function is ignored.
    */
-  public DomNode javascript(String name, boolean defer) {
+  public DomNode javascript(String name, boolean defer, boolean module) {
     DomNode s = new DomNode("script").attribute("src", name);
     if (isDuplicateJS(name)) {
       return this;
@@ -246,7 +246,7 @@ public class DomNode {
     if (defer) {
       s.attribute("defer");
     }
-    if (name.endsWith(".mjs") || name.endsWith(".jsx")) {
+    if (name.endsWith(".mjs") || name.endsWith(".jsx") || module) {
       s.attribute("type", "module");
     }
     return add(s);
