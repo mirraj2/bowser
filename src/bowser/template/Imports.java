@@ -29,7 +29,7 @@ public class Imports {
   public static void appendToHead(DomNode head, DomNode headNode, Controller controller, boolean embedCSS) {
     for (String jsImport : split(headNode.getAttribute("js", ""))) {
       String s = normalizePath(jsImport);
-      head.javascript(s, false);
+      head.javascript(s, false, false);
     }
 
     for (String cssImport : split(headNode.getAttribute("css", ""))) {
@@ -52,10 +52,10 @@ public class Imports {
     }
   }
 
-  public static void importJSToHead(Iterable<String> jsFiles, DomNode head, boolean defer) {
+  public static void importJSToHead(Iterable<String> jsFiles, DomNode head, boolean defer, boolean module) {
     for (String jsImport : jsFiles) {
       String s = normalizePath(jsImport);
-      head.javascript(s, defer);
+      head.javascript(s, defer, module);
     }
   }
 
@@ -122,7 +122,7 @@ public class Imports {
     return Splitter.on(' ').omitEmptyStrings().trimResults().split(s);
   }
 
-  public static enum MediaType{
+  public static enum MediaType {
     SCREEN, PRINT;
 
     @Override
