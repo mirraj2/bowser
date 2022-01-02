@@ -42,6 +42,11 @@ public class Response {
     return status(Status.TEMPORARY_REDIRECT).close();
   }
 
+  public Response redirectPermanent(String url) {
+    response.setValue("Location", url);
+    return status(Status.MOVED_PERMANENTLY).close();
+  }
+
   public Response cacheFor(int n, TimeUnit units) {
     response.setValue("Cache-Control", "max-age=" + TimeUnit.SECONDS.convert(n, units));
     return this;
