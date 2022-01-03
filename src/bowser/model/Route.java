@@ -53,7 +53,7 @@ public class Route {
       return false;
     }
     String h = request.getHost();
-    if (!host.isEmpty() && (h == null || !h.endsWith(host))) {
+    if (!host.isEmpty() && (h == null || !h.equals(host))) {
       return false;
     }
     return true;
