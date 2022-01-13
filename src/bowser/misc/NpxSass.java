@@ -37,7 +37,7 @@ public class NpxSass implements SassFunction {
     }
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    run("npx sass " + file.getPath(), file.getParentFile(), baos);
+    run("npx sass --style=compressed " + file.getPath(), file.getParentFile(), baos);
 
     return baos.toByteArray();
   }
