@@ -32,12 +32,10 @@ public class StaticContentHandler implements RequestHandler {
 
   private WebServer server;
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
-  private final SCSSProcessor scssProcessor;
   private boolean enableCaching = true;
 
   public StaticContentHandler(WebServer server) {
     this.server = server;
-    this.scssProcessor = new SCSSProcessor(this, enableCaching);
   }
 
   @Override
@@ -84,15 +82,6 @@ public class StaticContentHandler implements RequestHandler {
       if (enableCaching) {
         // because we have cache busting for these files, we can set the longest possible cache duration
         response.cacheFor(365, TimeUnit.DAYS);
-      }
-    }
-
-    if (path.endsWith(".scss")) {
-      data = scssProcessor.process(request.getOriginalPath(), data);
-      if (jsWrappedCss) {
-        String wrapped = "window.importCSS(`/* " + path + " */\n" + new String(data, StandardCharsets.UTF_8) + "`);";
-        data = wrapped.getBytes(StandardCharsets.UTF_8);
-        response.contentType("text/javascript");
       }
     }
 
@@ -208,7 +197,6 @@ public class StaticContentHandler implements RequestHandler {
 
   public StaticContentHandler setCachingEnabled(boolean b) {
     this.enableCaching = b;
-    scssProcessor.setCachingEnabled(b);
     if (!b) {
       cache.clear();
     }
@@ -217,10 +205,6 @@ public class StaticContentHandler implements RequestHandler {
 
   public WebServer getServer() {
     return server;
-  }
-
-  public SCSSProcessor getScssProcessor() {
-    return scssProcessor;
   }
 
 }

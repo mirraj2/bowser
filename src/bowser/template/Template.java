@@ -48,8 +48,7 @@ public class Template {
 
   private Template(String s, Controller controller, DomParser parser, boolean embedCSS) {
     this.parser = parser;
-    this.scoper = controller == null ? null
-        : new CSSScoper(controller.getServer().getResourceLoader().getScssProcessor());
+    this.scoper = null;
 
     isRoot = true;
     root = parser.parse(s, isRoot);

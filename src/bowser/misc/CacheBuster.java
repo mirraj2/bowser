@@ -66,9 +66,8 @@ public class CacheBuster {
     } else {
       if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
         data = hashMJSImports(data, depth).getBytes(StandardCharsets.UTF_8);
-      } else if (path.endsWith(".scss")) {
-        data = resourceLoader.getScssProcessor().process(path, data);
       }
+
       String hash = Hashing.murmur3_32().hashBytes(data).toString();
       int i = path.lastIndexOf('.');
       checkState(i != -1, path);
@@ -113,7 +112,6 @@ public class CacheBuster {
           if (path.endsWith(".scss")) {
             if (inlineSCSS) {
               byte[] styleData = resourceLoader.getData(path, null);
-              styleData = resourceLoader.getScssProcessor().process(path, styleData);
               String ss = new String(styleData, StandardCharsets.UTF_8);
               return "window.importCSS(`" + ss + "`)";
             } else {
@@ -159,7 +157,6 @@ public class CacheBuster {
       threadCache.set(null);
     }
   }
-
 
   private static enum CachePolicy {
     GLOBAL_CACHE, REQUEST_BASED_CACHE;
