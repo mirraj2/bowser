@@ -58,7 +58,7 @@ public class Head extends DomNode {
 
     ret.add(new DomNode("meta").attribute("charset", "utf-8"));
 
-    String viewport = "width=device-width, initial-scale=1, maximum-scale=1";
+    String viewport = "width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover";
 
     ret.add(new DomNode("title").text(title));
     ret.add(new DomNode("meta").attribute("name", "viewport").attribute("content", viewport));
