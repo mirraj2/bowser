@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 import bowser.handler.StaticContentHandler;
+
 import io.bit3.jsass.CompilationException;
 import io.bit3.jsass.Compiler;
 import io.bit3.jsass.Options;
@@ -27,7 +28,7 @@ import io.bit3.jsass.importer.Import;
 public class SCSSProcessor {
 
   private final StaticContentHandler staticContentHandler;
-  private final Compiler compiler = new Compiler();
+  private Compiler compiler;
   private final Options options = new Options();
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
 
@@ -48,6 +49,9 @@ public class SCSSProcessor {
     }
     String input = new String(data, StandardCharsets.UTF_8);
     try {
+      if (compiler == null) {
+        compiler = new Compiler();
+      }
       final Output output = compiler.compileString(input, null, null, options);
       byte[] ret = normalize(output.getCss()).getBytes(StandardCharsets.UTF_8);
       if (enableCaching) {
