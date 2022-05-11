@@ -10,11 +10,12 @@ import com.google.common.hash.Hashing;
 
 import bowser.handler.StaticContentHandler;
 import bowser.model.Controller;
+
 import ox.util.Regex;
 
 /**
  * Changes resource paths on the fly in order to bust caches for old files.
- * 
+ *
  * For example, foo.js -> foo-j2np21.js<br>
  * And then when that file is modified, it would become foo.js -> foo-zz93q.js
  */
@@ -98,13 +99,13 @@ public class CacheBuster {
   private String hashMJSImports(byte[] data, int depth) {
     String s = new String(data, StandardCharsets.UTF_8);
 
-    String ret = Regex.replaceAll("import (?:(?:\\{(?:.|\\n)*?\\}|\\w+) from )?\\\"(.*)\\\";|import\\(\"(.*)\"\\)", s,
+    String ret = Regex.replaceAll("import \\\"(.*)\\\";| from \\\"(.*)\\\";|import\\(\"(.*)\"\\)", s,
         match -> {
           String fullMatch = match.group(0);
           // Log.debug(Joiner.on(' ').join(Collections.nCopies(depth, " ")) + fullMatch);
           int start = match.start();
 
-          int groupIndex = match.group(1) != null ? 1 : 2;
+          int groupIndex = match.group(1) != null ? 1 : match.group(2) != null ? 2 : 3;
 
           int i = match.start(groupIndex) - start;
           int j = match.end(groupIndex) - start;
@@ -159,7 +160,6 @@ public class CacheBuster {
       threadCache.set(null);
     }
   }
-
 
   private static enum CachePolicy {
     GLOBAL_CACHE, REQUEST_BASED_CACHE;
