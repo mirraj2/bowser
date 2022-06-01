@@ -1,8 +1,10 @@
 package bowser.handler;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.channels.ClosedChannelException;
@@ -22,16 +24,15 @@ import bowser.model.Request;
 import bowser.model.RequestHandler;
 import bowser.model.Response;
 import bowser.template.Template;
+
 import ox.IO;
 import ox.Log;
 import ox.Pair;
 
 public class StaticContentHandler implements RequestHandler {
 
-  private static final byte[] NO_DATA = new byte[0];
-
   private WebServer server;
-  private final Map<String, byte[]> cache = Maps.newConcurrentMap();
+  private final Map<String, ResourceData> cache = Maps.newConcurrentMap();
   private final SCSSProcessor scssProcessor;
   private boolean enableCaching = true;
 
@@ -50,18 +51,20 @@ public class StaticContentHandler implements RequestHandler {
       path = path.substring(0, path.length() - 3);
     }
 
-    byte[] data = getData(path);
+    ResourceData data = getResourceData(path);
 
     if (data == null) {
       return false;
     }
+
+    byte[] bb = data.bytes;
 
     if (path.endsWith(".css") || path.endsWith(".scss")) {
       response.contentType("text/css");
     } else if (path.endsWith(".js")) {
       response.contentType("text/javascript");
     } else if (path.endsWith(".mjs")) {
-      data = server.getCacheBuster().hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
+      bb = server.getCacheBuster().hashMJSImports(data).getBytes(StandardCharsets.UTF_8);
       response.contentType("text/javascript");
     } else if (path.endsWith(".mp4")) {
       response.setCompressed(false);
@@ -88,10 +91,11 @@ public class StaticContentHandler implements RequestHandler {
     }
 
     if (path.endsWith(".scss")) {
-      data = scssProcessor.process(request.getOriginalPath(), data);
+      bb = scssProcessor.process(request.getOriginalPath(), bb);
       if (jsWrappedCss) {
-        String wrapped = "window.importCSS(`/* " + path + " */\n" + new String(data, StandardCharsets.UTF_8) + "`);";
-        data = wrapped.getBytes(StandardCharsets.UTF_8);
+        String wrapped = "window.importCSS(`/* " + path + " */\n" + new String(bb, StandardCharsets.UTF_8)
+            + "`);";
+        bb = wrapped.getBytes(StandardCharsets.UTF_8);
         response.contentType("text/javascript");
       }
     }
@@ -102,21 +106,21 @@ public class StaticContentHandler implements RequestHandler {
     response.header("Accept-Ranges", "bytes");
     if (range == null) {
       if (!response.isCompressed()) {
-        response.header("Content-Length", data.length + "");
+        response.header("Content-Length", bb.length + "");
       }
-      is = new ByteArrayInputStream(data);
+      is = new ByteArrayInputStream(bb);
     } else {
       response.status(Status.PARTIAL_CONTENT);
       Long end = range.b;
       if (end == null) {
-        end = (long) data.length - 1;
+        end = (long) bb.length - 1;
       }
       long len = end - range.a + 1;
       if (!response.isCompressed()) {
         response.header("Content-Length", len + "");
       }
-      response.header("Content-Range", "bytes " + range.a + "-" + end + "/" + data.length);
-      is = new ByteArrayInputStream(data, range.a.intValue(), (int) len);
+      response.header("Content-Range", "bytes " + range.a + "-" + end + "/" + bb.length);
+      is = new ByteArrayInputStream(bb, range.a.intValue(), (int) len);
     }
 
     try {
@@ -144,9 +148,18 @@ public class StaticContentHandler implements RequestHandler {
   }
 
   public byte[] getData(String path, Controller controller) {
+    return getResourceData(path, controller).bytes;
+  }
+
+  public ResourceData getResourceData(String path) {
+    return getResourceData(path, null);
+  }
+
+  public ResourceData getResourceData(String path, Controller controller) {
     path = server.getCacheBuster().unhashPath(path);
 
-    byte[] data = cache.get(path);
+    ResourceData data = cache.get(path);
+    // byte[] data = cache.get(path);
 
     if (data == NO_DATA) {
       return null;
@@ -154,19 +167,22 @@ public class StaticContentHandler implements RequestHandler {
 
     if (data == null) {
       data = load(path, controller);
-      if (enableCaching) {
-        cache.put(path, data);
+      cache.put(path, data);
+
+      if (data == NO_DATA) {
+        return null;
+      }
+    } else {
+      if (!enableCaching) {
+        data.ensureLatestVersion();
       }
     }
 
-    if (data == NO_DATA) {
-      return null;
-    }
 
     return data;
   }
 
-  private byte[] load(String path, Controller controller) {
+  private ResourceData load(String path, Controller controller) {
     if (path.charAt(0) == '/') {
       path = path.substring(1);
     }
@@ -175,17 +191,18 @@ public class StaticContentHandler implements RequestHandler {
     if (controller != null) {
       URL url = controller.getResource(path);
       if (url != null) {
-        return IO.from(url).toByteArray();
+        return new ResourceData(url);
       }
     }
 
     URL url = pathToUrl(path);
     if (url != null) {
-      return IO.from(url).toByteArray();
+      return new ResourceData(url);
     }
 
     if (path.equals("bowser.js")) {
-      return IO.from(Template.class, "bowser.js").toByteArray();
+      url = Template.class.getResource("bowser.js");
+      return new ResourceData(url);
     }
 
     Log.debug("Couldn't find: " + path);
@@ -209,9 +226,6 @@ public class StaticContentHandler implements RequestHandler {
   public StaticContentHandler setCachingEnabled(boolean b) {
     this.enableCaching = b;
     scssProcessor.setCachingEnabled(b);
-    if (!b) {
-      cache.clear();
-    }
     return this;
   }
 
@@ -221,6 +235,42 @@ public class StaticContentHandler implements RequestHandler {
 
   public SCSSProcessor getScssProcessor() {
     return scssProcessor;
+  }
+
+  private static final ResourceData NO_DATA = new ResourceData();
+
+  public static class ResourceData {
+    public final URL url;
+    public byte[] bytes;
+    public long dataAsOf;
+
+    private ResourceData() {
+      this.url = null;
+      this.bytes = null;
+    }
+
+    public ResourceData(URL url) {
+      this.url = checkNotNull(url);
+      this.reload();
+    }
+
+    public void ensureLatestVersion() {
+      String s = url.getFile();
+      if (!s.isEmpty()) {
+        File f = new File(s);
+        if (f.lastModified() > dataAsOf) {
+          reload();
+        }
+      }
+    }
+
+    private void reload() {
+      // Log.debug("Loading resource: " + url);
+      dataAsOf = System.currentTimeMillis();
+      this.bytes = IO.from(url).toByteArray();
+
+    }
+
   }
 
 }

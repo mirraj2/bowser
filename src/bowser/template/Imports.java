@@ -9,10 +9,12 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+import bowser.handler.StaticContentHandler.ResourceData;
 import bowser.model.Controller;
 import bowser.node.DomNode;
 import bowser.node.DomParser;
 import bowser.node.TextNode;
+
 import ox.Log;
 import ox.x.XOptional;
 
@@ -72,7 +74,7 @@ public class Imports {
       if (!jsImport.startsWith("/")) {
         jsImport = "/" + jsImport;
       }
-      byte[] jsBytes = controller.getData(jsImport);
+      ResourceData jsBytes = controller.getResourceData(jsImport);
       checkNotNull(jsBytes, "Could not find: " + jsImport);
       DomNode script = new DomNode("script");
       String s;
@@ -80,7 +82,7 @@ public class Imports {
         script.attribute("type", "module");
         s = controller.getServer().getCacheBuster().hashMJSImports(jsBytes);
       } else {
-        s = new String(jsBytes, StandardCharsets.UTF_8);
+        s = new String(jsBytes.bytes, StandardCharsets.UTF_8);
       }
       script.add(new TextNode("\n" + s));
       ret.add(script);

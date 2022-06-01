@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 
 import bowser.handler.StaticContentHandler;
+import bowser.handler.StaticContentHandler.ResourceData;
 import bowser.model.Controller;
 
 import ox.util.Regex;
@@ -61,16 +62,17 @@ public class CacheBuster {
     if (!path.startsWith("/")) {
       path = "/" + path;
     }
-    byte[] data = resourceLoader.getData(path, controller);
+    ResourceData data = resourceLoader.getResourceData(path, controller);
     if (data == null) {
       ret = path;
     } else {
+      byte[] bb = data.bytes;
       if (path.endsWith(".mjs") || path.endsWith(".jsx")) {
-        data = hashMJSImports(data, depth).getBytes(StandardCharsets.UTF_8);
+        bb = hashMJSImports(data, depth).getBytes(StandardCharsets.UTF_8);
       } else if (path.endsWith(".scss")) {
-        data = resourceLoader.getScssProcessor().process(path, data);
+        bb = resourceLoader.getScssProcessor().process(path, data.bytes);
       }
-      String hash = Hashing.murmur3_32().hashBytes(data).toString();
+      String hash = Hashing.murmur3_32().hashBytes(bb).toString();
       int i = path.lastIndexOf('.');
       checkState(i != -1, path);
       ret = path.substring(0, i) + "-" + hash + path.substring(i);
@@ -89,15 +91,15 @@ public class CacheBuster {
 
   static int counter = 0;
 
-  public String hashMJSImports(byte[] data) {
+  public String hashMJSImports(ResourceData data) {
     return hashMJSImports(data, 0);
   }
 
   /**
    * Goes through an mjs file and replaces paths with hashed ones.
    */
-  private String hashMJSImports(byte[] data, int depth) {
-    String s = new String(data, StandardCharsets.UTF_8);
+  private String hashMJSImports(ResourceData data, int depth) {
+    String s = new String(data.bytes, StandardCharsets.UTF_8);
 
     String ret = Regex.replaceAll("import \\\"(.*)\\\";| from \\\"(.*)\\\";|import\\(\"(.*)\"\\)", s,
         match -> {

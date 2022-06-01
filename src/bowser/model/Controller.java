@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import bowser.WebServer;
+import bowser.handler.StaticContentHandler.ResourceData;
 
 public abstract class Controller {
 
@@ -50,6 +51,10 @@ public abstract class Controller {
 
   public byte[] getData(String path) {
     return server.getResourceLoader().getData(path, this);
+  }
+
+  public ResourceData getResourceData(String path) {
+    return server.getResourceLoader().getResourceData(path, this);
   }
 
   public URL getResource(String path) {
