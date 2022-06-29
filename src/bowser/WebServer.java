@@ -39,6 +39,7 @@ import bowser.model.Route;
 import bowser.node.DomNode;
 import bowser.node.Head;
 import bowser.template.Template;
+
 import ox.Log;
 import ox.Threads;
 import ox.x.XList;
@@ -181,7 +182,7 @@ public class WebServer {
     return head;
   }
 
-  private void handle(Request request, Response response) {
+  public void handle(Request request, Response response) {
     RequestHandler lastHandler = null;
     try {
       boolean handled = false;
