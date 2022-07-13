@@ -39,6 +39,7 @@ import bowser.model.Route;
 import bowser.node.DomNode;
 import bowser.node.Head;
 import bowser.template.Template;
+
 import ox.Log;
 import ox.Threads;
 import ox.x.XList;
@@ -181,7 +182,42 @@ public class WebServer {
     return head;
   }
 
-  private void handle(Request request, Response response) {
+  public void processRequest(Request request, Response response) {
+    Stopwatch watch = Stopwatch.createStarted();
+    try {
+      routeToHandler(request, response);
+    } catch (final Throwable e) {
+      Throwable root = Throwables.getRootCause(e);
+      if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
+        e.printStackTrace();
+        response.status(Status.INTERNAL_SERVER_ERROR);
+        try {
+          String message;
+          if (e instanceof UserReadableError) {
+            message = e.getMessage();
+          } else if (!Strings.isNullOrEmpty(root.getMessage())) {
+            message = root.getMessage();
+          } else {
+            message = "Server Error";
+          }
+          response.contentType("text/plain");
+          response.write(message);
+        } catch (Exception e1) {
+          e1.printStackTrace();
+        }
+      }
+    } finally {
+      response.close();
+      cacheBuster.onRequestFinished();
+    }
+    try {
+      logger.log(request, response, watch);
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void routeToHandler(Request request, Response response) {
     RequestHandler lastHandler = null;
     try {
       boolean handled = false;
@@ -243,43 +279,12 @@ public class WebServer {
     }
   }
 
+
+
   private final Container container = new Container() {
     @Override
     public void handle(org.simpleframework.http.Request request, org.simpleframework.http.Response response) {
-      Stopwatch watch = Stopwatch.createStarted();
-      Request req = new Request(request);
-      Response resp = new Response(response);
-      try {
-        WebServer.this.handle(req, resp);
-      } catch (final Throwable e) {
-        Throwable root = Throwables.getRootCause(e);
-        if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
-          e.printStackTrace();
-          response.setStatus(Status.INTERNAL_SERVER_ERROR);
-          try {
-            String message;
-            if (e instanceof UserReadableError) {
-              message = e.getMessage();
-            } else if (!Strings.isNullOrEmpty(root.getMessage())) {
-              message = root.getMessage();
-            } else {
-              message = "Server Error";
-            }
-            resp.contentType("text/plain");
-            resp.write(message);
-          } catch (Exception e1) {
-            e1.printStackTrace();
-          }
-        }
-      } finally {
-        resp.close();
-        cacheBuster.onRequestFinished();
-      }
-      try {
-        logger.log(req, resp, watch);
-      } catch (Throwable e) {
-        e.printStackTrace();
-      }
+      processRequest(new Request(request), new Response(response));
     }
   };
 
