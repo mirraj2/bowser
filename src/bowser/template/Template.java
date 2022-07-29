@@ -27,6 +27,7 @@ import bowser.node.DomParser;
 import bowser.node.Head;
 import bowser.node.TextNode;
 import bowser.template.Imports.MediaType;
+
 import ox.IO;
 import ox.Json;
 import ox.Log;
@@ -478,7 +479,7 @@ public class Template {
         throw new RuntimeException("Don't know how to get size from a " + o.getClass());
       }
     } else {
-      return Reflection.call(o, method);
+      return Reflection.callMethod(o, method);
     }
   }
 
