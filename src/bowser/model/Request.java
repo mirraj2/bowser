@@ -247,7 +247,7 @@ public class Request {
   private static final Set<String> staticExtensions;
   static {
     Set<String> set = Sets.newHashSet("css", "scss", "js", "mjs", "jsx", "ico", "otf", "woff", "woff2", "eot", "ttf",
-        "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm");
+        "mp4", "map", "pdf", "cur", "txt", "mp3", "mov", "webm", "webp");
     set.addAll(Images.FORMATS);
     staticExtensions = ImmutableSet.copyOf(set);
   }

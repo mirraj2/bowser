@@ -70,7 +70,7 @@ public class StaticContentHandler implements RequestHandler {
       response.contentType("image/svg+xml");
     }
 
-    if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".woff2") || path.endsWith(".ttf")
+    if (path.endsWith(".jpg") || path.endsWith(".png") || path.endsWith(".webp") || path.endsWith(".woff2") || path.endsWith(".ttf")
         || path.endsWith(".gif") || path.endsWith(".otf") || path.endsWith(".woff")) {
       response.setCompressed(false);
       if (enableCaching) {
