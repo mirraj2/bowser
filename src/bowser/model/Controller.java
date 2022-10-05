@@ -9,15 +9,15 @@ import java.util.Map;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import bowser.WebServer;
+import bowser.BowserWebServer;
 
 public abstract class Controller {
 
-  protected WebServer server;
+  protected BowserWebServer server;
   private final Map<String, String> folders = Maps.newHashMap();
   private final List<Route> routes = Lists.newArrayList();
 
-  public final void init(WebServer server) {
+  public final void init(BowserWebServer server) {
     this.server = server;
     init();
   }
@@ -34,7 +34,7 @@ public abstract class Controller {
     return route;
   }
 
-  public WebServer getServer() {
+  public BowserWebServer getServer() {
     return server;
   }
 

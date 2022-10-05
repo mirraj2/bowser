@@ -1,6 +1,6 @@
 package bowser.handler;
 
-import bowser.WebServer;
+import bowser.BowserWebServer;
 import bowser.model.Request;
 import bowser.model.RequestHandler;
 import bowser.model.Response;
@@ -12,7 +12,7 @@ import ox.IO;
 public class RouteHandler implements RequestHandler {
 
   private final Route route;
-  private final WebServer server;
+  private final BowserWebServer server;
 
   public RouteHandler(Route route) {
     this.route = route;

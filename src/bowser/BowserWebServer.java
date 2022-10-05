@@ -44,10 +44,12 @@ import ox.Log;
 import ox.Threads;
 import ox.x.XList;
 import ox.x.XMultimap;
+import ox.x.XOptional;
 
-public class WebServer {
+public class BowserWebServer {
 
   public static boolean debugHandlers = false;
+  private static InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();
 
   public final int port;
   public final boolean enableCaching;
@@ -71,7 +73,7 @@ public class WebServer {
 
   private final CacheBuster cacheBuster;
 
-  public WebServer(String appName, int port, boolean enableCaching) {
+  public BowserWebServer(String appName, int port, boolean enableCaching) {
     this.port = port;
     this.enableCaching = enableCaching;
     this.staticContentHandler = new StaticContentHandler(this);
@@ -79,30 +81,30 @@ public class WebServer {
     head = Head.defaults(appName);
   }
 
-  public WebServer mobileDisplay() {
+  public BowserWebServer mobileDisplay() {
     Template.mobileDisplay = true;
     return this;
   }
 
-  public WebServer controller(Controller controller) {
+  public BowserWebServer controller(Controller controller) {
     controllers.add(controller);
     controller.init(this);
     return this;
   }
 
-  public WebServer controller(Controller... controllers) {
+  public BowserWebServer controller(Controller... controllers) {
     for (Controller c : controllers) {
       controller(c);
     }
     return this;
   }
 
-  public WebServer add(RequestHandler handler) {
+  public BowserWebServer add(RequestHandler handler) {
     handlers.add(handler);
     return this;
   }
 
-  public WebServer add(RequestHandler... handlers) {
+  public BowserWebServer add(RequestHandler... handlers) {
     for (RequestHandler handler : handlers) {
       add(handler);
     }
@@ -112,12 +114,12 @@ public class WebServer {
   /**
    * Add an exception handler whose handle() function will be called if any handlers throw an exception.
    */
-  public WebServer exceptionHandler(ExceptionHandler handler) {
+  public BowserWebServer exceptionHandler(ExceptionHandler handler) {
     this.exceptionHandler = checkNotNull(handler);
     return this;
   }
 
-  public WebServer notFoundHandler(RequestHandler handler) {
+  public BowserWebServer notFoundHandler(RequestHandler handler) {
     this.notFoundHandler = handler;
     return this;
   }
@@ -126,31 +128,31 @@ public class WebServer {
     add(new RouteHandler(route));
   }
 
-  public WebServer ssl(SSLContext sslContext) {
+  public BowserWebServer ssl(SSLContext sslContext) {
     this.sslContext = sslContext;
     return this;
   }
 
-  public WebServer logger(WebLogger logger) {
+  public BowserWebServer logger(WebLogger logger) {
     this.logger = logger;
     return this;
   }
 
-  public WebServer showImportComments() {
+  public BowserWebServer showImportComments() {
     this.showImportComments = true;
     return this;
   }
 
-  public WebServer includeRouteDebugInfo() {
+  public BowserWebServer includeRouteDebugInfo() {
     this.includeRouteDebugInfo = true;
     return this;
   }
 
-  public WebServer googleAnalytics(String googleAnalyticsId) {
+  public BowserWebServer googleAnalytics(String googleAnalyticsId) {
     return googleAnalytics(googleAnalyticsId, "");
   }
 
-  public WebServer googleAnalytics(String googleAnalyticsId, String adwordsTagId) {
+  public BowserWebServer googleAnalytics(String googleAnalyticsId, String adwordsTagId) {
     checkNotEmpty(normalize(googleAnalyticsId));
 
     head.add(new DomNode("script").attribute("async").attribute("src",
@@ -185,6 +187,7 @@ public class WebServer {
   public void processRequest(Request request, Response response) {
     Stopwatch watch = Stopwatch.createStarted();
     try {
+      currentRequest.set(request);
       routeToHandler(request, response);
     } catch (final Throwable e) {
       Throwable root = Throwables.getRootCause(e);
@@ -207,6 +210,7 @@ public class WebServer {
         }
       }
     } finally {
+      currentRequest.set(null);
       response.close();
       cacheBuster.onRequestFinished();
     }
@@ -289,7 +293,7 @@ public class WebServer {
   };
 
   @SuppressWarnings("resource")
-  public WebServer start() {
+  public BowserWebServer start() {
     checkForDuplicatePaths();
 
     if (enableCaching) {
@@ -356,12 +360,19 @@ public class WebServer {
     }
   }
 
-  public static WebServer redirectToHttps() {
+  /**
+   * Gets the Request associated with the current Thread.
+   */
+  public static XOptional<Request> getCurrentRequest() {
+    return XOptional.ofNullable(currentRequest.get());
+  }
+
+  public static BowserWebServer redirectToHttps() {
     return redirect(80, 443);
   }
 
-  public static WebServer redirect(int fromPort, int toPort) {
-    return new WebServer("Redirect", fromPort, false).add((request, response) -> {
+  public static BowserWebServer redirect(int fromPort, int toPort) {
+    return new BowserWebServer("Redirect", fromPort, false).add((request, response) -> {
       String host = request.getHost();
       String path = request.request.getTarget();
       if (toPort == 443) {

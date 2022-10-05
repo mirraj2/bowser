@@ -15,7 +15,7 @@ import org.simpleframework.http.Status;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 
-import bowser.WebServer;
+import bowser.BowserWebServer;
 import bowser.misc.SCSSProcessor;
 import bowser.model.Controller;
 import bowser.model.Request;
@@ -30,12 +30,12 @@ public class StaticContentHandler implements RequestHandler {
 
   private static final byte[] NO_DATA = new byte[0];
 
-  private WebServer server;
+  private BowserWebServer server;
   private final Map<String, byte[]> cache = Maps.newConcurrentMap();
   private final SCSSProcessor scssProcessor;
   private boolean enableCaching = true;
 
-  public StaticContentHandler(WebServer server) {
+  public StaticContentHandler(BowserWebServer server) {
     this.server = server;
     this.scssProcessor = new SCSSProcessor(this, enableCaching);
   }
@@ -215,7 +215,7 @@ public class StaticContentHandler implements RequestHandler {
     return this;
   }
 
-  public WebServer getServer() {
+  public BowserWebServer getServer() {
     return server;
   }
 
