@@ -19,7 +19,7 @@ public class SSLUtils {
 
   private static final String pass = "spamspam";
 
-  public static File createKeystoreFromPEM(File pemFile) {
+  public static File createKeystoreFromPEM(File pemFile, File privKey) {
     boolean generateKeystore = false;
 
     File dir = pemFile.parent();
@@ -38,8 +38,8 @@ public class SSLUtils {
     if (generateKeystore) {
       Splitter splitter = Splitter.on(' ');
       try {
-        String command = "openssl pkcs12 -export -out keystore.pkcs12 -in fullchain.pem -inkey privkey.pem -passout pass:"
-            + pass;
+        String command = "openssl pkcs12 -export -out keystore.pkcs12 -in fullchain.pem -inkey " + privKey.getPath()
+            + " -passout pass:" + pass;
         Log.debug(command);
         Process process = new ProcessBuilder(splitter.splitToList(command))
             .directory(dir.file).inheritIO().start();
@@ -69,7 +69,7 @@ public class SSLUtils {
     }
 
     File pemFile = dir.child("fullchain.pem");
-    File keystoreFile = createKeystoreFromPEM(pemFile);
+    File keystoreFile = createKeystoreFromPEM(pemFile, pemFile.sibling("privkey.pem"));
 
     try {
       KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
