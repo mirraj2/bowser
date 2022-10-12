@@ -17,19 +17,13 @@ import ox.Log;
 
 public class SSLUtils {
 
-  public static SSLContext createContext(String domain) {
-    String pass = "spamspam";
+  private static final String pass = "spamspam";
 
-    File dir = new File("/etc/letsencrypt/live/" + domain);
-    if (!dir.exists()) {
-      Log.warn("Could not find letsencrypt dir: " + dir);
-      return null;
-    }
-
-    File keystoreFile = new File(dir, "keystore.jks");
-    File pemFile = new File(dir, "fullchain.pem");
-
+  public static File createKeystoreFromPEM(File pemFile) {
     boolean generateKeystore = false;
+
+    File dir = pemFile.getParentFile();
+    File keystoreFile = new File(dir, "keystore.jks");
 
     if (keystoreFile.exists()) {
       if (keystoreFile.lastModified() < pemFile.lastModified()) {
@@ -63,6 +57,19 @@ public class SSLUtils {
         throw propagate(e);
       }
     }
+
+    return keystoreFile;
+  }
+
+  public static SSLContext createContext(String domain) {
+    File dir = new File("/etc/letsencrypt/live/" + domain);
+    if (!dir.exists()) {
+      Log.warn("Could not find letsencrypt dir: " + dir);
+      return null;
+    }
+
+    File pemFile = new File(dir, "fullchain.pem");
+    File keystoreFile = createKeystoreFromPEM(pemFile);
 
     try {
       KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
