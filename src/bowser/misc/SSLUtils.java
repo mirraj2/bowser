@@ -3,7 +3,6 @@ package bowser.misc;
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Utils.propagate;
 
-import java.io.File;
 import java.security.KeyStore;
 
 import javax.net.ssl.KeyManagerFactory;
@@ -12,6 +11,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import com.google.common.base.Splitter;
 
+import ox.File;
 import ox.IO;
 import ox.Log;
 
@@ -22,11 +22,11 @@ public class SSLUtils {
   public static File createKeystoreFromPEM(File pemFile) {
     boolean generateKeystore = false;
 
-    File dir = pemFile.getParentFile();
-    File keystoreFile = new File(dir, "keystore.jks");
+    File dir = pemFile.parent();
+    File keystoreFile = pemFile.sibling("keystore.jks");
 
     if (keystoreFile.exists()) {
-      if (keystoreFile.lastModified() < pemFile.lastModified()) {
+      if (keystoreFile.getLastModifiedTimestamp() < pemFile.getLastModifiedTimestamp()) {
         Log.info("SSUtils: It looks like a new PEM file was created. Regenerating the keystore.");
         keystoreFile.delete();
         generateKeystore = true;
@@ -42,17 +42,17 @@ public class SSLUtils {
             + pass;
         Log.debug(command);
         Process process = new ProcessBuilder(splitter.splitToList(command))
-            .directory(dir).inheritIO().start();
+            .directory(dir.file).inheritIO().start();
         checkState(process.waitFor() == 0);
 
         command = "keytool -importkeystore -srckeystore keystore.pkcs12 -srcstoretype PKCS12 -destkeystore keystore.jks -srcstorepass "
             + pass + " -deststorepass " + pass;
         Log.debug(command);
         process = new ProcessBuilder(splitter.splitToList(command))
-            .directory(dir).inheritIO().start();
+            .directory(dir.file).inheritIO().start();
         checkState(process.waitFor() == 0);
 
-        new File(dir, "keystore.pkcs12").delete();// cleanup
+        dir.child("keystore.pkcs12").delete();// cleanup
       } catch (Exception e) {
         throw propagate(e);
       }
@@ -62,13 +62,13 @@ public class SSLUtils {
   }
 
   public static SSLContext createContext(String domain) {
-    File dir = new File("/etc/letsencrypt/live/" + domain);
+    File dir = File.ofPath("/etc/letsencrypt/live/" + domain);
     if (!dir.exists()) {
       Log.warn("Could not find letsencrypt dir: " + dir);
       return null;
     }
 
-    File pemFile = new File(dir, "fullchain.pem");
+    File pemFile = dir.child("fullchain.pem");
     File keystoreFile = createKeystoreFromPEM(pemFile);
 
     try {
