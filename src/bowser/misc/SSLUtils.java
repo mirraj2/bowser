@@ -71,6 +71,10 @@ public class SSLUtils {
     File pemFile = dir.child("fullchain.pem");
     File keystoreFile = createKeystoreFromPEM(pemFile, pemFile.sibling("privkey.pem"));
 
+    return createContextFromKeystore(keystoreFile);
+  }
+
+  public static SSLContext createContextFromKeystore(File keystoreFile) {
     try {
       KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
       keystore.load(IO.from(keystoreFile).asStream(), pass.toCharArray());
