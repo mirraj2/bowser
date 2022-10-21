@@ -8,7 +8,7 @@
 	<classpathentry kind="lib" path="lib/css/jsass/jsass-5.9.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/simpleframework.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/ox"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
