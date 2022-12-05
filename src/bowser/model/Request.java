@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import bowser.handler.MobileDetector;
+
 import ox.Json;
 import ox.Pair;
 import ox.util.Images;
@@ -38,6 +39,9 @@ public class Request {
   private Map<String, Object> userData = Maps.newHashMap();
 
   private String host = null;
+
+  // cached value of getJson
+  private Json json = null;
 
   public Request(org.simpleframework.http.Request request) {
     this.request = request;
@@ -83,7 +87,7 @@ public class Request {
 
   public void setPath(String path) {
     this.segments = Splitter.on('/').omitEmptyStrings().splitToList(path);
-    this.path = path.toLowerCase();
+    this.path = path;
   }
 
   public String getSegment(int index) {
@@ -136,23 +140,24 @@ public class Request {
   }
 
   public Json getJson() {
-    String s = getContent();
-    Json ret;
-    if (s.startsWith("{") || s.startsWith("[")) {
-      ret = new Json(s);
-    } else {
-      ret = Json.object();
+    if (json == null) {
+      String s = getContent();
+      if (s.startsWith("{") || s.startsWith("[")) {
+        json = new Json(s);
+      } else {
+        json = Json.object();
+      }
+      if (json.isObject()) {
+        getQuery().forEach((k, v) -> {
+          // for some reason, when the json is stringified, it shows up like this:
+          // { "string": "a", "{\"string\":\"a\"}": "" }
+          if (!v.isEmpty() || k.charAt(0) != '{') {
+            json.with(k, v);
+          }
+        });
+      }
     }
-    if (ret.isObject()) {
-      getQuery().forEach((k, v) -> {
-        // for some reason, when the json is stringified, it shows up like this:
-        // { "string": "a", "{\"string\":\"a\"}": "" }
-        if (!v.isEmpty() || k.charAt(0) != '{') {
-          ret.with(k, v);
-        }
-      });
-    }
-    return ret;
+    return json;
   }
 
   public String getContent() {

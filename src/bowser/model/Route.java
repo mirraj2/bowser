@@ -4,19 +4,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.propagate;
 
 import java.net.URL;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import bowser.template.Data;
 import bowser.template.Template;
+
 import ox.IO;
 import ox.Json;
 import ox.Log;
+import ox.util.Regex;
+import ox.x.XList;
 
 public class Route {
+  private static final String charMatcher = "[0-9a-zA-Z\\-_:@\\. ']*";
+
   public final Controller controller;
   public final String method, path;
   private boolean enableCaching;
+
   public final Pattern regex;
+  private XList<String> namedGroups = null;
 
   public String resource;
   public Handler handler;
@@ -35,12 +43,21 @@ public class Route {
     this.path = path;
     this.enableCaching = enableCaching;
 
-    path = path.toLowerCase();
     if (path.contains("**")) {
       path = path.replace("**", ".*");
     } else {
-      path = path.replace("*", "[0-9a-zA-Z\\-_:@\\. ']*");
+      path = path.replace("*", charMatcher);
     }
+
+    if (path.contains("{")) {
+      namedGroups = XList.createWithCapacity(2);
+      path = Regex.replaceAll("\\{(.*)\\}", path, matcher -> {
+        String paramName = matcher.group(1);
+        namedGroups.add(paramName);
+        return "(?<" + paramName + ">" + charMatcher + ")";
+      });
+    }
+
     path += "/?";
     regex = Pattern.compile(path);
   }
@@ -49,13 +66,19 @@ public class Route {
     if (!request.getMethod().equalsIgnoreCase(method)) {
       return false;
     }
-    if (!regex.matcher(request.path).matches()) {
+    Matcher matcher = regex.matcher(request.path);
+    if (!matcher.matches()) {
       return false;
     }
     String h = request.getHost();
     if (!host.isEmpty() && (h == null || !h.equals(host))) {
       return false;
     }
+
+    for (int i = 1; i <= matcher.groupCount(); i++) {
+      request.getJson().with(namedGroups.get(i - 1), matcher.group(i));
+    }
+
     return true;
   }
 
