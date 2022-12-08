@@ -51,7 +51,7 @@ public class Route {
 
     if (path.contains("{")) {
       namedGroups = XList.createWithCapacity(2);
-      path = Regex.replaceAll("\\{(.*)\\}", path, matcher -> {
+      path = Regex.replaceAll("\\{(.*?)\\}", path, matcher -> {
         String paramName = matcher.group(1);
         namedGroups.add(paramName);
         return "(?<" + paramName + ">" + charMatcher + ")";
