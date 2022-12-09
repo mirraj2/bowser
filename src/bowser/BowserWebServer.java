@@ -49,7 +49,7 @@ import ox.x.XOptional;
 public class BowserWebServer {
 
   public static boolean debugHandlers = false;
-  private static InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();
+  private static final InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();
 
   public final int port;
   public final boolean enableCaching;
@@ -60,7 +60,7 @@ public class BowserWebServer {
   private final List<RequestHandler> handlers = Lists.newArrayList();
   private final Map<String, Controller> routeControllers = Maps.newHashMap();
 
-  private StaticContentHandler staticContentHandler;
+  private final StaticContentHandler staticContentHandler;
 
   private SSLContext sslContext;
 
@@ -229,6 +229,7 @@ public class BowserWebServer {
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
       response.header("Access-Control-Allow-Credentials", "true");
       response.header("Access-Control-Expose-Headers", "Content-Disposition");
+      response.header("Access-Control-Allow-Methods", "GET, HEAD, POST, PATCH, DELETE, PUT, OPTIONS");
       response.header("X-Frame-Options", "SAMEORIGIN");
       if (sslContext != null) {
         long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
