@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.hash.HashCode;
@@ -83,7 +85,13 @@ public class ClientSocket {
       os.write(createFrame(Opcode.TEXT, payload));
       os.flush();
     } catch (IOException e) {
-      throw propagate(e);
+      if (Throwables.getRootCause(e) instanceof SocketException) {
+        Log.warn("ClientSocket: failed to send text.");
+        onClose.run();
+        return this;
+      } else {
+        throw propagate(e);
+      }
     }
     return this;
   }
@@ -362,6 +370,10 @@ public class ClientSocket {
     onOpen.accept(this);
   }
   
+  public boolean isConnected() {
+    return socket.isConnected();
+  }
+
   public static final class DisconnectedException extends RuntimeException {
   }
 
