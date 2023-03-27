@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import bowser.template.Imports.MediaType;
+
 import ox.x.XOptional;
 
 public class DomNode {
@@ -295,12 +296,13 @@ public class DomNode {
 
   public void render(StringBuilder sb, int depth) {
     renderStartTag(sb, depth);
-    if (!selfClosingNode) {
+    if (selfClosingNode) {
+      if (shouldGenWhitespace()) {
+        sb.append("\n");
+      }
+    } else {
       renderContent(sb, depth);
       renderEndTag(sb, depth);
-    }
-    if (shouldGenWhitespace()) {
-      sb.append("\n");
     }
   }
 
