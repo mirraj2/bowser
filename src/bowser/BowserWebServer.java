@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import bowser.handler.ExceptionHandler;
+import bowser.handler.PortRedirect;
 import bowser.handler.RouteHandler;
 import bowser.handler.StaticContentHandler;
 import bowser.misc.CacheBuster;
@@ -372,18 +373,9 @@ public class BowserWebServer {
   }
 
   public static BowserWebServer redirect(int fromPort, int toPort) {
-    return new BowserWebServer("Redirect", fromPort, false).add((request, response) -> {
-      String host = request.getHost();
-      String path = request.request.getTarget();
-      if (toPort == 443) {
-        response.redirect("https://" + host + path);
-      } else if (toPort == 80) {
-        response.redirect("http://" + host + path);
-      } else {
-        response.redirect("http://" + host + toPort + ":" + toPort + path);
-      }
-      return true;
-    }).start();
+    return new BowserWebServer("Redirect", fromPort, false)
+        .add(new PortRedirect(toPort))
+        .start();
   }
 
 }
