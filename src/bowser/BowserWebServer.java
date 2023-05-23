@@ -212,7 +212,12 @@ public class BowserWebServer {
       }
     } finally {
       currentRequest.set(null);
-      response.close();
+      try {
+        response.close();
+      } catch (Throwable t) {
+        Log.debug("Problem closing output: " + request);
+        t.printStackTrace();
+      }
       cacheBuster.onRequestFinished();
     }
     try {
