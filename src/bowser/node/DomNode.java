@@ -168,6 +168,10 @@ public class DomNode {
     return Splitter.on(' ').omitEmptyStrings().trimResults().splitToList(s);
   }
 
+  public DomNode text(Object o) {
+    return text(o == null ? "" : o.toString());
+  }
+
   public DomNode text(String text) {
     children.clear();
     add(new TextNode(text));
