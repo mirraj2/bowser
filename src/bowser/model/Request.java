@@ -43,6 +43,10 @@ public class Request {
   // cached value of getJson
   private Json json = null;
 
+  public Request() {
+    this.request = null;
+  }
+
   public Request(org.simpleframework.http.Request request) {
     this.request = request;
     setPath(request.getPath().getPath());
