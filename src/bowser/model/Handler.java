@@ -1,5 +1,7 @@
 package bowser.model;
 
+import java.util.function.Consumer;
+
 @FunctionalInterface
 public interface Handler extends RequestHandler {
 
@@ -10,5 +12,17 @@ public interface Handler extends RequestHandler {
   }
 
   public abstract void handle(Request request, Response response);
+
+  /**
+   * Returns a Handler which wraps it's execution with the given callback
+   */
+  public default Handler wrapWith(Consumer<Runnable> wrapper) {
+    return (request, response) -> {
+      wrapper.accept(() -> {
+        handle(request, response);
+      });
+    };
+  }
+
 
 }
