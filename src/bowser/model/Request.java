@@ -9,6 +9,8 @@ import static ox.util.Utils.propagate;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +19,7 @@ import org.simpleframework.http.Cookie;
 import org.simpleframework.http.Part;
 import org.simpleframework.http.Path;
 import org.simpleframework.http.Query;
+import org.simpleframework.transport.TransportChannel;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
@@ -27,6 +30,7 @@ import bowser.handler.MobileDetector;
 
 import ox.Json;
 import ox.Pair;
+import ox.Reflection;
 import ox.util.Images;
 import ox.x.XList;
 import ox.x.XMap;
@@ -251,6 +255,22 @@ public class Request {
       end = parseLong(s.substring(index + 1));
     }
     return Pair.of(start, end);
+  }
+
+  public boolean isAborted() {
+    TransportChannel channel = Reflection.get(request, "channel");
+    SocketChannel socket = channel.getSocket();
+
+    // if socket.read() ends up blocking, we can try this out:
+    // socket.configureBlocking(true);
+
+    int bytesRead;
+    try {
+      bytesRead = socket.read(ByteBuffer.allocate(1));
+    } catch (IOException e) {
+      throw propagate(e);
+    }
+    return bytesRead == -1;
   }
 
   private static final Set<String> staticExtensions;

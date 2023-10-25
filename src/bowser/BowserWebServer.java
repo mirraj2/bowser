@@ -4,11 +4,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.checkNotEmpty;
 import static ox.util.Utils.normalize;
 import static ox.util.Utils.propagate;
+import static ox.util.Utils.sleep;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.net.ssl.SSLContext;
 
@@ -19,7 +23,6 @@ import org.simpleframework.transport.Server;
 import org.simpleframework.transport.connect.SocketConnection;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -49,6 +52,8 @@ import ox.x.XOptional;
 
 public class BowserWebServer {
 
+  private static Executor interruptorPool = Executors.newCachedThreadPool();
+
   public static boolean debugHandlers = false;
   private static InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();
 
@@ -73,6 +78,11 @@ public class BowserWebServer {
   private final Head head;
 
   private final CacheBuster cacheBuster;
+
+  /**
+   * If true, when a web socket gets disconnected, we will interrupt the thread which is processing that request.
+   */
+  public boolean interruptHandlerOnDisconnect = false;
 
   public BowserWebServer(String appName, int port, boolean enableCaching) {
     this.port = port;
@@ -149,6 +159,11 @@ public class BowserWebServer {
     return this;
   }
 
+  public BowserWebServer interruptHandlerOnDisconnect(boolean interruptHandlerOnDisconnect) {
+    this.interruptHandlerOnDisconnect = interruptHandlerOnDisconnect;
+    return this;
+  }
+
   public BowserWebServer googleAnalytics(String googleAnalyticsId) {
     return googleAnalytics(googleAnalyticsId, "");
   }
@@ -187,31 +202,31 @@ public class BowserWebServer {
 
   public void processRequest(Request request, Response response) {
     Stopwatch watch = Stopwatch.createStarted();
+    AtomicBoolean running = new AtomicBoolean(true);
     try {
       currentRequest.set(request);
+
+      if (interruptHandlerOnDisconnect) {
+        final Thread thread = Thread.currentThread();
+        interruptorPool.execute(() -> {
+          sleep(30);
+          while (running.get()) {
+            if (request.isAborted()) {
+              thread.interrupt();
+              break;
+            } else {
+              sleep(30);
+            }
+          }
+        });
+      }
+
       routeToHandler(request, response);
     } catch (final Throwable e) {
-      Throwable root = Throwables.getRootCause(e);
-      if (!"Stream has been closed".equals(root.getMessage()) && !"Broken pipe".equals(root.getMessage())) {
-        e.printStackTrace();
-        response.status(Status.INTERNAL_SERVER_ERROR);
-        try {
-          String message;
-          if (e instanceof UserReadableError) {
-            message = e.getMessage();
-          } else if (!Strings.isNullOrEmpty(root.getMessage())) {
-            message = root.getMessage();
-          } else {
-            message = "Server Error";
-          }
-          response.contentType("text/plain");
-          response.write(message);
-        } catch (Exception e1) {
-          e1.printStackTrace();
-        }
-      }
+      handleError(response, e);
     } finally {
       currentRequest.set(null);
+      running.set(false);
       try {
         response.close();
       } catch (Throwable t) {
@@ -224,6 +239,31 @@ public class BowserWebServer {
       logger.log(request, response, watch);
     } catch (Throwable e) {
       e.printStackTrace();
+    }
+  }
+
+  private void handleError(Response response, Throwable e) {
+    Throwable root = Throwables.getRootCause(e);
+    String message = root.getMessage();
+
+    if (root instanceof InterruptedException || "Stream has been closed".equals(message)
+        || "Broken pipe".equals(message)) {
+      return;
+    }
+
+    e.printStackTrace();
+    response.status(Status.INTERNAL_SERVER_ERROR);
+    try {
+      if (e instanceof UserReadableError) {
+        message = e.getMessage();
+      }
+      if (message.isEmpty()) {
+        message = "Server Error";
+      }
+      response.contentType("text/plain");
+      response.write(message);
+    } catch (Exception e1) {
+      e1.printStackTrace();
     }
   }
 
@@ -288,8 +328,6 @@ public class BowserWebServer {
       }
     }
   }
-
-
 
   private final Container container = new Container() {
     @Override
