@@ -159,6 +159,10 @@ public class BowserWebServer {
     return this;
   }
 
+  /**
+   * If true, when a connection is disconnected, this will interrupt the thread which is processing the request. This
+   * can be useful for avoiding intensive computations on a request that is already aborted by the client.
+   */
   public BowserWebServer interruptHandlerOnDisconnect(boolean interruptHandlerOnDisconnect) {
     this.interruptHandlerOnDisconnect = interruptHandlerOnDisconnect;
     return this;
