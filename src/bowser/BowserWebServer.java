@@ -2,6 +2,7 @@ package bowser;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static ox.util.Utils.checkNotEmpty;
+import static ox.util.Utils.isNullOrEmpty;
 import static ox.util.Utils.normalize;
 import static ox.util.Utils.propagate;
 import static ox.util.Utils.sleep;
@@ -261,7 +262,7 @@ public class BowserWebServer {
       if (e instanceof UserReadableError) {
         message = e.getMessage();
       }
-      if (message.isEmpty()) {
+      if (isNullOrEmpty(message)) {
         message = "Server Error";
       }
       response.contentType("text/plain");
