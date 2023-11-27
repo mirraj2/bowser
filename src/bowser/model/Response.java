@@ -151,6 +151,14 @@ public class Response {
     return this;
   }
 
+  public long getResponseTime() {
+    long ret = response.getResponseTime();
+    if (ret == -1) {
+      ret = System.currentTimeMillis();
+    }
+    return ret;
+  }
+
   public Response close() {
     // we used to write the responseBody immediately, but this caused race conditions with routes that acquired database
     // transaction locks. Writing the response after all database locks are released is the safest.
