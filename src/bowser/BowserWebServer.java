@@ -58,6 +58,8 @@ public class BowserWebServer {
   public static boolean debugHandlers = false;
   private static InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();
 
+  private XList<Request> requestsInProgress = XList.create();
+
   public final int port;
   public final boolean enableCaching;
   public boolean showImportComments = false;
@@ -210,6 +212,9 @@ public class BowserWebServer {
     AtomicBoolean running = new AtomicBoolean(true);
     try {
       currentRequest.set(request);
+      synchronized (requestsInProgress) {
+        requestsInProgress.add(request);
+      }
 
       if (interruptHandlerOnDisconnect) {
         final Thread thread = Thread.currentThread();
@@ -232,6 +237,9 @@ public class BowserWebServer {
     } finally {
       currentRequest.set(null);
       running.set(false);
+      synchronized (requestsInProgress) {
+        requestsInProgress.remove(request);
+      }
       try {
         response.close();
       } catch (Throwable t) {
@@ -414,6 +422,10 @@ public class BowserWebServer {
    */
   public static XOptional<Request> getCurrentRequest() {
     return XOptional.ofNullable(currentRequest.get());
+  }
+
+  public XList<Request> getRequestsInProgress() {
+    return requestsInProgress;
   }
 
   public static BowserWebServer redirectToHttps() {
