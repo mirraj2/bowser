@@ -259,6 +259,10 @@ public class Request {
 
   public boolean isAborted() {
     TransportChannel channel = Reflection.get(request, "channel");
+    if (channel == null) {
+      // I think this happens when we mock the request during testing
+      return false;
+    }
     SocketChannel socket = channel.getSocket();
 
     // if socket.read() ends up blocking, we can try this out:
