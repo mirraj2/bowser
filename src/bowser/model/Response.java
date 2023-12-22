@@ -87,10 +87,10 @@ public class Response {
   }
 
   public Response cookie(String key, String value, int expiry, TimeUnit units) {
-    return cookie(key, value, expiry, units, "");
+    return cookie(key, value, expiry, units, "", false);
   }
 
-  public Response cookie(String key, String value, int expiry, TimeUnit units, String domain) {
+  public Response cookie(String key, String value, int expiry, TimeUnit units, String domain, boolean httpOnly) {
     Cookie cookie = new Cookie(key, value);
     if (!domain.isEmpty()) {
       cookie.setDomain(domain);
@@ -100,6 +100,8 @@ public class Response {
     } else {
       cookie.setExpiry((int) TimeUnit.SECONDS.convert(expiry, units));
     }
+    // HttpOnly attribute forbids JavaScript from accessing the cookie
+    cookie.setProtected(httpOnly);
     return cookie(cookie);
   }
 
