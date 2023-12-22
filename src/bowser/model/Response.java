@@ -14,6 +14,7 @@ import org.simpleframework.http.Status;
 
 import ox.IO;
 import ox.Json;
+import ox.Log;
 
 public class Response {
 
@@ -168,7 +169,7 @@ public class Response {
       try {
         IO.from(responseBody).to(getOutputStream());
       } catch (Exception e) {
-        e.printStackTrace();
+        Log.error(e);
       }
     }
 
