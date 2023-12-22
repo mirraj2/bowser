@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPOutputStream;
 
 import org.simpleframework.http.Cookie;
-import org.simpleframework.http.Status;
 
 import ox.IO;
 import ox.Json;
@@ -89,6 +88,10 @@ public class Response {
 
   public Response cookie(String key, String value, int expiry, TimeUnit units) {
     return cookie(key, value, expiry, units, "", false);
+  }
+
+  public Response cookie(String key, String value, int expiry, TimeUnit units, String domain) {
+    return cookie(key, value, expiry, units, domain, false);
   }
 
   public Response cookie(String key, String value, int expiry, TimeUnit units, String domain, boolean httpOnly) {
