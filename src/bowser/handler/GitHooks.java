@@ -8,6 +8,7 @@ import com.google.common.base.Splitter;
 
 import bowser.model.Controller;
 import bowser.model.Handler;
+
 import ox.Json;
 import ox.Log;
 
@@ -83,7 +84,7 @@ public class GitHooks extends Controller {
       // .start();
       Runtime.getRuntime().exec(updatePath);
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
   }
 

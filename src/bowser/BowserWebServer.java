@@ -244,14 +244,14 @@ public class BowserWebServer {
         response.close();
       } catch (Throwable t) {
         Log.debug("Problem closing output: " + request);
-        t.printStackTrace();
+        Log.error(t);
       }
       cacheBuster.onRequestFinished();
     }
     try {
       logger.log(request, response, watch);
     } catch (Throwable e) {
-      e.printStackTrace();
+      Log.error(e);
     }
   }
 
@@ -263,8 +263,7 @@ public class BowserWebServer {
         || "Broken pipe".equals(message)) {
       return;
     }
-
-    e.printStackTrace();
+    Log.error(e);
     response.status(Status.INTERNAL_SERVER_ERROR);
     try {
       if (e instanceof UserReadableError) {
@@ -276,7 +275,7 @@ public class BowserWebServer {
       response.contentType("text/plain");
       response.write(message);
     } catch (Exception e1) {
-      e1.printStackTrace();
+      Log.error(e1);
     }
   }
 

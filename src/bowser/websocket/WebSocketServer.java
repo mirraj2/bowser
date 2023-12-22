@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
+import ox.Log;
+
 public class WebSocketServer {
 
   public final int port;
@@ -50,7 +52,7 @@ public class WebSocketServer {
           new ClientSocket(client, onOpen);
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        Log.error(e);
       }
     });
 

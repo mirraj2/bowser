@@ -120,7 +120,7 @@ public class ClientSocket {
     try {
       socket.close();
     } catch (IOException e) {
-      e.printStackTrace();
+      Log.error(e);
     }
     return this;
   }
@@ -143,20 +143,20 @@ public class ClientSocket {
         String s = baos.toString("UTF-8");
         handleUpgradeRequest(s);
       } catch (Throwable t) {
-        t.printStackTrace();
+        Log.error(t);
       }
       try {
         listenForMessages(in);
       } catch (Throwable t) {
         if (!(t instanceof IOException) && !(t instanceof DisconnectedException)
             && !t.getMessage().contains("Bad rsv")) {
-          t.printStackTrace();
+          Log.error(t);
         }
       } finally {
         try {
           onClose.run();
         } catch (Throwable t) {
-          t.printStackTrace();
+          Log.error(t);
         }
       }
     });
@@ -183,7 +183,7 @@ public class ClientSocket {
         try {
           onMessage.accept(text);
         } catch (Throwable t) {
-          t.printStackTrace();
+          Log.error(t);
         }
       } else if (code == Opcode.PING) {
         getPayload(in);
@@ -210,7 +210,7 @@ public class ClientSocket {
     try {
       onMessage.accept(text);
     } catch (Throwable t) {
-      t.printStackTrace();
+      Log.error(t);
     }
   }
 
@@ -279,7 +279,7 @@ public class ClientSocket {
       os.flush();
     } catch (IOException e) {
       if (!e.getMessage().contains("Broken pipe")) {
-        e.printStackTrace();
+        Log.error(e);
       }
     }
   }
