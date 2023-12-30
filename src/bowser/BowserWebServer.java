@@ -46,6 +46,7 @@ import bowser.node.Head;
 import bowser.template.Template;
 
 import ox.Log;
+import ox.NamedThreadFactory;
 import ox.Threads;
 import ox.x.XList;
 import ox.x.XMultimap;
@@ -53,7 +54,8 @@ import ox.x.XOptional;
 
 public class BowserWebServer {
 
-  private static Executor interruptorPool = Executors.newCachedThreadPool();
+  private static Executor interruptorPool = Executors
+      .newCachedThreadPool(new NamedThreadFactory(BowserWebServer.class, "interruptor"));
 
   public static boolean debugHandlers = false;
   private static InheritableThreadLocal<Request> currentRequest = new InheritableThreadLocal<>();

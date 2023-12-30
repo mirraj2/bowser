@@ -11,6 +11,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import ox.Log;
+import ox.NamedThreadFactory;
 
 public class WebSocketServer {
 
@@ -45,7 +46,7 @@ public class WebSocketServer {
       throw new RuntimeException(e);
     }
 
-    Executors.newSingleThreadExecutor().execute(() -> {
+    Executors.newSingleThreadExecutor(new NamedThreadFactory(WebSocketServer.class, "listener")).execute(() -> {
       try {
         while (true) {
           Socket client = server.accept();

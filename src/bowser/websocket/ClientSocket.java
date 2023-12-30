@@ -33,11 +33,13 @@ import com.google.common.io.BaseEncoding;
 
 import ox.Json;
 import ox.Log;
+import ox.NamedThreadFactory;
 import ox.x.XMap;
 
 public class ClientSocket {
 
-  private static final Executor executor = Executors.newCachedThreadPool();
+  private static final Executor executor = Executors
+      .newCachedThreadPool(new NamedThreadFactory(ClientSocket.class, "listener"));
 
   public final Socket socket;
 
