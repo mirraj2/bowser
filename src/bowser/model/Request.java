@@ -149,11 +149,16 @@ public class Request {
 
   public Json getJson() {
     if (json == null) {
-      String s = getContent();
-      if (s.startsWith("{") || s.startsWith("[")) {
-        json = new Json(s);
+      HttpPart jsonPart = getPart("json");
+      if (jsonPart != null) {
+        json = jsonPart.toJson();
       } else {
-        json = Json.object();
+        String s = getContent();
+        if (s.startsWith("{") || s.startsWith("[")) {
+          json = new Json(s);
+        } else {
+          json = Json.object();
+        }
       }
       if (json.isObject()) {
         getQuery().forEach((k, v) -> {
