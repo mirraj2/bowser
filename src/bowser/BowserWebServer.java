@@ -246,7 +246,6 @@ public class BowserWebServer {
         response.close();
       } catch (Throwable t) {
         Log.debug("Problem closing output: " + request);
-        Log.error(t);
       }
       cacheBuster.onRequestFinished();
     }
