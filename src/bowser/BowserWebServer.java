@@ -237,8 +237,6 @@ public class BowserWebServer {
     } catch (final Throwable e) {
       handleError(response, e);
     } finally {
-      currentRequest.set(null);
-      running.set(false);
       synchronized (requestsInProgress) {
         requestsInProgress.remove(request);
       }
@@ -249,7 +247,13 @@ public class BowserWebServer {
         Log.error(t);
       }
       cacheBuster.onRequestFinished();
+      logRequest(request, response, watch);
+      currentRequest.set(null);
+      running.set(false);
     }
+  }
+
+  private void logRequest(Request request, Response response, Stopwatch watch) {
     try {
       logger.log(request, response, watch);
     } catch (Throwable e) {
