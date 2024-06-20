@@ -10,6 +10,7 @@ import static ox.util.Utils.propagate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 import java.util.Map;
@@ -276,6 +277,8 @@ public class Request {
     int bytesRead;
     try {
       bytesRead = socket.read(ByteBuffer.allocate(1));
+    } catch (ClosedChannelException e) {
+      return true;
     } catch (IOException e) {
       throw propagate(e);
     }
