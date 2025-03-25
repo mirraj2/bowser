@@ -155,7 +155,8 @@ public class DomParser {
         }
       }
     }
-    throw new RuntimeException("Could not find end of start tag!");
+    throw new RuntimeException(
+        "Could not find end of start tag! " + s.substring(start, Math.min(start + 100, s.length())) + "...");
   }
 
   public static Integer findEndTag(String tag, String s, int start, int end) {

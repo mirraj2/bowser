@@ -292,6 +292,14 @@ public class BowserWebServer {
       response.header("Access-Control-Allow-Origin", request.request.getValue("Origin"));
       response.header("Access-Control-Allow-Credentials", "true");
       response.header("Access-Control-Expose-Headers", "Content-Disposition");
+      response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+      if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        response.status(200);
+        return;
+      }
+
       response.header("X-Frame-Options", "SAMEORIGIN");
       if (sslContext != null) {
         long ONE_YEAR = TimeUnit.DAYS.toSeconds(365);
